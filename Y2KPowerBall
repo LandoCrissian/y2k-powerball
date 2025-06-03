@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Y2K Powerball</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #0a0a0a;
+      color: white;
+    }
+    .number-box {
+      width: 3rem;
+      height: 3rem;
+      background: #111;
+      border: 2px solid #444;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+    .number-box.selected {
+      background-color: #00ffe1;
+      color: #000;
+    }
+  </style>
+</head>
+<body class="p-6">
+
+  <div class="max-w-3xl mx-auto space-y-10">
+    <h1 class="text-3xl font-bold text-center text-purple-400">🎯 Y2K Powerball</h1>
+
+    <!-- Jackpot Display -->
+    <div class="bg-zinc-900 p-6 rounded-xl shadow-md text-center">
+      <p class="text-lg">💰 Current Jackpot:</p>
+      <p id="jackpotAmount" class="text-3xl font-bold text-green-400">2,000,000 Y2K</p>
+      <p id="drawCountdown" class="text-sm mt-2 text-gray-400">Next draw in: --:--:--</p>
+    </div>
+
+    <!-- Number Picker -->
+    <div class="bg-zinc-800 p-6 rounded-xl shadow">
+      <h2 class="text-xl font-semibold mb-4">🎟️ Select 5 Numbers (1–69)</h2>
+      <div class="grid grid-cols-10 gap-2 max-h-[250px] overflow-y-auto" id="numberGrid"></div>
+
+      <div class="flex gap-4 mt-6">
+        <button onclick="quickPick()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">🎲 Quick Pick</button>
+        <button onclick="submitTicket()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Buy Ticket (100 CRO)</button>
+      </div>
+      <p id="errorMsg" class="text-red-400 mt-3"></p>
+    </div>
+
+    <!-- Ticket History -->
+    <div class="bg-zinc-900 p-6 rounded-xl">
+      <h2 class="text-xl font-semibold mb-4">📜 Your Entries</h2>
+      <div id="ticketHistory" class="space-y-2 text-sm text-gray-300">Connect wallet to view past tickets.</div>
+    </div>
+
+    <!-- Draw History -->
+    <div class="bg-zinc-800 p-6 rounded-xl">
+      <h2 class="text-xl font-semibold mb-4">🏆 Past Draws</h2>
+      <ul id="pastDraws" class="text-gray-400 text-sm space-y-1">
+        <li>Week 24 – Winning Numbers: 03 - 17 - 22 - 41 - 59 – No winner (Jackpot Rolled)</li>
+        <!-- Firebase pulls will replace these -->
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const selectedNumbers = new Set();
+
+    function createNumberGrid() {
+      const grid = document.getElementById('numberGrid');
+      for (let i = 1; i <= 69; i++) {
+        const btn = document.createElement('div');
+        btn.className = 'number-box';
+        btn.textContent = i;
+        btn.onclick = () => toggleNumber(i, btn);
+        grid.appendChild(btn);
+      }
+    }
+
+    function toggleNumber(num, element) {
+      if (selectedNumbers.has(num)) {
+        selectedNumbers.delete(num);
+        element.classList.remove('selected');
+      } else {
+        if (selectedNumbers.size >= 5) return;
+        selectedNumbers.add(num);
+        element.classList.add('selected');
+      }
+    }
+
+    function quickPick() {
+      selectedNumbers.clear();
+      document.querySelectorAll('.number-box').forEach(b => b.classList.remove('selected'));
+      while (selectedNumbers.size < 5) {
+        const rand = Math.floor(Math.random() * 69) + 1;
+        selectedNumbers.add(rand);
+      }
+      selectedNumbers.forEach(num => {
+        const boxes = document.querySelectorAll('.number-box');
+        boxes[num - 1].classList.add('selected');
+      });
+    }
+
+    function submitTicket() {
+      const err = document.getElementById("errorMsg");
+      if (selectedNumbers.size !== 5) {
+        err.textContent = "❌ You must select exactly 5 numbers.";
+        return;
+      }
+
+      const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
+      err.textContent = "";
+
+      // Replace this with real payment + Firebase logic
+      alert(`✅ Ticket submitted: ${numbers.join(" - ")}\n100 CRO deducted.`);
+    }
+
+    createNumberGrid();
+  </script>
+
+</body>
+</html>
