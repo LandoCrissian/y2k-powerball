@@ -23,49 +23,65 @@
       justify-content: center;
       font-size: 1.25rem;
       cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .number-box:hover {
+      background-color: #222;
+      border-color: #666;
     }
     .number-box.selected {
-      background-color: #00ffe1;
-      color: #000;
+      background-color: #ff00aa;
+      color: #fff;
+      border: 2px solid white;
+      font-weight: bold;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body class="p-6">
 
-  <div class="max-w-3xl mx-auto space-y-10">
-    <h1 class="text-3xl font-bold text-center text-purple-400">🎯 Y2K Powerball</h1>
+  <div class="max-w-4xl mx-auto space-y-10">
 
-    <!-- Jackpot Display -->
-    <div class="bg-zinc-900 p-6 rounded-xl shadow-md text-center">
+    <!-- HEADER -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-extrabold text-purple-500 tracking-tight">🎯 Y2K POWERBALL</h1>
+      <p class="text-sm text-zinc-400 italic">Buy with CRO. Win with Y2K. Every week.</p>
+    </div>
+
+    <!-- JACKPOT -->
+    <div class="bg-gradient-to-r from-yellow-400/20 via-pink-500/10 to-purple-500/20 p-6 rounded-xl text-center shadow-lg border border-zinc-700">
       <p class="text-lg">💰 Current Jackpot:</p>
-      <p id="jackpotAmount" class="text-3xl font-bold text-green-400">2,000,000 Y2K</p>
+      <p id="jackpotAmount" class="text-3xl font-bold text-green-400 animate-pulse drop-shadow-md">2,000,000 Y2K</p>
       <p id="drawCountdown" class="text-sm mt-2 text-gray-400">Next draw in: --:--:--</p>
     </div>
 
-    <!-- Number Picker -->
-    <div class="bg-zinc-800 p-6 rounded-xl shadow">
-      <h2 class="text-xl font-semibold mb-4">🎟️ Select 5 Numbers (1–69)</h2>
-      <div class="grid grid-cols-10 gap-2 max-h-[250px] overflow-y-auto" id="numberGrid"></div>
+    <!-- PICK NUMBERS -->
+    <div class="bg-black/40 p-5 rounded-xl shadow-inner border border-zinc-700">
+      <h2 class="text-lg font-semibold text-pink-300 mb-3">🎟️ Select 5 Numbers (1–69)</h2>
+      <div class="grid grid-cols-10 gap-2 max-h-[300px] overflow-y-auto" id="numberGrid"></div>
 
       <div class="flex gap-4 mt-6">
-        <button onclick="quickPick()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">🎲 Quick Pick</button>
-        <button onclick="submitTicket()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Buy Ticket (100 CRO)</button>
+        <button onclick="quickPick()" class="bg-gradient-to-br from-blue-500 to-indigo-700 text-white px-5 py-2 rounded-xl font-bold shadow-md hover:scale-105 transition-all duration-200">🎲 Quick Pick</button>
+        <button onclick="submitTicket()" class="bg-gradient-to-br from-green-400 to-green-700 text-white px-5 py-2 rounded-xl font-bold shadow-md hover:scale-105 transition-all duration-200">💸 Buy Ticket (100 CRO)</button>
       </div>
       <p id="errorMsg" class="text-red-400 mt-3"></p>
     </div>
 
-    <!-- Ticket History -->
-    <div class="bg-zinc-900 p-6 rounded-xl">
-      <h2 class="text-xl font-semibold mb-4">📜 Your Entries</h2>
+    <!-- TICKET HISTORY -->
+    <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+      <h2 class="text-xl font-semibold mb-4 text-white">🧾 Your Entries</h2>
       <div id="ticketHistory" class="space-y-2 text-sm text-gray-300">Connect wallet to view past tickets.</div>
     </div>
 
-    <!-- Draw History -->
-    <div class="bg-zinc-800 p-6 rounded-xl">
-      <h2 class="text-xl font-semibold mb-4">🏆 Past Draws</h2>
-      <ul id="pastDraws" class="text-gray-400 text-sm space-y-1">
-        <li>Week 24 – Winning Numbers: 03 - 17 - 22 - 41 - 59 – No winner (Jackpot Rolled)</li>
-        <!-- Firebase pulls will replace these -->
+    <!-- DRAW HISTORY -->
+    <div class="bg-zinc-800 p-6 rounded-xl border border-zinc-700">
+      <h2 class="text-xl font-semibold mb-4 text-white">🏆 Past Draws</h2>
+      <ul id="pastDraws" class="space-y-2">
+        <li class="bg-black/30 rounded-lg p-3 shadow-sm border border-zinc-700 text-sm">
+          <span class="font-bold text-yellow-300">Week 24:</span>
+          🎱 03 - 17 - 22 - 41 - 59 
+          <span class="text-red-400 font-semibold">→ No Winner (Jackpot Rolled)</span>
+        </li>
       </ul>
     </div>
   </div>
@@ -124,6 +140,5 @@
 
     createNumberGrid();
   </script>
-
 </body>
 </html>
