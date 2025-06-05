@@ -2,111 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Y2K Powerball</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="p-4 min-h-screen">
-  <!-- Connect Wallet Button -->
-  <div class="fixed top-4 right-4">
-    <button id="connectWallet" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-bold shadow-lg hover:scale-105 transition-all duration-200">
-      Connect Wallet
-    </button>
-  </div>
-
-  <div class="max-w-4xl mx-auto space-y-8">
-    <!-- HEADER -->
-    <div class="text-center mb-8 animate-fade-in">
-      <div class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 tracking-tight">
-        🎯 Y2K POWERBALL
-      </div>
-      <p class="text-sm text-zinc-400 italic mt-2">Play on Cronos. Win Y2K. Change Your Life.</p>
-    </div>
-
-    <!-- JACKPOT -->
-    <div class="bg-gradient-to-r from-yellow-400/20 via-pink-500/10 to-purple-500/20 p-8 rounded-2xl text-center shadow-2xl border border-zinc-700/50 backdrop-blur-sm">
-      <div class="flex flex-col items-center gap-2">
-        <div class="text-xl font-semibold text-yellow-300">💰 Current Jackpot</div>
-        <div id="jackpotAmount" class="text-4xl font-bold text-green-400 animate-pulse drop-shadow-md">
-          2,000,000 Y2K
-        </div>
-        <div class="mt-4 flex flex-col items-center">
-          <div class="text-zinc-400 text-sm">Next Draw In:</div>
-          <div id="drawCountdown" class="font-mono text-2xl text-white mt-1">
-            <span id="days">00</span>d
-            <span id="hours">00</span>h
-            <span id="minutes">00</span>m
-            <span id="seconds">00</span>s
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TICKET PRICE INFO -->
-    <div class="bg-black/40 p-4 rounded-xl text-center">
-      <p class="text-xl">
-        <span class="text-pink-500 font-bold">100 CRO</span>
-        <span class="text-zinc-400"> per ticket</span>
-      </p>
-    </div>
-
-    <!-- PICK NUMBERS -->
-    <div class="bg-black/40 p-6 rounded-xl shadow-inner border border-zinc-700/50 backdrop-blur-sm">
-      <h2 class="text-xl font-semibold text-pink-300 mb-4">🎟️ Select 5 Numbers (1–69)</h2>
-      <div class="grid grid-cols-7 sm:grid-cols-10 gap-2 max-h-[300px] overflow-y-auto px-2" id="numberGrid"></div>
-
-      <div class="flex flex-col sm:flex-row gap-4 mt-8">
-        <button onclick="quickPick()" class="flex-1 bg-gradient-to-br from-blue-500 to-indigo-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all duration-200 active:scale-95">
-          🎲 Quick Pick
-        </button>
-        <button onclick="submitTicket()" id="buyButton" class="flex-1 bg-gradient-to-br from-green-400 to-green-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all duration-200 active:scale-95">
-          💸 Buy Ticket
-        </button>
-      </div>
-      
-      <div id="statusMsg" class="mt-4 text-center"></div>
-    </div>
-
-    <!-- TICKET HISTORY -->
-    <div class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/50 backdrop-blur-sm">
-      <h2 class="text-xl font-semibold mb-4 text-white">🧾 Your Active Tickets</h2>
-      <div id="ticketHistory" class="space-y-3"></div>
-    </div>
-
-    <!-- DRAW HISTORY -->
-    <div class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/50 backdrop-blur-sm mb-8">
-      <h2 class="text-xl font-semibold mb-4 text-white">🏆 Recent Draws</h2>
-      <div id="pastDraws" class="space-y-3">
-        <div class="bg-black/30 rounded-lg p-4 border border-zinc-700/50">
-          <div class="flex items-center justify-between">
-            <span class="text-yellow-300 font-bold">Draw #248</span>
-            <span class="text-zinc-500 text-sm">2 days ago</span>
-          </div>
-          <div class="mt-2">
-            <span class="text-white font-mono">03 - 17 - 22 - 41 - 59</span>
-          </div>
-          <div class="mt-2 text-red-400 text-sm">No Winner - Jackpot Rolled Over</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    html {
+    html, body {
       background-color: #0a0a0a;
-    }
-    
-    body {
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Inter', sans-serif;
       color: white;
-      min-height: 100vh;
-      background: radial-gradient(circle at 50% 50%, rgba(123, 31, 162, 0.15), transparent 70%),
-                  radial-gradient(circle at 100% 0%, rgba(255, 0, 170, 0.15), transparent 50%);
+      scroll-behavior: smooth;
     }
-
+    .orbitron {
+      font-family: 'Orbitron', sans-serif;
+    }
+    .glitch-text {
+      animation: glitch 2s infinite;
+    }
+    @keyframes glitch {
+      0% { text-shadow: 1px 1px #ff00ff; }
+      50% { text-shadow: -1px -1px #00ffff; }
+      100% { text-shadow: 1px 1px #ff00ff; }
+    }
     .number-box {
       width: 100%;
       aspect-ratio: 1;
@@ -116,116 +35,146 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.125rem;
+      font-size: 1.25rem;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(4px);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s ease;
     }
-
-    .number-box:hover {
-      background-color: rgba(34, 34, 34, 0.8);
-      border-color: rgba(102, 102, 102, 0.7);
-      transform: translateY(-2px);
-    }
-
-    .number-box:active {
-      transform: scale(0.95);
-    }
-
     .number-box.selected {
       background: linear-gradient(135deg, #ff00aa, #8400ff);
       color: white;
-      border: 2px solid rgba(255, 255, 255, 0.5);
       font-weight: bold;
+      box-shadow: 0 0 10px rgba(255, 0, 170, 0.5);
       transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .number-box:hover {
+      background-color: rgba(34, 34, 34, 0.9);
     }
-
-    .animate-fade-in {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-
-    .loading {
-      position: relative;
-    }
-
-    .loading:after {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      margin: auto;
-      border: 4px solid transparent;
-      border-top-color: #ffffff;
-      border-radius: 50%;
-      animation: loading-spinner 1s ease infinite;
-    }
-
-    @keyframes loading-spinner {
-      from { transform: rotate(0turn) }
-      to { transform: rotate(1turn) }
+    .stat-box {
+      background: rgba(20,20,20,0.7);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
     }
   </style>
+</head>
+<body class="p-4">
+  <div class="max-w-5xl mx-auto space-y-10">
+
+    <!-- Top Header -->
+    <div class="text-center">
+      <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 orbitron glitch-text">
+        🎯 Y2K POWERBALL
+      </h1>
+      <p class="text-zinc-400 italic text-sm mt-2">Buy with CRO. Win in Y2K. Survive the Syndicate.</p>
+    </div>
+
+    <!-- Vault Player Card (placeholder) -->
+    <div id="playerProfile" class="flex flex-col sm:flex-row items-center sm:justify-between gap-4 bg-zinc-900/80 p-4 rounded-xl border border-zinc-700">
+      <div>
+        <div class="text-lg font-semibold text-white">🧑‍🚀 SynΔps3</div>
+        <div class="text-sm text-zinc-400">Vault Verified • 4.2M Y2K</div>
+      </div>
+      <div class="flex gap-2 text-xs">
+        <span class="bg-green-700/70 text-white px-3 py-1 rounded-full">✅ Free Roll Active</span>
+        <span class="bg-purple-600/60 px-3 py-1 rounded-full text-white">Badge: Dead Syndicate</span>
+      </div>
+    </div>
+
+        <!-- Jackpot Display -->
+    <div class="bg-gradient-to-r from-yellow-400/10 via-purple-500/10 to-pink-500/10 p-6 rounded-xl text-center shadow-xl border border-zinc-700 backdrop-blur-md">
+      <div class="text-lg font-semibold text-yellow-300">💰 Jackpot This Week</div>
+      <div id="jackpotAmount" class="text-4xl font-bold text-green-400 animate-pulse">2,000,000 Y2K</div>
+      <div class="mt-2 text-sm text-zinc-400">🔥 Rolled Over 2 Weeks</div>
+    </div>
+
+    <!-- Countdown Timer -->
+    <div class="text-center text-sm text-zinc-400">
+      ⏳ Next Draw In: 
+      <span id="days" class="text-white font-bold">--</span>d
+      <span id="hours" class="text-white font-bold">--</span>h
+      <span id="minutes" class="text-white font-bold">--</span>m
+      <span id="seconds" class="text-white font-bold">--</span>s
+    </div>
+
+    <!-- Ticket Price -->
+    <div class="text-center mt-2 text-pink-500 font-bold">🎟️ 100 CRO per ticket</div>
+
+    <!-- Number Picker -->
+    <div class="bg-black/40 p-5 rounded-xl border border-zinc-700 backdrop-blur-sm">
+      <h2 class="text-xl font-semibold text-pink-300 mb-4">Pick 5 Numbers (1–69)</h2>
+      <div class="grid grid-cols-7 sm:grid-cols-10 gap-2" id="numberGrid"></div>
+
+      <div class="flex flex-col sm:flex-row gap-4 mt-6">
+        <button onclick="quickPick()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-bold transition-all">
+          🎲 Quick Pick
+        </button>
+        <button onclick="submitTicket()" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl font-bold transition-all">
+          💸 Buy Ticket
+        </button>
+      </div>
+      <div id="statusMsg" class="mt-4 text-center text-sm text-green-400"></div>
+    </div>
+
+    <!-- Your Stats -->
+    <div class="flex flex-wrap justify-center gap-4 text-center text-zinc-300">
+      <div class="stat-box">
+        🎫 This Week's Tickets: <span class="text-white font-bold">3</span>
+      </div>
+      <div class="stat-box">
+        💀 Rollovers Survived: <span class="text-white font-bold">4</span>
+      </div>
+      <div class="stat-box">
+        🧠 Lifetime Entries: <span class="text-white font-bold">21</span>
+      </div>
+    </div>
+
+    <!-- Ticket History -->
+    <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-800 backdrop-blur-sm">
+      <h2 class="text-xl font-semibold mb-4 text-white">Your Active Tickets</h2>
+      <div id="ticketHistory" class="space-y-2">
+        <div class="bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white">
+          🎟️ 03 - 14 - 27 - 44 - 66
+        </div>
+        <div class="bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white">
+          🎟️ 05 - 09 - 28 - 33 - 57
+        </div>
+      </div>
+    </div>
+
+    <!-- Past Draws -->
+    <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-800 backdrop-blur-sm">
+      <h2 class="text-xl font-semibold mb-4 text-white">Recent Draws</h2>
+      <div id="pastDraws" class="space-y-2">
+        <div class="bg-black/40 rounded-lg p-3 border border-zinc-700">
+          <div class="flex justify-between">
+            <span class="text-yellow-300 font-bold">Week #247</span>
+            <span class="text-red-400 font-semibold">No Winner</span>
+          </div>
+          <div class="mt-1 font-mono text-white">05 - 12 - 22 - 41 - 66</div>
+        </div>
+        <div class="bg-black/40 rounded-lg p-3 border border-zinc-700">
+          <div class="flex justify-between">
+            <span class="text-yellow-300 font-bold">Week #246</span>
+            <span class="text-red-400 font-semibold">No Winner</span>
+          </div>
+          <div class="mt-1 font-mono text-white">01 - 17 - 23 - 39 - 49</div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- end container -->
 
   <script>
-    let provider, signer, account;
+    // Create number grid
     const selectedNumbers = new Set();
-    
-    // Contract ABI and address (replace with actual values)
-    const contractAddress = "YOUR_CONTRACT_ADDRESS";
-    const contractABI = [
-      "function buyTicket(uint8[5] numbers) payable",
-      "function getJackpot() view returns (uint256)",
-      "function getNextDrawTime() view returns (uint256)",
-      "function getUserTickets(address user) view returns (uint8[][5])"
-    ];
-
-    // Initialize Web3
-    async function initWeb3() {
-      try {
-        if (typeof window.ethereum === 'undefined') {
-          throw new Error('Please install MetaMask');
-        }
-
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await provider.send("eth_requestAccounts", []);
-        account = accounts[0];
-        signer = provider.getSigner();
-        
-        const button = document.getElementById('connectWallet');
-        button.textContent = `${account.slice(0,6)}...${account.slice(-4)}`;
-        
-        await loadUserTickets();
-        await updateJackpot();
-        startCountdown();
-        
-        showStatus('Wallet connected! ✅', 'text-green-400');
-      } catch (err) {
-        showStatus('Failed to connect wallet: ' + err.message, 'text-red-400');
-      }
-    }
-
-    // Initialize number grid
-    function createNumberGrid() {
-      const grid = document.getElementById('numberGrid');
-      for (let i = 1; i <= 69; i++) {
-        const btn = document.createElement('div');
-        btn.className = 'number-box';
-        btn.textContent = i;
-        btn.addEventListener('click', () => toggleNumber(i, btn));
-        grid.appendChild(btn);
-      }
+    const grid = document.getElementById('numberGrid');
+    for (let i = 1; i <= 69; i++) {
+      const box = document.createElement('div');
+      box.className = 'number-box';
+      box.textContent = i;
+      box.onclick = () => toggleNumber(i, box);
+      grid.appendChild(box);
     }
 
     function toggleNumber(num, element) {
@@ -233,10 +182,7 @@
         selectedNumbers.delete(num);
         element.classList.remove('selected');
       } else {
-        if (selectedNumbers.size >= 5) {
-          showStatus('Maximum 5 numbers allowed!', 'text-yellow-400');
-          return;
-        }
+        if (selectedNumbers.size >= 5) return;
         selectedNumbers.add(num);
         element.classList.add('selected');
       }
@@ -244,172 +190,54 @@
 
     function quickPick() {
       selectedNumbers.clear();
-      document.querySelectorAll('.number-box').forEach(b => b.classList.remove('selected'));
-      
+      document.querySelectorAll('.number-box').forEach(el => el.classList.remove('selected'));
       while (selectedNumbers.size < 5) {
         const rand = Math.floor(Math.random() * 69) + 1;
-        if (!selectedNumbers.has(rand)) {
-          selectedNumbers.add(rand);
-          const element = document.querySelectorAll('.number-box')[rand - 1];
-          element.classList.add('selected');
-        }
+        selectedNumbers.add(rand);
       }
+      selectedNumbers.forEach(num => {
+        document.querySelectorAll('.number-box')[num - 1].classList.add('selected');
+      });
     }
 
-    async function submitTicket() {
-      if (!account) {
-        showStatus('Please connect your wallet first!', 'text-red-400');
-        return;
-      }
-
+    function submitTicket() {
       if (selectedNumbers.size !== 5) {
-        showStatus('Please select exactly 5 numbers!', 'text-yellow-400');
+        document.getElementById('statusMsg').textContent = 'Pick exactly 5 numbers.';
         return;
       }
-
-      const buyButton = document.getElementById('buyButton');
-      buyButton.disabled = true;
-      buyButton.classList.add('loading');
-
-      try {
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-        const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
-        
-        // Convert CRO to Wei (100 CRO)
-        const ticketPrice = ethers.utils.parseEther("100");
-        
-        const tx = await contract.buyTicket(numbers, { value: ticketPrice });
-        showStatus('Transaction submitted...', 'text-yellow-400');
-        
-        await tx.wait();
-        showStatus('Ticket purchased successfully! 🎉', 'text-green-400');
-        
-        // Trigger confetti
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-
-        // Clear selection
-        selectedNumbers.clear();
-        document.querySelectorAll('.number-box').forEach(b => b.classList.remove('selected'));
-        
-        // Refresh ticket history
-        await loadUserTickets();
-      } catch (err) {
-        showStatus('Transaction failed: ' + err.message, 'text-red-400');
-      } finally {
-        buyButton.disabled = false;
-        buyButton.classList.remove('loading');
-      }
+      const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      document.getElementById('statusMsg').textContent = `Ticket submitted: ${numbers.join(' - ')}`;
+      selectedNumbers.clear();
+      document.querySelectorAll('.number-box').forEach(el => el.classList.remove('selected'));
     }
 
-    function showStatus(message, className) {
-      const status = document.getElementById('statusMsg');
-      status.textContent = message;
-      status.className = className;
-      setTimeout(() => {
-        status.textContent = '';
-      }, 5000);
-    }
-
-    async function loadUserTickets() {
-      if (!account) return;
-      
-      try {
-        const contract = new ethers.Contract(contractAddress, contractABI, provider);
-        const tickets = await contract.getUserTickets(account);
-        
-        const historyDiv = document.getElementById('ticketHistory');
-        historyDiv.innerHTML = '';
-        
-        if (tickets.length === 0) {
-          historyDiv.innerHTML = '<p class="text-zinc-500">No active tickets found</p>';
-          return;
-        }
-
-        tickets.forEach((ticket, index) => {
-          const ticketEl = document.createElement('div');
-          ticketEl.className = 'bg-black/30 rounded-lg p-4 border border-zinc-700/50';
-          ticketEl.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="text-pink-400 font-semibold">Ticket #${index + 1}</span>
-            </div>
-            <div class="mt-2 font-mono">${ticket.join(' - ')}</div>
-          `;
-          historyDiv.appendChild(ticketEl);
-        });
-      } catch (err) {
-        console.error('Failed to load tickets:', err);
-      }
-    }
-
-    async function updateJackpot() {
-      if (!provider) return;
-      
-      try {
-        const contract = new ethers.Contract(contractAddress, contractABI, provider);
-        const jackpot = await contract.getJackpot();
-        document.getElementById('jackpotAmount').textContent = 
-          `${ethers.utils.formatUnits(jackpot, 18)} Y2K`;
-      } catch (err) {
-        console.error('Failed to update jackpot:', err);
-      }
-    }
-
+    // Countdown
     function startCountdown() {
-      // Set next draw time to next Friday at 20:00 UTC
-      const now = new Date();
-      let nextDraw = new Date();
-      nextDraw.setUTCDate(now.getUTCDate() + (5 - now.getUTCDay() + 7) % 7);
-      nextDraw.setUTCHours(20, 0, 0, 0);
-      
-      if (now > nextDraw) {
-        nextDraw.setUTCDate(nextDraw.getUTCDate() + 7);
-      }
-
-      function updateTimer() {
+      const countdown = () => {
         const now = new Date();
-        const diff = nextDraw - now;
-        
-        if (diff <= 0) {
-          nextDraw.setUTCDate(nextDraw.getUTCDate() + 7);
-          return;
-        }
+        const nextDraw = new Date(now);
+        nextDraw.setUTCDate(now.getUTCDate() + (5 - now.getUTCDay() + 7) % 7);
+        nextDraw.setUTCHours(20, 0, 0, 0);
+        if (now > nextDraw) nextDraw.setUTCDate(nextDraw.getUTCDate() + 7);
 
+        const diff = nextDraw - now;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        document.getElementById('days').textContent = String(days).padStart(2, '0');
-        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-      }
+        document.getElementById("days").textContent = String(days).padStart(2, '0');
+        document.getElementById("hours").textContent = String(hours).padStart(2, '0');
+        document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
+        document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
+      };
 
-      updateTimer();
-      setInterval(updateTimer, 1000);
+      countdown();
+      setInterval(countdown, 1000);
     }
 
-    // Event Listeners
-    document.getElementById('connectWallet').addEventListener('click', initWeb3);
-
-    // Initialize the app
-    createNumberGrid();
     startCountdown();
-
-    // Handle account changes
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', function (accounts) {
-        window.location.reload();
-      });
-
-      window.ethereum.on('chainChanged', function (chainId) {
-        window.location.reload();
-      });
-    }
   </script>
 </body>
 </html>
