@@ -69,7 +69,7 @@
       <p class="text-zinc-400 italic text-sm mt-2">Buy with CRO. Win in Y2K. Survive the Syndicate.</p>
     </div>
 
-    <!-- Vault Player Card (placeholder) -->
+    <!-- Vault Player Card (static placeholder) -->
     <div id="playerProfile" class="flex flex-col sm:flex-row items-center sm:justify-between gap-4 bg-zinc-900/80 p-4 rounded-xl border border-zinc-700">
       <div>
         <div class="text-lg font-semibold text-white">🧑‍🚀 SynΔps3</div>
@@ -81,7 +81,7 @@
       </div>
     </div>
 
-        <!-- Jackpot Display -->
+    <!-- Jackpot Display -->
     <div class="bg-gradient-to-r from-yellow-400/10 via-purple-500/10 to-pink-500/10 p-6 rounded-xl text-center shadow-xl border border-zinc-700 backdrop-blur-md">
       <div class="text-lg font-semibold text-yellow-300">💰 Jackpot This Week</div>
       <div id="jackpotAmount" class="text-4xl font-bold text-green-400 animate-pulse">2,000,000 Y2K</div>
@@ -116,29 +116,19 @@
       <div id="statusMsg" class="mt-4 text-center text-sm text-green-400"></div>
     </div>
 
-    <!-- Your Stats -->
+    <!-- Stats -->
     <div class="flex flex-wrap justify-center gap-4 text-center text-zinc-300">
-      <div class="stat-box">
-        🎫 This Week's Tickets: <span class="text-white font-bold">3</span>
-      </div>
-      <div class="stat-box">
-        💀 Rollovers Survived: <span class="text-white font-bold">4</span>
-      </div>
-      <div class="stat-box">
-        🧠 Lifetime Entries: <span class="text-white font-bold">21</span>
-      </div>
+      <div class="stat-box">🎫 This Week's Tickets: <span class="text-white font-bold">3</span></div>
+      <div class="stat-box">💀 Rollovers Survived: <span class="text-white font-bold">4</span></div>
+      <div class="stat-box">🧠 Lifetime Entries: <span class="text-white font-bold">21</span></div>
     </div>
 
     <!-- Ticket History -->
     <div class="bg-zinc-900/80 p-5 rounded-xl border border-zinc-800 backdrop-blur-sm">
       <h2 class="text-xl font-semibold mb-4 text-white">Your Active Tickets</h2>
       <div id="ticketHistory" class="space-y-2">
-        <div class="bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white">
-          🎟️ 03 - 14 - 27 - 44 - 66
-        </div>
-        <div class="bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white">
-          🎟️ 05 - 09 - 28 - 33 - 57
-        </div>
+        <div class="bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white">🎟️ 03 - 14 - 27 - 44 - 66</div>
+        <div class="bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white">🎟️ 05 - 09 - 28 - 33 - 57</div>
       </div>
     </div>
 
@@ -163,12 +153,12 @@
       </div>
     </div>
 
-  </div> <!-- end container -->
+  </div>
 
   <script>
-    // Create number grid
     const selectedNumbers = new Set();
     const grid = document.getElementById('numberGrid');
+
     for (let i = 1; i <= 69; i++) {
       const box = document.createElement('div');
       box.className = 'number-box';
@@ -177,14 +167,14 @@
       grid.appendChild(box);
     }
 
-    function toggleNumber(num, element) {
+    function toggleNumber(num, el) {
       if (selectedNumbers.has(num)) {
         selectedNumbers.delete(num);
-        element.classList.remove('selected');
+        el.classList.remove('selected');
       } else {
         if (selectedNumbers.size >= 5) return;
         selectedNumbers.add(num);
-        element.classList.add('selected');
+        el.classList.add('selected');
       }
     }
 
@@ -212,7 +202,6 @@
       document.querySelectorAll('.number-box').forEach(el => el.classList.remove('selected'));
     }
 
-    // Countdown
     function startCountdown() {
       const countdown = () => {
         const now = new Date();
