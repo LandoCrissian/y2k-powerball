@@ -451,5 +451,110 @@
     updateSelectedPreview();
     updateStatusMessage();
   </script>
+
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+    authDomain: "y2k-arcade.firebaseapp.com",
+    projectId: "y2k-arcade",
+    storageBucket: "y2k-arcade.firebasestorage.app",
+    messagingSenderId: "1063043176357",
+    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let walletAddress = null;
+  let isVaultVerified = false;
+  const WEEK_KEY = (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
+    return `${year}-W${String(week).padStart(2, '0')}`;
+  })();
+
+  // 🔌 Wallet Connect
+  async function connectWallet() {
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      walletAddress = accounts[0].toLowerCase();
+      checkVaultStatus(walletAddress);
+    } else {
+      alert('No wallet detected');
+    }
+  }
+
+  // 🔍 Check Vault Status
+  async function checkVaultStatus(wallet) {
+    const userRef = doc(db, "users", wallet);
+    const snap = await getDoc(userRef);
+    isVaultVerified = snap.exists();
+  }
+
+  // 📊 Free Entry Tracking
+  async function getFreeEntriesUsed(wallet) {
+    const ref = doc(db, "powerball_free_entries", wallet);
+    const snap = await getDoc(ref);
+    return snap.exists() ? (snap.data()[WEEK_KEY] || 0) : 0;
+  }
+
+  async function incrementFreeEntry(wallet) {
+    const ref = doc(db, "powerball_free_entries", wallet);
+    await setDoc(ref, { [WEEK_KEY]: increment(1) }, { merge: true });
+  }
+
+  // 📝 Ticket Logging
+  async function logTicket(wallet, numbers, method = "free") {
+    const drawId = WEEK_KEY;
+    const ticketRef = doc(db, "powerball_tickets", `${drawId}_${wallet}_${Date.now()}`);
+    await setDoc(ticketRef, {
+      wallet,
+      numbers,
+      timestamp: Date.now(),
+      draw: drawId,
+      method
+    });
+  }
+
+  // 🎟️ Ticket Submission Logic
+  window.submitTicket = async function () {
+    if (selectedNumbers.size !== 5) {
+      document.getElementById('statusMsg').textContent = 'Please pick 5 numbers';
+      document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-red-400';
+      vibrate([100, 100, 100]);
+      return;
+    }
+
+    if (!walletAddress) {
+      await connectWallet();
+    }
+
+    const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
+    const used = await getFreeEntriesUsed(walletAddress);
+
+    if (isVaultVerified && used < 5) {
+      await incrementFreeEntry(walletAddress);
+      await logTicket(walletAddress, numbers, "free");
+    } else {
+      // TODO: Add real CRO payment logic here before ticket is accepted
+      await logTicket(walletAddress, numbers, "paid");
+    }
+
+    // 🎉 UI Feedback
+    selectedNumbers.clear();
+    document.querySelectorAll('.number-btn').forEach(el => el.classList.remove('selected'));
+    updateSelectedPreview();
+    updateTicketHistory();
+
+    document.getElementById('statusMsg').textContent = '🎉 Ticket submitted!';
+    document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-green-400';
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+    vibrate([100, 50, 100]);
+  };
+</script>
 </body>
 </html>
