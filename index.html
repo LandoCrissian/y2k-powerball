@@ -1,164 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Y2K Powerball</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
-<body class="p-4 min-h-screen">
-  <div class="max-w-5xl mx-auto space-y-8">
-    <!-- Header Section -->
-    <header class="relative text-center py-6">
-      <div class="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-purple-500/10 blur-xl"></div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 orbitron glitch-text">
+<body class="touch-manipulation">
+  <!-- Main Container -->
+  <div class="min-h-screen p-4 pb-20">
+    <!-- Header -->
+    <header class="text-center mb-6 pt-2">
+      <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 orbitron glitch-text">
         🎯 Y2K POWERBALL
       </h1>
-      <p class="text-zinc-400 italic text-sm mt-2 cyberpunk-subtitle">Buy with CRO. Win in Y2K. Survive the Syndicate.</p>
-      <div class="mt-4 flex justify-center gap-2">
-        <div class="pulse-dot"></div>
-        <span class="text-xs text-green-400">NETWORK ACTIVE</span>
-      </div>
+      <p class="text-zinc-400 text-sm mt-1">Buy with CRO • Win in Y2K</p>
     </header>
 
-    <!-- Player Profile Card -->
-    <div id="playerProfile" class="transform hover:scale-[1.02] transition-all duration-300">
-      <div class="bg-gradient-to-r from-zinc-900 to-zinc-800 p-5 rounded-xl border border-zinc-700/50 shadow-xl backdrop-blur-lg">
-        <div class="flex flex-col sm:flex-row items-center sm:justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">
-              🧑‍🚀
-            </div>
-            <div>
-              <div class="text-lg font-semibold text-white">SynΔps3 <span class="text-xs text-green-400">●</span></div>
-              <div class="text-sm text-zinc-400 flex items-center gap-2">
-                <span class="text-emerald-400">✓</span> Vault Verified • <span class="text-yellow-400">4.2M Y2K</span>
-              </div>
-            </div>
+    <!-- Player Card -->
+    <div class="bg-black/40 rounded-xl p-4 mb-6 border border-zinc-800/50">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+          🧑‍🚀
+        </div>
+        <div>
+          <div class="font-semibold text-white flex items-center gap-2">
+            SynΔps3 
+            <span class="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">Active</span>
           </div>
-          <div class="flex flex-wrap gap-2 text-xs">
-            <span class="status-badge bg-green-700/70">✅ Free Roll Active</span>
-            <span class="status-badge bg-purple-600/60">🏆 Dead Syndicate</span>
-          </div>
+          <div class="text-sm text-zinc-400">4.2M Y2K Balance</div>
         </div>
       </div>
     </div>
 
-    <!-- Jackpot Display -->
-    <div class="jackpot-container relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-purple-500/20 to-pink-500/20 blur-xl"></div>
-      <div class="relative bg-black/40 p-8 rounded-xl border border-zinc-700/50 backdrop-blur-md text-center">
-        <div class="text-lg font-semibold text-yellow-300 mb-2">💰 Current Jackpot</div>
-        <div id="jackpotAmount" class="text-5xl font-bold text-green-400 jackpot-glow orbitron">2,000,000 Y2K</div>
-        <div class="mt-4 text-sm">
-          <span class="text-pink-400">🔥 2 Week Rollover</span>
-          <span class="mx-2">•</span>
-          <span class="text-blue-400">👥 142 Players</span>
-        </div>
-      </div>
+    <!-- Jackpot -->
+    <div class="bg-black/40 rounded-xl p-6 mb-6 border border-zinc-800/50 text-center">
+      <div class="text-yellow-300 mb-1">💰 Jackpot</div>
+      <div class="text-4xl font-bold text-green-400 orbitron glow-text">2,000,000</div>
+      <div class="text-green-400 text-sm">Y2K</div>
+      <div class="text-zinc-400 text-sm mt-2">🔥 2 Week Rollover</div>
     </div>
 
-    <!-- Countdown Timer -->
-    <div class="countdown-container bg-black/40 p-6 rounded-xl border border-zinc-700/50 backdrop-blur-sm">
-      <div class="text-center mb-4">
-        <span class="text-zinc-400">⏳ Next Draw In</span>
+    <!-- Timer -->
+    <div class="grid grid-cols-4 gap-2 mb-6">
+      <div class="timer-box">
+        <span id="days" class="timer-number">--</span>
+        <span class="timer-label">DAYS</span>
       </div>
-      <div class="grid grid-cols-4 gap-4">
-        <div class="countdown-box">
-          <span id="days" class="countdown-number">--</span>
-          <span class="countdown-label">DAYS</span>
-        </div>
-        <div class="countdown-box">
-          <span id="hours" class="countdown-number">--</span>
-          <span class="countdown-label">HOURS</span>
-        </div>
-        <div class="countdown-box">
-          <span id="minutes" class="countdown-number">--</span>
-          <span class="countdown-label">MINS</span>
-        </div>
-        <div class="countdown-box">
-          <span id="seconds" class="countdown-number">--</span>
-          <span class="countdown-label">SECS</span>
-        </div>
+      <div class="timer-box">
+        <span id="hours" class="timer-number">--</span>
+        <span class="timer-label">HRS</span>
+      </div>
+      <div class="timer-box">
+        <span id="mins" class="timer-number">--</span>
+        <span class="timer-label">MIN</span>
+      </div>
+      <div class="timer-box">
+        <span id="secs" class="timer-number">--</span>
+        <span class="timer-label">SEC</span>
       </div>
     </div>
 
     <!-- Number Picker -->
-    <div class="number-picker-container bg-black/40 p-6 rounded-xl border border-zinc-700/50 backdrop-blur-sm">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-pink-300">Pick 5 Numbers (1–69)</h2>
-        <span class="text-pink-500 font-bold">🎟️ 100 CRO/ticket</span>
+    <div class="bg-black/40 rounded-xl p-4 mb-6 border border-zinc-800/50">
+      <div class="flex justify-between items-center mb-4">
+        <div class="text-white">Pick 5 Numbers</div>
+        <div class="text-pink-400 text-sm">100 CRO/ticket</div>
       </div>
       
-      <div class="grid grid-cols-7 sm:grid-cols-10 gap-2" id="numberGrid"></div>
+      <!-- Number Grid -->
+      <div id="numberGrid" class="grid grid-cols-7 gap-2 mb-4"></div>
 
-      <div class="flex flex-col sm:flex-row gap-4 mt-6">
-        <button onclick="quickPick()" class="action-button bg-blue-600 hover:bg-blue-700">
+      <!-- Selected Numbers Preview -->
+      <div id="selectedPreview" class="flex justify-center gap-2 mb-4 min-h-[40px]"></div>
+
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="quickPick()" class="action-btn bg-blue-600">
           🎲 Quick Pick
         </button>
-        <button onclick="submitTicket()" class="action-button bg-green-500 hover:bg-green-600">
+        <button onclick="submitTicket()" class="action-btn bg-green-500">
           💸 Buy Ticket
         </button>
       </div>
-      <div id="statusMsg" class="mt-4 text-center text-sm status-message"></div>
+
+      <!-- Status Message -->
+      <div id="statusMsg" class="text-center text-sm mt-3 h-6 text-zinc-400"></div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-      <div class="stat-box">
-        <div class="stat-value">3</div>
-        <div class="stat-label">🎫 Week's Tickets</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-value">4</div>
-        <div class="stat-label">💀 Rollovers Survived</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-value">21</div>
-        <div class="stat-label">🧠 Lifetime Entries</div>
-      </div>
+    <!-- Tickets -->
+    <div class="bg-black/40 rounded-xl p-4 mb-6 border border-zinc-800/50">
+      <h2 class="text-white mb-3">Your Tickets</h2>
+      <div id="ticketHistory" class="space-y-2"></div>
     </div>
 
-    <!-- Active Tickets -->
-    <div class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800 backdrop-blur-sm">
-      <h2 class="text-xl font-semibold mb-4 text-white flex items-center gap-2">
-        <span>Active Tickets</span>
-        <span class="text-sm text-zinc-500">(Last 7 Days)</span>
-      </h2>
-      <div id="ticketHistory" class="space-y-3"></div>
-    </div>
-
-    <!-- Past Draws -->
-    <div class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800 backdrop-blur-sm">
-      <h2 class="text-xl font-semibold mb-4 text-white">Recent Draws</h2>
-      <div id="pastDraws" class="space-y-3">
-        <div class="draw-box">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-yellow-300 font-bold">#247</span>
-            <span class="text-red-400">No Winner • 1.8M Y2K</span>
+    <!-- Recent Draws -->
+    <div class="bg-black/40 rounded-xl p-4 border border-zinc-800/50">
+      <h2 class="text-white mb-3">Recent Draws</h2>
+      <div class="space-y-3">
+        <div class="draw-result">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-yellow-400">#247</span>
+            <span class="text-red-400">No Winner</span>
           </div>
-          <div class="flex gap-2">
-            <span class="number-pill">05</span>
-            <span class="number-pill">12</span>
-            <span class="number-pill">22</span>
-            <span class="number-pill">41</span>
-            <span class="number-pill">66</span>
+          <div class="flex gap-1">
+            <span class="number-ball">05</span>
+            <span class="number-ball">12</span>
+            <span class="number-ball">22</span>
+            <span class="number-ball">41</span>
+            <span class="number-ball">66</span>
           </div>
         </div>
-        <div class="draw-box">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-yellow-300 font-bold">#246</span>
-            <span class="text-red-400">No Winner • 1.5M Y2K</span>
+        <div class="draw-result">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-yellow-400">#246</span>
+            <span class="text-red-400">No Winner</span>
           </div>
-          <div class="flex gap-2">
-            <span class="number-pill">01</span>
-            <span class="number-pill">17</span>
-            <span class="number-pill">23</span>
-            <span class="number-pill">39</span>
-            <span class="number-pill">49</span>
+          <div class="flex gap-1">
+            <span class="number-ball">01</span>
+            <span class="number-ball">17</span>
+            <span class="number-ball">23</span>
+            <span class="number-ball">39</span>
+            <span class="number-ball">49</span>
           </div>
         </div>
       </div>
@@ -168,201 +133,180 @@
   <style>
     html {
       background-color: #0a0a0a;
+      height: 100%;
+      overflow-x: hidden;
     }
     
     body {
       font-family: 'Inter', sans-serif;
       color: white;
-      background: radial-gradient(circle at 50% -20%, #2a0a2a, transparent 70%),
-                  radial-gradient(circle at 80% 60%, #170a2a, transparent 50%);
-      min-height: 100vh;
+      background: radial-gradient(circle at 50% 0%, #2a0a2a, transparent 70%),
+                  radial-gradient(circle at 80% 40%, #170a2a, transparent 50%);
+      min-height: 100%;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .orbitron {
       font-family: 'Orbitron', sans-serif;
     }
 
-    .tech-mono {
-      font-family: 'Share Tech Mono', monospace;
+    .glow-text {
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
     }
 
-    .glitch-text {
-      position: relative;
-      animation: glitch 3s infinite;
-    }
-
-    @keyframes glitch {
-      0% { text-shadow: 2px 2px #ff00ff; }
-      25% { text-shadow: -2px -2px #00ffff; }
-      50% { text-shadow: 2px -2px #ff00ff; }
-      75% { text-shadow: -2px 2px #00ffff; }
-      100% { text-shadow: 2px 2px #ff00ff; }
-    }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.5; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .status-badge {
-      padding: 0.5rem 1rem;
-      border-radius: 9999px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .jackpot-glow {
-      text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
-      animation: glow 2s ease-in-out infinite;
-    }
-
-    @keyframes glow {
-      0%, 100% { text-shadow: 0 0 20px rgba(74, 222, 128, 0.5); }
-      50% { text-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
-    }
-
-    .countdown-box {
+    .timer-box {
       background: rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 0.75rem;
-      padding: 1rem;
+      border-radius: 12px;
+      padding: 10px 4px;
       text-align: center;
     }
 
-    .countdown-number {
+    .timer-number {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-size: 20px;
       color: #22d3ee;
-      text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
-    }
-
-    .countdown-label {
       display: block;
-      font-size: 0.75rem;
-      color: #94a3b8;
-      margin-top: 0.5rem;
+      font-weight: bold;
     }
 
-    .number-box {
-      width: 100%;
+    .timer-label {
+      font-size: 10px;
+      color: #94a3b8;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .number-btn {
       aspect-ratio: 1;
-      background: rgba(17, 17, 17, 0.7);
-      border: 2px solid rgba(68, 68, 68, 0.5);
-      border-radius: 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: rgba(17, 17, 17, 0.7);
+      border: 1.5px solid rgba(68, 68, 68, 0.5);
+      border-radius: 12px;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.25rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      font-size: 16px;
+      touch-action: manipulation;
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s ease;
     }
 
-    .number-box.selected {
+    .number-btn.selected {
       background: linear-gradient(135deg, #ff00aa, #8400ff);
+      border: none;
       color: white;
       font-weight: bold;
-      box-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
       transform: scale(1.05);
-      border: none;
+      box-shadow: 0 0 15px rgba(255, 0, 170, 0.3);
     }
 
-    .number-box:hover {
-      background-color: rgba(34, 34, 34, 0.9);
-    }
-
-    .action-button {
-      padding: 1rem;
-      border-radius: 0.75rem;
-      font-weight: bold;
+    .action-btn {
+      padding: 14px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
       text-align: center;
-      transition: all 0.2s ease;
-      flex: 1;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.15s ease;
+      touch-action: manipulation;
     }
 
-    .stat-box {
-      background: rgba(20,20,20,0.7);
-      border: 1px solid rgba(255,255,255,0.05);
-      padding: 1.25rem;
-      border-radius: 1rem;
-      text-align: center;
+    .action-btn:active {
+      transform: scale(0.95);
     }
 
-    .stat-value {
+    .number-ball {
+      background: rgba(255,255,255,0.1);
+      padding: 6px;
+      border-radius: 8px;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #22d3ee;
-      margin-bottom: 0.5rem;
+      min-width: 32px;
+      text-align: center;
+      font-size: 14px;
     }
 
-    .stat-label {
-      font-size: 0.875rem;
-      color: #94a3b8;
-    }
-
-    .draw-box {
+    .draw-result {
       background: rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.05);
-      padding: 1rem;
-      border-radius: 0.75rem;
-    }
-
-    .number-pill {
-      background: rgba(255,255,255,0.1);
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      font-family: 'Share Tech Mono', monospace;
-      min-width: 2.5rem;
-      text-align: center;
-    }
-
-    .status-message {
-      height: 1.5rem;
-      transition: all 0.3s ease;
+      padding: 12px;
+      border-radius: 12px;
     }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    .selected-preview-number {
+      background: linear-gradient(135deg, #ff00aa, #8400ff);
+      color: white;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 8px;
+      border-radius: 8px;
+      min-width: 36px;
+      text-align: center;
+      font-weight: bold;
     }
   </style>
 
   <script>
     const selectedNumbers = new Set();
     const grid = document.getElementById('numberGrid');
+    const preview = document.getElementById('selectedPreview');
     let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
 
-    // Initialize the grid
+    // Initialize number grid
     for (let i = 1; i <= 69; i++) {
-      const box = document.createElement('div');
-      box.className = 'number-box';
-      box.textContent = i;
-      box.addEventListener('click', () => toggleNumber(i, box));
-      grid.appendChild(box);
+      const btn = document.createElement('div');
+      btn.className = 'number-btn';
+      btn.textContent = i;
+      
+      // Add touch and click handlers
+      const handleSelection = (e) => {
+        e.preventDefault();
+        toggleNumber(i, btn);
+      };
+      
+      btn.addEventListener('touchstart', handleSelection, { passive: false });
+      btn.addEventListener('click', handleSelection);
+      grid.appendChild(btn);
     }
 
     function vibrate(pattern) {
       if ('vibrate' in navigator) {
         navigator.vibrate(pattern);
+      }
+    }
+
+    function updateSelectedPreview() {
+      preview.innerHTML = '';
+      const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
+      numbers.forEach(num => {
+        const div = document.createElement('div');
+        div.className = 'selected-preview-number';
+        div.textContent = String(num).padStart(2, '0');
+        preview.appendChild(div);
+      });
+
+      // Add empty slots
+      for (let i = numbers.length; i < 5; i++) {
+        const div = document.createElement('div');
+        div.className = 'selected-preview-number';
+        div.style.background = 'rgba(255,255,255,0.1)';
+        div.textContent = '--';
+        preview.appendChild(div);
       }
     }
 
@@ -373,8 +317,8 @@
         vibrate(50);
       } else {
         if (selectedNumbers.size >= 5) {
-          el.style.animation = 'shake 0.5s';
-          setTimeout(() => el.style.animation = '', 500);
+          el.classList.add('shake');
+          setTimeout(() => el.classList.remove('shake'), 400);
           vibrate([50, 50, 50]);
           return;
         }
@@ -382,6 +326,7 @@
         el.classList.add('selected');
         vibrate(100);
       }
+      updateSelectedPreview();
       updateStatusMessage();
     }
 
@@ -390,40 +335,41 @@
       const msg = document.getElementById('statusMsg');
       if (remaining > 0) {
         msg.textContent = `Select ${remaining} more number${remaining > 1 ? 's' : ''}`;
-        msg.className = 'status-message text-zinc-400';
+        msg.className = 'text-center text-sm mt-3 text-zinc-400';
       } else {
         msg.textContent = 'Ready to submit! 🎯';
-        msg.className = 'status-message text-green-400';
+        msg.className = 'text-center text-sm mt-3 text-green-400';
       }
     }
 
     function quickPick() {
       selectedNumbers.clear();
-      document.querySelectorAll('.number-box').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.number-btn').forEach(el => el.classList.remove('selected'));
       
       while (selectedNumbers.size < 5) {
         const rand = Math.floor(Math.random() * 69) + 1;
         if (!selectedNumbers.has(rand)) {
           selectedNumbers.add(rand);
-          document.querySelectorAll('.number-box')[rand - 1].classList.add('selected');
+          document.querySelectorAll('.number-btn')[rand - 1].classList.add('selected');
         }
       }
       
       vibrate([50, 50, 50, 50, 50]);
+      updateSelectedPreview();
       updateStatusMessage();
     }
 
     function submitTicket() {
       if (selectedNumbers.size !== 5) {
-        document.getElementById('statusMsg').textContent = 'Please pick exactly 5 numbers';
-        document.getElementById('statusMsg').className = 'status-message text-red-400';
+        document.getElementById('statusMsg').textContent = 'Please pick 5 numbers';
+        document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-red-400';
         vibrate([100, 100, 100]);
         return;
       }
 
       const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
       
-      // Save to local storage
+      // Save ticket
       tickets.unshift({
         numbers,
         timestamp: Date.now()
@@ -435,17 +381,17 @@
       
       // Clear selection
       selectedNumbers.clear();
-      document.querySelectorAll('.number-box').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.number-btn').forEach(el => el.classList.remove('selected'));
+      updateSelectedPreview();
       
-      // Show success message
-      document.getElementById('statusMsg').textContent = '🎉 Ticket submitted successfully!';
-      document.getElementById('statusMsg').className = 'status-message text-green-400';
+      // Success feedback
+      document.getElementById('statusMsg').textContent = '🎉 Ticket purchased!';
+      document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-green-400';
       
-      // Trigger confetti
       confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.7 },
         colors: ['#ff00aa', '#8400ff', '#22d3ee']
       });
       
@@ -458,16 +404,20 @@
       
       const recentTickets = tickets.slice(0, 5);
       recentTickets.forEach(ticket => {
-        const ticketElement = document.createElement('div');
-        ticketElement.className = 'bg-black/40 rounded-md p-3 border border-zinc-700 text-sm font-mono text-white flex items-center gap-2';
-        ticketElement.innerHTML = `
-          <span>🎟️</span>
-          <div class="flex gap-2 flex-1">
-            ${ticket.numbers.map(n => `<span class="number-pill">${String(n).padStart(2, '0')}</span>`).join('')}
+        const div = document.createElement('div');
+        div.className = 'draw-result';
+        div.innerHTML = `
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-zinc-400">${new Date(ticket.timestamp).toLocaleDateString()}</span>
+            <span class="text-green-400">Active</span>
           </div>
-          <span class="text-zinc-500 text-xs">${new Date(ticket.timestamp).toLocaleDateString()}</span>
+          <div class="flex gap-1">
+            ${ticket.numbers.map(n => `
+              <span class="number-ball">${String(n).padStart(2, '0')}</span>
+            `).join('')}
+          </div>
         `;
-        historyContainer.appendChild(ticketElement);
+        historyContainer.appendChild(div);
       });
     }
 
@@ -487,8 +437,8 @@
 
         document.getElementById("days").textContent = String(days).padStart(2, '0');
         document.getElementById("hours").textContent = String(hours).padStart(2, '0');
-        document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
-        document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
+        document.getElementById("mins").textContent = String(minutes).padStart(2, '0');
+        document.getElementById("secs").textContent = String(seconds).padStart(2, '0');
       };
 
       countdown();
@@ -498,6 +448,7 @@
     // Initialize
     startCountdown();
     updateTicketHistory();
+    updateSelectedPreview();
     updateStatusMessage();
   </script>
 </body>
