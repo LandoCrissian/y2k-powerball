@@ -643,5 +643,111 @@
             animateJackpot();
         });
     </script>
+
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // 🔥 Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+    authDomain: "y2k-arcade.firebaseapp.com",
+    projectId: "y2k-arcade",
+    storageBucket: "y2k-arcade.appspot.com",
+    messagingSenderId: "1063043176357",
+    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 🎟️ State
+  let walletAddress = null;
+  let isVaultVerified = false;
+
+  const WEEK_KEY = (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
+    return `${year}-W${String(week).padStart(2, '0')}`;
+  })();
+
+  // 🔌 Wallet Connect
+  async function connectWallet() {
+    if (!window.ethereum) return alert('Wallet not found');
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    walletAddress = accounts[0].toLowerCase();
+    document.querySelector('.wallet-status').innerHTML = `<span class="dot pulse"></span> ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
+    await checkVaultStatus(walletAddress);
+    updateFreeEntryUI();
+  }
+
+  // 🧠 Vault Check
+  async function checkVaultStatus(wallet) {
+    const ref = doc(db, "users", wallet);
+    const snap = await getDoc(ref);
+    isVaultVerified = snap.exists();
+  }
+
+  // 🔁 Free Entry Logic
+  async function getFreeEntriesUsed(wallet) {
+    const ref = doc(db, "powerball_free_entries", wallet);
+    const snap = await getDoc(ref);
+    return snap.exists() ? (snap.data()[WEEK_KEY] || 0) : 0;
+  }
+
+  async function incrementFreeEntry(wallet) {
+    const ref = doc(db, "powerball_free_entries", wallet);
+    await setDoc(ref, { [WEEK_KEY]: increment(1) }, { merge: true });
+  }
+
+  // 📩 Log Ticket
+  async function logTicket(wallet, method = "free") {
+    const ref = doc(db, "powerball_tickets", `${WEEK_KEY}_${wallet}_${Date.now()}`);
+    await setDoc(ref, {
+      wallet,
+      method,
+      draw: WEEK_KEY,
+      timestamp: Date.now()
+    });
+  }
+
+  // 💥 Submit Ticket
+  async function handleTicket(isFree = true) {
+    if (!walletAddress) await connectWallet();
+    if (!walletAddress) return;
+
+    if (isFree && isVaultVerified) {
+      const used = await getFreeEntriesUsed(walletAddress);
+      if (used >= 5) {
+        alert('No free entries left this week.');
+        return;
+      }
+      await incrementFreeEntry(walletAddress);
+      await logTicket(walletAddress, "free");
+    } else {
+      // TODO: Add real CRO tx here before this logs
+      await logTicket(walletAddress, "paid");
+    }
+
+    alert('🎟️ Ticket submitted!');
+    updateFreeEntryUI();
+  }
+
+  // 🔁 Update Free Entry Button
+  async function updateFreeEntryUI() {
+    const btn = document.getElementById("freeButton");
+    if (!btn || !walletAddress) return;
+    const used = await getFreeEntriesUsed(walletAddress);
+    btn.querySelector(".button-price").textContent = isVaultVerified ? `${5 - used} LEFT` : `VAULT ONLY`;
+  }
+
+  // 🔘 Button Events
+  document.getElementById("freeButton")?.addEventListener("click", () => handleTicket(true));
+  document.getElementById("buyButton")?.addEventListener("click", () => handleTicket(false));
+
+  // Auto-connect wallet on load (optional)
+  // window.addEventListener("load", connectWallet);
+</script>
 </body>
 </html>
