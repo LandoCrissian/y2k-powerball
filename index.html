@@ -1,560 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Y2K Powerball</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: radial-gradient(circle at top, #111, #000);
+      font-family: 'Orbitron', sans-serif;
+      color: white;
+    }
+    .glitch-text {
+      animation: flicker 3s infinite alternate;
+      background: linear-gradient(90deg, #00ffe1, #ff00f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      font-size: 3rem;
+    }
+    @keyframes flicker {
+      0%, 100% {
+        text-shadow: 0 0 6px #00ffe1, 0 0 12px #ff00f7;
+        opacity: 1;
+      }
+      40% {
+        opacity: 0.85;
+        text-shadow: 0 0 3px #00ffe1, 0 0 6px #ff00f7;
+      }
+    }
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1rem;
+      box-shadow: 0 0 30px rgba(0,255,225,0.2);
+    }
+    .btn {
+      background: linear-gradient(to right, #00ffe1, #ff00f7);
+      color: black;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: 0.3s ease;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
-<body class="touch-manipulation">
-  <!-- Main Container -->
-  <div class="min-h-screen p-4 pb-20">
-    <!-- Header -->
-    <header class="text-center mb-6 pt-2">
-      <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 orbitron glitch-text">
-        🎯 Y2K POWERBALL
-      </h1>
-      <p class="text-zinc-400 text-sm mt-1">Buy with CRO • Win in Y2K</p>
-    </header>
+<body class="p-4">
 
-    <!-- Player Card -->
-    <div class="bg-black/40 rounded-xl p-4 mb-6 border border-zinc-800/50">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-          🧑‍🚀
-        </div>
-        <div>
-          <div class="font-semibold text-white flex items-center gap-2">
-            SynΔps3 
-            <span class="text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">Active</span>
-          </div>
-          <div class="text-sm text-zinc-400">4.2M Y2K Balance</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Jackpot -->
-    <div class="bg-black/40 rounded-xl p-6 mb-6 border border-zinc-800/50 text-center">
-      <div class="text-yellow-300 mb-1">💰 Jackpot</div>
-      <div class="text-4xl font-bold text-green-400 orbitron glow-text">2,000,000</div>
-      <div class="text-green-400 text-sm">Y2K</div>
-      <div class="text-zinc-400 text-sm mt-2">🔥 2 Week Rollover</div>
-    </div>
-
-    <!-- Timer -->
-    <div class="grid grid-cols-4 gap-2 mb-6">
-      <div class="timer-box">
-        <span id="days" class="timer-number">--</span>
-        <span class="timer-label">DAYS</span>
-      </div>
-      <div class="timer-box">
-        <span id="hours" class="timer-number">--</span>
-        <span class="timer-label">HRS</span>
-      </div>
-      <div class="timer-box">
-        <span id="mins" class="timer-number">--</span>
-        <span class="timer-label">MIN</span>
-      </div>
-      <div class="timer-box">
-        <span id="secs" class="timer-number">--</span>
-        <span class="timer-label">SEC</span>
-      </div>
-    </div>
-
-    <!-- Number Picker -->
-    <div class="bg-black/40 rounded-xl p-4 mb-6 border border-zinc-800/50">
-      <div class="flex justify-between items-center mb-4">
-        <div class="text-white">Pick 5 Numbers</div>
-        <div class="text-pink-400 text-sm">100 CRO/ticket</div>
-      </div>
-      
-      <!-- Number Grid -->
-      <div id="numberGrid" class="grid grid-cols-7 gap-2 mb-4"></div>
-
-      <!-- Selected Numbers Preview -->
-      <div id="selectedPreview" class="flex justify-center gap-2 mb-4 min-h-[40px]"></div>
-
-      <!-- Action Buttons -->
-      <div class="grid grid-cols-2 gap-3">
-        <button onclick="quickPick()" class="action-btn bg-blue-600">
-          🎲 Quick Pick
-        </button>
-        <button onclick="submitTicket()" class="action-btn bg-green-500">
-          💸 Buy Ticket
-        </button>
-      </div>
-
-      <!-- Status Message -->
-      <div id="statusMsg" class="text-center text-sm mt-3 h-6 text-zinc-400"></div>
-    </div>
-
-    <!-- Tickets -->
-    <div class="bg-black/40 rounded-xl p-4 mb-6 border border-zinc-800/50">
-      <h2 class="text-white mb-3">Your Tickets</h2>
-      <div id="ticketHistory" class="space-y-2"></div>
-    </div>
-
-    <!-- Recent Draws -->
-    <div class="bg-black/40 rounded-xl p-4 border border-zinc-800/50">
-      <h2 class="text-white mb-3">Recent Draws</h2>
-      <div class="space-y-3">
-        <div class="draw-result">
-          <div class="flex justify-between text-sm mb-1">
-            <span class="text-yellow-400">#247</span>
-            <span class="text-red-400">No Winner</span>
-          </div>
-          <div class="flex gap-1">
-            <span class="number-ball">05</span>
-            <span class="number-ball">12</span>
-            <span class="number-ball">22</span>
-            <span class="number-ball">41</span>
-            <span class="number-ball">66</span>
-          </div>
-        </div>
-        <div class="draw-result">
-          <div class="flex justify-between text-sm mb-1">
-            <span class="text-yellow-400">#246</span>
-            <span class="text-red-400">No Winner</span>
-          </div>
-          <div class="flex gap-1">
-            <span class="number-ball">01</span>
-            <span class="number-ball">17</span>
-            <span class="number-ball">23</span>
-            <span class="number-ball">39</span>
-            <span class="number-ball">49</span>
-          </div>
-        </div>
-      </div>
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="glitch-text">Y2K POWERBALL</h1>
+    <div class="flex items-center gap-4 text-sm">
+      <div id="walletDisplay">Wallet: —</div>
+      <div id="badgeDisplay" class="bg-[#00ffe1]/10 border border-[#00ffe1] px-3 py-1 rounded text-xs">No Badge</div>
     </div>
   </div>
 
-  <style>
-    html {
-      background-color: #0a0a0a;
-      height: 100%;
-      overflow-x: hidden;
-    }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      color: white;
-      background: radial-gradient(circle at 50% 0%, #2a0a2a, transparent 70%),
-                  radial-gradient(circle at 80% 40%, #170a2a, transparent 50%);
-      min-height: 100%;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
+  <!-- Jackpot + Countdown -->
+  <div class="glass p-6 mb-6 text-center">
+    <h2 class="text-2xl mb-2">💰 Current Jackpot</h2>
+    <div id="jackpot" class="text-4xl font-bold text-yellow-300">Loading...</div>
+    <div class="mt-4 text-sm text-gray-400">Next draw in:</div>
+    <div id="countdown" class="text-xl font-mono">00:00:00</div>
+  </div>
 
-    .orbitron {
-      font-family: 'Orbitron', sans-serif;
-    }
+  <!-- Ticket Entry UI -->
+  <div class="glass p-6 mb-6">
+    <h3 class="text-xl mb-2">🎫 Your Entries</h3>
+    <div id="ticketGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-4">
+      <!-- Tickets will be rendered here -->
+    </div>
 
-    .glow-text {
-      text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-    }
+    <div class="flex flex-col sm:flex-row gap-4">
+      <button id="freeBtn" class="btn w-full">Use Free Entry</button>
+      <button id="paidBtn" class="btn w-full">Buy Entry (2 CRO)</button>
+    </div>
+    <div id="entryMsg" class="text-sm text-center text-green-300 mt-3"></div>
+  </div>
 
-    .timer-box {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 10px 4px;
-      text-align: center;
-    }
+  <!-- Winner Log -->
+  <div class="glass p-6">
+    <h3 class="text-xl mb-2">🏆 Past Winners</h3>
+    <ul id="winnerList" class="text-sm space-y-2 text-gray-300">
+      <li>Loading...</li>
+    </ul>
+  </div>
 
-    .timer-number {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 20px;
-      color: #22d3ee;
-      display: block;
-      font-weight: bold;
-    }
+  <!-- Footer -->
+  <div class="mt-10 text-center text-xs text-gray-500">
+    Powered by Y2K Vault · <a href="https://y2kcoin.org" class="underline text-[#00ffe1]">Home</a> · <a href="/vault" class="underline text-[#00ffe1]">Vault</a> · <a href="/airdrops" class="underline text-[#00ffe1]">Airdrop</a>
+  </div>
 
-    .timer-label {
-      font-size: 10px;
-      color: #94a3b8;
-      display: block;
-      margin-top: 2px;
-    }
-
-    .number-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-
-    .number-btn {
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(17, 17, 17, 0.7);
-      border: 1.5px solid rgba(68, 68, 68, 0.5);
-      border-radius: 12px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 16px;
-      touch-action: manipulation;
-      user-select: none;
-      transition: all 0.2s ease;
-    }
-
-    .number-btn.selected {
-      background: linear-gradient(135deg, #ff00aa, #8400ff);
-      border: none;
-      color: white;
-      font-weight: bold;
-      transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 0, 170, 0.3);
-    }
-
-    .action-btn {
-      padding: 14px;
-      border-radius: 12px;
-      color: white;
-      font-weight: 600;
-      text-align: center;
-      transition: all 0.15s ease;
-      touch-action: manipulation;
-    }
-
-    .action-btn:active {
-      transform: scale(0.95);
-    }
-
-    .number-ball {
-      background: rgba(255,255,255,0.1);
-      padding: 6px;
-      border-radius: 8px;
-      font-family: 'Share Tech Mono', monospace;
-      min-width: 32px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .draw-result {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.05);
-      padding: 12px;
-      border-radius: 12px;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      75% { transform: translateX(4px); }
-    }
-
-    .shake {
-      animation: shake 0.4s ease-in-out;
-    }
-
-    .selected-preview-number {
-      background: linear-gradient(135deg, #ff00aa, #8400ff);
-      color: white;
-      font-family: 'Share Tech Mono', monospace;
-      padding: 8px;
-      border-radius: 8px;
-      min-width: 36px;
-      text-align: center;
-      font-weight: bold;
-    }
-  </style>
-
-  <script>
-    const selectedNumbers = new Set();
-    const grid = document.getElementById('numberGrid');
-    const preview = document.getElementById('selectedPreview');
-    let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-
-    // Initialize number grid
-    for (let i = 1; i <= 69; i++) {
-      const btn = document.createElement('div');
-      btn.className = 'number-btn';
-      btn.textContent = i;
-      
-      // Add touch and click handlers
-      const handleSelection = (e) => {
-        e.preventDefault();
-        toggleNumber(i, btn);
-      };
-      
-      btn.addEventListener('touchstart', handleSelection, { passive: false });
-      btn.addEventListener('click', handleSelection);
-      grid.appendChild(btn);
-    }
-
-    function vibrate(pattern) {
-      if ('vibrate' in navigator) {
-        navigator.vibrate(pattern);
-      }
-    }
-
-    function updateSelectedPreview() {
-      preview.innerHTML = '';
-      const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
-      numbers.forEach(num => {
-        const div = document.createElement('div');
-        div.className = 'selected-preview-number';
-        div.textContent = String(num).padStart(2, '0');
-        preview.appendChild(div);
-      });
-
-      // Add empty slots
-      for (let i = numbers.length; i < 5; i++) {
-        const div = document.createElement('div');
-        div.className = 'selected-preview-number';
-        div.style.background = 'rgba(255,255,255,0.1)';
-        div.textContent = '--';
-        preview.appendChild(div);
-      }
-    }
-
-    function toggleNumber(num, el) {
-      if (selectedNumbers.has(num)) {
-        selectedNumbers.delete(num);
-        el.classList.remove('selected');
-        vibrate(50);
-      } else {
-        if (selectedNumbers.size >= 5) {
-          el.classList.add('shake');
-          setTimeout(() => el.classList.remove('shake'), 400);
-          vibrate([50, 50, 50]);
-          return;
-        }
-        selectedNumbers.add(num);
-        el.classList.add('selected');
-        vibrate(100);
-      }
-      updateSelectedPreview();
-      updateStatusMessage();
-    }
-
-    function updateStatusMessage() {
-      const remaining = 5 - selectedNumbers.size;
-      const msg = document.getElementById('statusMsg');
-      if (remaining > 0) {
-        msg.textContent = `Select ${remaining} more number${remaining > 1 ? 's' : ''}`;
-        msg.className = 'text-center text-sm mt-3 text-zinc-400';
-      } else {
-        msg.textContent = 'Ready to submit! 🎯';
-        msg.className = 'text-center text-sm mt-3 text-green-400';
-      }
-    }
-
-    function quickPick() {
-      selectedNumbers.clear();
-      document.querySelectorAll('.number-btn').forEach(el => el.classList.remove('selected'));
-      
-      while (selectedNumbers.size < 5) {
-        const rand = Math.floor(Math.random() * 69) + 1;
-        if (!selectedNumbers.has(rand)) {
-          selectedNumbers.add(rand);
-          document.querySelectorAll('.number-btn')[rand - 1].classList.add('selected');
-        }
-      }
-      
-      vibrate([50, 50, 50, 50, 50]);
-      updateSelectedPreview();
-      updateStatusMessage();
-    }
-
-    function submitTicket() {
-      if (selectedNumbers.size !== 5) {
-        document.getElementById('statusMsg').textContent = 'Please pick 5 numbers';
-        document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-red-400';
-        vibrate([100, 100, 100]);
-        return;
-      }
-
-      const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
-      
-      // Save ticket
-      tickets.unshift({
-        numbers,
-        timestamp: Date.now()
-      });
-      localStorage.setItem('tickets', JSON.stringify(tickets));
-      
-      // Update UI
-      updateTicketHistory();
-      
-      // Clear selection
-      selectedNumbers.clear();
-      document.querySelectorAll('.number-btn').forEach(el => el.classList.remove('selected'));
-      updateSelectedPreview();
-      
-      // Success feedback
-      document.getElementById('statusMsg').textContent = '🎉 Ticket purchased!';
-      document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-green-400';
-      
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
-        colors: ['#ff00aa', '#8400ff', '#22d3ee']
-      });
-      
-      vibrate([100, 50, 100]);
-    }
-
-    function updateTicketHistory() {
-      const historyContainer = document.getElementById('ticketHistory');
-      historyContainer.innerHTML = '';
-      
-      const recentTickets = tickets.slice(0, 5);
-      recentTickets.forEach(ticket => {
-        const div = document.createElement('div');
-        div.className = 'draw-result';
-        div.innerHTML = `
-          <div class="flex justify-between text-sm mb-1">
-            <span class="text-zinc-400">${new Date(ticket.timestamp).toLocaleDateString()}</span>
-            <span class="text-green-400">Active</span>
-          </div>
-          <div class="flex gap-1">
-            ${ticket.numbers.map(n => `
-              <span class="number-ball">${String(n).padStart(2, '0')}</span>
-            `).join('')}
-          </div>
-        `;
-        historyContainer.appendChild(div);
-      });
-    }
-
-    function startCountdown() {
-      const countdown = () => {
-        const now = new Date();
-        const nextDraw = new Date(now);
-        nextDraw.setUTCDate(now.getUTCDate() + (5 - now.getUTCDay() + 7) % 7);
-        nextDraw.setUTCHours(20, 0, 0, 0);
-        if (now > nextDraw) nextDraw.setUTCDate(nextDraw.getUTCDate() + 7);
-
-        const diff = nextDraw - now;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        document.getElementById("days").textContent = String(days).padStart(2, '0');
-        document.getElementById("hours").textContent = String(hours).padStart(2, '0');
-        document.getElementById("mins").textContent = String(minutes).padStart(2, '0');
-        document.getElementById("secs").textContent = String(seconds).padStart(2, '0');
-      };
-
-      countdown();
-      setInterval(countdown, 1000);
-    }
-
-    // Initialize
-    startCountdown();
-    updateTicketHistory();
-    updateSelectedPreview();
-    updateStatusMessage();
-  </script>
-
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
-    authDomain: "y2k-arcade.firebaseapp.com",
-    projectId: "y2k-arcade",
-    storageBucket: "y2k-arcade.firebasestorage.app",
-    messagingSenderId: "1063043176357",
-    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  let walletAddress = null;
-  let isVaultVerified = false;
-  const WEEK_KEY = (() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
-    return `${year}-W${String(week).padStart(2, '0')}`;
-  })();
-
-  // 🔌 Wallet Connect
-  async function connectWallet() {
-    if (window.ethereum) {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      walletAddress = accounts[0].toLowerCase();
-      checkVaultStatus(walletAddress);
-    } else {
-      alert('No wallet detected');
-    }
-  }
-
-  // 🔍 Check Vault Status
-  async function checkVaultStatus(wallet) {
-    const userRef = doc(db, "users", wallet);
-    const snap = await getDoc(userRef);
-    isVaultVerified = snap.exists();
-  }
-
-  // 📊 Free Entry Tracking
-  async function getFreeEntriesUsed(wallet) {
-    const ref = doc(db, "powerball_free_entries", wallet);
-    const snap = await getDoc(ref);
-    return snap.exists() ? (snap.data()[WEEK_KEY] || 0) : 0;
-  }
-
-  async function incrementFreeEntry(wallet) {
-    const ref = doc(db, "powerball_free_entries", wallet);
-    await setDoc(ref, { [WEEK_KEY]: increment(1) }, { merge: true });
-  }
-
-  // 📝 Ticket Logging
-  async function logTicket(wallet, numbers, method = "free") {
-    const drawId = WEEK_KEY;
-    const ticketRef = doc(db, "powerball_tickets", `${drawId}_${wallet}_${Date.now()}`);
-    await setDoc(ticketRef, {
-      wallet,
-      numbers,
-      timestamp: Date.now(),
-      draw: drawId,
-      method
-    });
-  }
-
-  // 🎟️ Ticket Submission Logic
-  window.submitTicket = async function () {
-    if (selectedNumbers.size !== 5) {
-      document.getElementById('statusMsg').textContent = 'Please pick 5 numbers';
-      document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-red-400';
-      vibrate([100, 100, 100]);
-      return;
-    }
-
-    if (!walletAddress) {
-      await connectWallet();
-    }
-
-    const numbers = Array.from(selectedNumbers).sort((a, b) => a - b);
-    const used = await getFreeEntriesUsed(walletAddress);
-
-    if (isVaultVerified && used < 5) {
-      await incrementFreeEntry(walletAddress);
-      await logTicket(walletAddress, numbers, "free");
-    } else {
-      // TODO: Add real CRO payment logic here before ticket is accepted
-      await logTicket(walletAddress, numbers, "paid");
-    }
-
-    // 🎉 UI Feedback
-    selectedNumbers.clear();
-    document.querySelectorAll('.number-btn').forEach(el => el.classList.remove('selected'));
-    updateSelectedPreview();
-    updateTicketHistory();
-
-    document.getElementById('statusMsg').textContent = '🎉 Ticket submitted!';
-    document.getElementById('statusMsg').className = 'text-center text-sm mt-3 text-green-400';
-    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-    vibrate([100, 50, 100]);
-  };
-</script>
 </body>
 </html>
