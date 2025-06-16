@@ -1,445 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-  <title>Y2K Powerball</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Y2K Powerball</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="p-4">
-  <!-- Main Container -->
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <h1 class="glitch-text">Y2K POWERBALL</h1>
-      <div class="wallet-badge">
-        <div id="walletDisplay" class="wallet">Wallet: —</div>
-        <div id="badgeDisplay" class="badge">No Badge</div>
-      </div>
-    </header>
+<body>
+    <div class="noise"></div>
+    <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="network-status">
+                <div class="signal-dot active"></div>
+                <div class="signal-dot active"></div>
+                <div class="signal-dot active"></div>
+                <div class="signal-dot"></div>
+                <span>MAINNET</span>
+            </div>
+            <div class="time" id="currentTime">00:00</div>
+            <div class="wallet-status">
+                <span class="dot pulse"></span>
+                CONNECTED
+            </div>
+        </div>
 
-    <!-- Jackpot Section -->
-    <section class="glass jackpot-container">
-      <div class="jackpot-content">
-        <h2>Current Jackpot 💰</h2>
-        <div id="jackpot" class="jackpot-amount">Loading...</div>
-        <div class="countdown-label">Next draw in:</div>
-        <div id="countdown" class="countdown">00:00:00</div>
-      </div>
-      <div class="pulse-overlay"></div>
-    </section>
+        <!-- Header Section -->
+        <header class="main-header">
+            <div class="logo-container">
+                <h1 class="neo-title">Y2K POWERBALL</h1>
+                <div class="version-tag">v2.0</div>
+            </div>
+            <div class="user-stats">
+                <div class="balance-display">
+                    <span class="balance-label">BALANCE</span>
+                    <span class="balance-amount">2,145.00</span>
+                    <span class="balance-currency">CRO</span>
+                </div>
+                <div class="badge premium">PREMIUM</div>
+            </div>
+        </header>
 
-    <!-- Ticket Entry Section -->
-    <section class="glass ticket-section">
-      <h3>Your Entries 🎫</h3>
-      <div id="ticketGrid" class="ticket-grid">
-        <!-- Tickets rendered via JS -->
-      </div>
+        <!-- Jackpot Display -->
+        <section class="jackpot-module">
+            <div class="jackpot-container neo-brutalism">
+                <div class="jackpot-header">
+                    <span class="jackpot-label">CURRENT JACKPOT</span>
+                    <div class="jackpot-timer" id="drawTimer">23:59:59</div>
+                </div>
+                <div class="jackpot-amount">
+                    <span class="currency">$</span>
+                    <span class="amount" id="jackpotAmount">1,532,498</span>
+                </div>
+                <div class="jackpot-footer">
+                    <div class="stat-item">
+                        <span class="stat-value">1,249</span>
+                        <span class="stat-label">ENTRIES</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">12</span>
+                        <span class="stat-label">WINNERS</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">98%</span>
+                        <span class="stat-label">ODDS</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-      <div class="button-container">
-        <button id="freeBtn" class="cyber-button">
-          <span class="cyber-button__content">Use Free Entry</span>
-          <span class="cyber-button__glitch"></span>
-        </button>
-        <button id="paidBtn" class="cyber-button">
-          <span class="cyber-button__content">Buy Entry (2 CRO)</span>
-          <span class="cyber-button__glitch"></span>
-        </button>
-      </div>
-      <div id="entryMsg" class="entry-message"></div>
-    </section>
+        <!-- Entry Section -->
+        <section class="entry-module">
+            <div class="entry-container neo-brutalism">
+                <h2 class="section-title">YOUR ENTRIES</h2>
+                <div class="ticket-grid" id="ticketGrid">
+                    <div class="ticket active">
+                        <div class="ticket-number">#0124</div>
+                        <div class="ticket-status">ACTIVE</div>
+                    </div>
+                    <div class="ticket pending">
+                        <div class="ticket-number">#0125</div>
+                        <div class="ticket-status">PENDING</div>
+                    </div>
+                    <div class="add-ticket">
+                        <div class="plus-icon">+</div>
+                        <div class="add-label">NEW ENTRY</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="neo-button primary" id="buyButton">
+                        <span class="button-content">BUY ENTRY</span>
+                        <span class="button-price">2 CRO</span>
+                    </button>
+                    <button class="neo-button secondary" id="freeButton">
+                        <span class="button-content">FREE ENTRY</span>
+                        <span class="button-price">1 LEFT</span>
+                    </button>
+                </div>
+            </div>
+        </section>
 
-    <!-- Winners Section -->
-    <section class="glass winners-section">
-      <h3>Past Winners 🏆</h3>
-      <ul id="winnerList" class="winner-list">
-        <li class="winner-item">Loading...</li>
-      </ul>
-    </section>
+        <!-- Recent Winners -->
+        <section class="winners-module">
+            <div class="winners-container neo-brutalism">
+                <h2 class="section-title">RECENT WINNERS</h2>
+                <div class="winners-list">
+                    <div class="winner-item">
+                        <div class="winner-info">
+                            <span class="winner-address">0x1234...5678</span>
+                            <span class="winner-time">2 min ago</span>
+                        </div>
+                        <div class="winner-amount">$25,000</div>
+                    </div>
+                    <div class="winner-item">
+                        <div class="winner-info">
+                            <span class="winner-address">0x8765...4321</span>
+                            <span class="winner-time">5 min ago</span>
+                        </div>
+                        <div class="winner-amount">$10,000</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        Powered by Y2K Vault · 
-        <a href="https://y2kcoin.org">Home</a> · 
-        <a href="/vault">Vault</a> · 
-        <a href="/airdrops">Airdrop</a>
-      </div>
-    </footer>
-  </div>
-
-  <style>
-    html {
-      background-color: #000000;
-    }
-    
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #111827, #000000);
-      font-family: 'Orbitron', sans-serif;
-      color: #ffffff;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .glitch-text {
-      font-size: 2.5rem;
-      font-weight: 900;
-      margin: 0;
-      background: linear-gradient(90deg, #00ffe1, #ff00f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: glitch 3s infinite alternate-reverse;
-      position: relative;
-    }
-
-    @keyframes glitch {
-      0% {
-        text-shadow: 0.05em 0 0 #00ffe1, -0.05em -0.025em 0 #ff00f7;
-      }
-      25% {
-        text-shadow: -0.05em -0.025em 0 #00ffe1, 0.025em 0.025em 0 #ff00f7;
-      }
-      50% {
-        text-shadow: 0.025em 0.05em 0 #00ffe1, -0.05em -0.05em 0 #ff00f7;
-      }
-      100% {
-        text-shadow: -0.025em 0 0 #00ffe1, -0.025em -0.025em 0 #ff00f7;
-      }
-    }
-
-    .wallet-badge {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      font-size: 0.9rem;
-    }
-
-    .badge {
-      background: rgba(0, 255, 225, 0.1);
-      border: 1px solid #00ffe1;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-    }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 30px rgba(0, 255, 225, 0.1);
-      transition: transform 0.3s ease;
-    }
-
-    .glass:hover {
-      transform: translateY(-2px);
-    }
-
-    .jackpot-container {
-      text-align: center;
-    }
-
-    .jackpot-content h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .jackpot-amount {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #ffd700;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-      margin: 1rem 0;
-    }
-
-    .countdown-label {
-      color: #a0aec0;
-      font-size: 0.9rem;
-    }
-
-    .countdown {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-top: 0.5rem;
-      font-family: monospace;
-    }
-
-    .ticket-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .cyber-button {
-      --primary: #00ffe1;
-      --shadow-primary: #ff00f7;
-      --font-size: 16px;
-      --shadow-primary-hue: 180;
-      --shadow-secondary-hue: 60;
-      --shadow-secondary: #ff00f7;
-      --clip: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 95% 90%, 85% 90%, 85% 100%, 8% 100%, 0 70%);
-      --border: 4px;
-      --shimmy-distance: 5;
-      --clip-one: polygon(0 2%, 100% 2%, 100% 95%, 95% 95%, 95% 90%, 85% 90%, 85% 95%, 8% 95%, 0 70%);
-      --clip-two: polygon(0 78%, 100% 78%, 100% 100%, 95% 100%, 95% 90%, 85% 90%, 85% 100%, 8% 100%, 0 78%);
-      --clip-three: polygon(0 44%, 100% 44%, 100% 54%, 95% 54%, 95% 54%, 85% 54%, 85% 54%, 8% 54%, 0 54%);
-      --clip-four: polygon(0 0, 100% 0, 100% 0, 95% 0, 95% 0, 85% 0, 85% 0, 8% 0, 0 0);
-      --clip-five: polygon(0 0, 100% 0, 100% 0, 95% 0, 95% 0, 85% 0, 85% 0, 8% 0, 0 0);
-      --clip-six: polygon(0 40%, 100% 40%, 100% 85%, 95% 85%, 95% 85%, 85% 85%, 85% 85%, 8% 85%, 0 70%);
-      --clip-seven: polygon(0 63%, 100% 63%, 100% 80%, 95% 80%, 95% 80%, 85% 80%, 85% 80%, 8% 80%, 0 70%);
-      font-family: 'Orbitron', sans-serif;
-      color: var(--primary);
-      cursor: pointer;
-      background: transparent;
-      text-transform: uppercase;
-      font-size: var(--font-size);
-      outline: transparent;
-      letter-spacing: 2px;
-      position: relative;
-      font-weight: 700;
-      border: 0;
-      min-width: 200px;
-      height: 55px;
-      line-height: 55px;
-      transition: background 0.2s;
-      flex: 1;
-    }
-
-    .cyber-button:hover {
-      background: rgba(0, 255, 225, 0.1);
-    }
-
-    .cyber-button:after,
-    .cyber-button:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      clip-path: var(--clip);
-      z-index: -1;
-    }
-
-    .cyber-button:before {
-      background: var(--shadow-primary);
-      transform: translate(var(--border), 0);
-    }
-
-    .cyber-button:after {
-      background: var(--primary);
-    }
-
-    .cyber-button__content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      padding: 0 2rem;
-    }
-
-    .entry-message {
-      text-align: center;
-      margin-top: 1rem;
-      color: #00ffe1;
-      font-size: 0.9rem;
-    }
-
-    .winner-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .winner-item {
-      padding: 0.75rem 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      color: #a0aec0;
-    }
-
-    .winner-item:last-child {
-      border-bottom: none;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding: 1rem 0;
-      font-size: 0.8rem;
-      color: #718096;
-    }
-
-    .footer a {
-      color: #00ffe1;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer a:hover {
-      color: #ff00f7;
-    }
-
-    @media (max-width: 640px) {
-      .header {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .wallet-badge {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .glitch-text {
-        font-size: 2rem;
-      }
-
-      .button-container {
-        flex-direction: column;
-      }
-
-      .cyber-button {
-        width: 100%;
-      }
-    }
-
-    .pulse-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at center, rgba(0, 255, 225, 0.1) 0%, transparent 70%);
-      animation: pulse 4s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 0.3;
-      }
-      50% {
-        opacity: 0.6;
-      }
-      100% {
-        opacity: 0.3;
-      }
-    }
-  </style>
-
-  <script>
-    // Initialize countdown timer
-    function updateCountdown() {
-      const now = new Date();
-      const nextDraw = new Date();
-      nextDraw.setHours(24, 0, 0, 0);
-      
-      const diff = nextDraw - now;
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      document.getElementById('countdown').textContent = 
-        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    // Update jackpot amount with animation
-    function updateJackpot() {
-      const jackpotEl = document.getElementById('jackpot');
-      const targetAmount = 1000000 + Math.floor(Math.random() * 500000);
-      const startAmount = parseInt(jackpotEl.textContent.replace(/[^0-9]/g, '')) || 0;
-      const duration = 2000;
-      const steps = 60;
-      const increment = (targetAmount - startAmount) / steps;
-      
-      let currentStep = 0;
-      
-      const animation = setInterval(() => {
-        currentStep++;
-        const current = Math.floor(startAmount + (increment * currentStep));
-        jackpotEl.textContent = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD'
-        }).format(current);
-        
-        if (currentStep >= steps) {
-          clearInterval(animation);
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-      }, duration / steps);
-    }
 
-    // Handle button interactions
-    document.getElementById('freeBtn').addEventListener('click', (e) => {
-      const btn = e.currentTarget;
-      btn.style.transform = 'scale(0.95)';
-      setTimeout(() => btn.style.transform = '', 100);
-      
-      document.getElementById('entryMsg').textContent = 'Free entry submitted! 🎉';
-      setTimeout(() => {
-        document.getElementById('entryMsg').textContent = '';
-      }, 3000);
-    });
+        :root {
+            --primary: #00ffe1;
+            --secondary: #ff00f7;
+            --background: #030014;
+            --surface: #0a0a23;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent: #6e56cf;
+            --success: #00ff9d;
+            --warning: #ffb800;
+            --error: #ff4747;
+        }
 
-    document.getElementById('paidBtn').addEventListener('click', (e) => {
-      const btn = e.currentTarget;
-      btn.style.transform = 'scale(0.95)';
-      setTimeout(() => btn.style.transform = '', 100);
-      
-      document.getElementById('entryMsg').textContent = 'Processing payment...';
-      setTimeout(() => {
-        document.getElementById('entryMsg').textContent = 'Entry confirmed! 🎉';
-        setTimeout(() => {
-          document.getElementById('entryMsg').textContent = '';
-        }, 3000);
-      }, 1500);
-    });
+        html {
+            background-color: var(--background);
+        }
 
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', () => {
-      updateJackpot();
-      updateCountdown();
-      setInterval(updateCountdown, 1000);
-      setInterval(updateJackpot, 30000);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #0a0a23, #030014);
+            color: var(--text);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-      // Simulate some winner data
-      const winners = [
-        '0x1234...abc won $50,000',
-        '0x5678...def won $25,000',
-        '0x90ab...ghi won $10,000'
-      ];
-      
-      const winnerList = document.getElementById('winnerList');
-      winnerList.innerHTML = winners.map(winner => 
-        `<li class="winner-item">${winner}</li>`
-      ).join('');
-    });
-  </script>
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .network-status {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .signal-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+        }
+
+        .signal-dot.active {
+            background: var(--primary);
+        }
+
+        .wallet-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Header */
+        .main-header {
+            margin-bottom: 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .neo-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 225, 0.5);
+        }
+
+        .version-tag {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-display {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .balance-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .balance-amount {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .balance-currency {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.premium {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        /* Jackpot Module */
+        .jackpot-module {
+            margin-bottom: 30px;
+        }
+
+        .neo-brutalism {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 40px rgba(0, 255, 225, 0.1);
+        }
+
+        .jackpot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .jackpot-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .jackpot-timer {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .jackpot-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .jackpot-footer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Entry Module */
+        .entry-module {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .ticket {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .ticket.active {
+            border: 1px solid var(--primary);
+        }
+
+        .ticket.pending {
+            border: 1px solid var(--warning);
+        }
+
+        .ticket-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .ticket-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .add-ticket {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-ticket:hover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 225, 0.1);
+        }
+
+        .plus-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .add-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .neo-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .neo-button.primary {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border: none;
+        }
+
+        .neo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-content {
+            font-weight: 600;
+        }
+
+        .button-price {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* Winners Module */
+        .winners-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .winner-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .winner-item:last-child {
+            border-bottom: none;
+        }
+
+        .winner-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .winner-address {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .winner-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .winner-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 16px;
+            }
+
+            .neo-title {
+                font-size: 24px;
+            }
+
+            .jackpot-amount {
+                font-size: 36px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 20px rgba(0, 255, 225, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(0, 255, 225, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 255, 225, 0.2);
+            }
+        }
+    </style>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // Update countdown timer
+        function updateDrawTimer() {
+            const now = new Date();
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59);
+            
+            const diff = endOfDay - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('drawTimer').textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // Animate jackpot amount
+        function animateJackpot() {
+            const jackpotEl = document.getElementById('jackpotAmount');
+            const targetAmount = 1532498;
+            const duration = 2000;
+            const steps = 60;
+            const increment = targetAmount / steps;
+            
+            let currentAmount = 0;
+            const animation = setInterval(() => {
+                currentAmount += increment;
+                if (currentAmount >= targetAmount) {
+                    currentAmount = targetAmount;
+                    clearInterval(animation);
+                }
+                jackpotEl.textContent = Math.floor(currentAmount).toLocaleString();
+            }, duration / steps);
+        }
+
+        // Button click handlers
+        document.getElementById('buyButton')?.addEventListener('click', () => {
+            // Add your buy entry logic here
+            console.log('Buy entry clicked');
+        });
+
+        document.getElementById('freeButton')?.addEventListener('click', () => {
+            // Add your free entry logic here
+            console.log('Free entry clicked');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            updateDrawTimer();
+            setInterval(updateDrawTimer, 1000);
+            
+            animateJackpot();
+        });
+    </script>
 </body>
 </html>
