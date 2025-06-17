@@ -1,654 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Y2K Powerball</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Y2K Powerball</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Firebase & Config -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+      authDomain: "y2k-arcade.firebaseapp.com",
+      projectId: "y2k-arcade",
+      storageBucket: "y2k-arcade.appspot.com",
+      messagingSenderId: "1063043176357",
+      appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app);
+  </script>
+
+  <!-- Ethers.js for CRO balance -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
-<body>
-    <div class="noise"></div>
-    <div class="app-container">
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <div class="network-status">
-                <div class="signal-dot active"></div>
-                <div class="signal-dot active"></div>
-                <div class="signal-dot active"></div>
-                <div class="signal-dot"></div>
-                <span>MAINNET</span>
-            </div>
-            <div class="time" id="currentTime">00:00</div>
-            <div class="wallet-status">
-                <span class="dot pulse"></span>
-                CONNECTED
-            </div>
-        </div>
-
-        <!-- Header Section -->
-        <header class="main-header">
-            <div class="logo-container">
-                <h1 class="neo-title">Y2K POWERBALL</h1>
-                <div class="version-tag">v2.0</div>
-            </div>
-            <div class="user-stats">
-                <div class="balance-display">
-                    <span class="balance-label">BALANCE</span>
-                    <span class="balance-amount">2,145.00</span>
-                    <span class="balance-currency">CRO</span>
-                </div>
-                <div class="badge premium">PREMIUM</div>
-            </div>
-        </header>
-
-        <!-- Jackpot Display -->
-        <section class="jackpot-module">
-            <div class="jackpot-container neo-brutalism">
-                <div class="jackpot-header">
-                    <span class="jackpot-label">CURRENT JACKPOT</span>
-                    <div class="jackpot-timer" id="drawTimer">23:59:59</div>
-                </div>
-                <div class="jackpot-amount">
-                    <span class="currency">$</span>
-                    <span class="amount" id="jackpotAmount">1,532,498</span>
-                </div>
-                <div class="jackpot-footer">
-                    <div class="stat-item">
-                        <span class="stat-value">1,249</span>
-                        <span class="stat-label">ENTRIES</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">12</span>
-                        <span class="stat-label">WINNERS</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">98%</span>
-                        <span class="stat-label">ODDS</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Entry Section -->
-        <section class="entry-module">
-            <div class="entry-container neo-brutalism">
-                <h2 class="section-title">YOUR ENTRIES</h2>
-                <div class="ticket-grid" id="ticketGrid">
-                    <div class="ticket active">
-                        <div class="ticket-number">#0124</div>
-                        <div class="ticket-status">ACTIVE</div>
-                    </div>
-                    <div class="ticket pending">
-                        <div class="ticket-number">#0125</div>
-                        <div class="ticket-status">PENDING</div>
-                    </div>
-                    <div class="add-ticket">
-                        <div class="plus-icon">+</div>
-                        <div class="add-label">NEW ENTRY</div>
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="neo-button primary" id="buyButton">
-                        <span class="button-content">BUY ENTRY</span>
-                        <span class="button-price">2 CRO</span>
-                    </button>
-                    <button class="neo-button secondary" id="freeButton">
-                        <span class="button-content">FREE ENTRY</span>
-                        <span class="button-price">1 LEFT</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Recent Winners -->
-        <section class="winners-module">
-            <div class="winners-container neo-brutalism">
-                <h2 class="section-title">RECENT WINNERS</h2>
-                <div class="winners-list">
-                    <div class="winner-item">
-                        <div class="winner-info">
-                            <span class="winner-address">0x1234...5678</span>
-                            <span class="winner-time">2 min ago</span>
-                        </div>
-                        <div class="winner-amount">$25,000</div>
-                    </div>
-                    <div class="winner-item">
-                        <div class="winner-info">
-                            <span class="winner-address">0x8765...4321</span>
-                            <span class="winner-time">5 min ago</span>
-                        </div>
-                        <div class="winner-amount">$10,000</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        :root {
-            --primary: #00ffe1;
-            --secondary: #ff00f7;
-            --background: #030014;
-            --surface: #0a0a23;
-            --text: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --accent: #6e56cf;
-            --success: #00ff9d;
-            --warning: #ffb800;
-            --error: #ff4747;
-        }
-
-        html {
-            background-color: var(--background);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top, #0a0a23, #030014);
-            color: var(--text);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .app-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Status Bar */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .network-status {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .signal-dot {
-            width: 4px;
-            height: 4px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-        }
-
-        .signal-dot.active {
-            background: var(--primary);
-        }
-
-        .wallet-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: var(--success);
-            border-radius: 50%;
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Header */
-        .main-header {
-            margin-bottom: 40px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .neo-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 255, 225, 0.5);
-        }
-
-        .version-tag {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .user-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .balance-display {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
-
-        .balance-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .balance-amount {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .balance-currency {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .badge.premium {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000;
-        }
-
-        /* Jackpot Module */
-        .jackpot-module {
-            margin-bottom: 30px;
-        }
-
-        .neo-brutalism {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 24px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 0 40px rgba(0, 255, 225, 0.1);
-        }
-
-        .jackpot-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .jackpot-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .jackpot-timer {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary);
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .jackpot-amount {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 48px;
-            font-weight: 700;
-            background: linear-gradient(to right, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 24px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .jackpot-footer {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            text-align: center;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* Entry Module */
-        .entry-module {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-        }
-
-        .ticket-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .ticket {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .ticket.active {
-            border: 1px solid var(--primary);
-        }
-
-        .ticket.pending {
-            border: 1px solid var(--warning);
-        }
-
-        .ticket-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .ticket-status {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .add-ticket {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .add-ticket:hover {
-            border-color: var(--primary);
-            background: rgba(0, 255, 225, 0.1);
-        }
-
-        .plus-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        .add-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .neo-button {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 16px;
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .neo-button.primary {
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            border: none;
-        }
-
-        .neo-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .button-content {
-            font-weight: 600;
-        }
-
-        .button-price {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        /* Winners Module */
-        .winners-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .winner-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .winner-item:last-child {
-            border-bottom: none;
-        }
-
-        .winner-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .winner-address {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .winner-time {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .winner-amount {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--success);
-        }
-
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 16px;
-            }
-
-            .neo-title {
-                font-size: 24px;
-            }
-
-            .jackpot-amount {
-                font-size: 36px;
-            }
-
-            .action-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        @keyframes glow {
-            0% {
-                box-shadow: 0 0 20px rgba(0, 255, 225, 0.2);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(0, 255, 225, 0.4);
-            }
-            100% {
-                box-shadow: 0 0 20px rgba(0, 255, 225, 0.2);
-            }
-        }
-    </style>
-
-    <script>
-        // Update current time
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', {
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            document.getElementById('currentTime').textContent = timeString;
-        }
-
-        // Update countdown timer
-        function updateDrawTimer() {
-            const now = new Date();
-            const endOfDay = new Date();
-            endOfDay.setHours(23, 59, 59);
-            
-            const diff = endOfDay - now;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('drawTimer').textContent = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-
-        // Animate jackpot amount
-        function animateJackpot() {
-            const jackpotEl = document.getElementById('jackpotAmount');
-            const targetAmount = 1532498;
-            const duration = 2000;
-            const steps = 60;
-            const increment = targetAmount / steps;
-            
-            let currentAmount = 0;
-            const animation = setInterval(() => {
-                currentAmount += increment;
-                if (currentAmount >= targetAmount) {
-                    currentAmount = targetAmount;
-                    clearInterval(animation);
-                }
-                jackpotEl.textContent = Math.floor(currentAmount).toLocaleString();
-            }, duration / steps);
-        }
-
-        // Button click handlers
-        document.getElementById('buyButton')?.addEventListener('click', () => {
-            // Add your buy entry logic here
-            console.log('Buy entry clicked');
-        });
-
-        document.getElementById('freeButton')?.addEventListener('click', () => {
-            // Add your free entry logic here
-            console.log('Free entry clicked');
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            updateTime();
-            setInterval(updateTime, 1000);
-            
-            updateDrawTimer();
-            setInterval(updateDrawTimer, 1000);
-            
-            animateJackpot();
-        });
-    </script>
-
-    <script type="module">
+  :root {
+    --primary: #00ffe1;
+    --secondary: #ff00f7;
+    --background: #030014;
+    --surface: #0a0a23;
+    --text: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --accent: #6e56cf;
+    --success: #00ff9d;
+    --warning: #ffb800;
+    --error: #ff4747;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #0a0a23, #030014);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  .app-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .neo-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(0, 255, 225, 0.5);
+  }
+
+  .neo-brutalism {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 40px rgba(0, 255, 225, 0.1);
+  }
+
+  .neo-button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .neo-button.primary {
+    background: linear-gradient(45deg, var(--primary), var(--accent));
+    border: none;
+  }
+
+  .neo-button.secondary {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .neo-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .balance-amount {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .number-picker {
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  .number-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    margin: 12px 0 16px;
+  }
+
+  .number-grid button {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .number-grid button.selected {
+    background: var(--primary);
+    color: #000;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .neo-title { font-size: 24px; }
+    .number-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+</style>
+
+    <body>
+  <div class="noise"></div>
+  <div class="app-container">
+
+    <!-- 🔌 STATUS BAR -->
+    <div class="status-bar">
+      <div class="network-status">
+        <div class="signal-dot active"></div>
+        <div class="signal-dot active"></div>
+        <div class="signal-dot active"></div>
+        <div class="signal-dot"></div>
+        <span>MAINNET</span>
+      </div>
+      <div class="time" id="currentTime">00:00</div>
+      <div class="wallet-status" onclick="connectWallet()">
+        <span class="dot pulse"></span>
+        CONNECT
+      </div>
+    </div>
+
+    <!-- 🧠 HEADER -->
+    <header class="main-header">
+      <div class="logo-container">
+        <h1 class="neo-title">Y2K POWERBALL</h1>
+        <div class="version-tag">v2.0</div>
+      </div>
+      <div class="user-stats">
+        <div class="balance-display">
+          <span class="balance-label">BALANCE</span>
+          <span class="balance-amount">--</span>
+          <span class="balance-currency">CRO</span>
+        </div>
+        <div class="badge premium">PREMIUM</div>
+      </div>
+    </header>
+
+    <!-- 💰 JACKPOT -->
+    <section class="jackpot-module">
+      <div class="jackpot-container neo-brutalism">
+        <div class="jackpot-header">
+          <span class="jackpot-label">CURRENT JACKPOT</span>
+          <div class="jackpot-timer" id="drawTimer">--:--:--</div>
+        </div>
+        <div class="jackpot-amount">
+          <span class="currency">CRO</span>
+          <span class="amount" id="jackpotAmount">Loading...</span>
+        </div>
+        <div class="jackpot-footer">
+          <div class="stat-item">
+            <span class="stat-value" id="entryCount">---</span>
+            <span class="stat-label">ENTRIES</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">???</span>
+            <span class="stat-label">WINNERS</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">∞</span>
+            <span class="stat-label">POTENTIAL</span>
+          </div>
+        </div>
+      </div>
+
+        <!-- 🎟️ ENTRY MODULE -->
+<section class="entry-module">
+  <div class="entry-container neo-brutalism">
+    <h2 class="section-title">YOUR ENTRIES</h2>
+    <div class="ticket-grid" id="ticketGrid">
+      <!-- Tickets will populate here -->
+    </div>
+
+    <!-- 🧩 NUMBER PICKER -->
+    <div class="number-picker" id="numberPicker" style="display: none;">
+      <h3>Pick 5 Numbers (1–69)</h3>
+      <div class="number-grid" id="numberGrid"></div>
+      <button class="neo-button secondary" onclick="quickPick()">Quick Pick</button>
+    </div>
+
+    <!-- 🧠 ACTIONS -->
+    <div class="action-buttons">
+      <button class="neo-button primary" id="buyButton">
+        <span class="button-content">BUY ENTRY</span>
+        <span class="button-price">2 CRO</span>
+      </button>
+      <button class="neo-button secondary" id="freeButton">
+        <span class="button-content">FREE ENTRY</span>
+        <span class="button-price">5 LEFT</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+        <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    increment,
+    collection,
+    query,
+    orderBy,
+    limit,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // 🔥 Initialize Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
     authDomain: "y2k-arcade.firebaseapp.com",
@@ -661,7 +266,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 🎟️ State
   let walletAddress = null;
   let isVaultVerified = false;
 
@@ -672,24 +276,25 @@
     return `${year}-W${String(week).padStart(2, '0')}`;
   })();
 
-  // 🔌 Wallet Connect
   async function connectWallet() {
-    if (!window.ethereum) return alert('Wallet not found');
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (!window.ethereum) {
+      alert("No wallet detected");
+      return;
+    }
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     walletAddress = accounts[0].toLowerCase();
     document.querySelector('.wallet-status').innerHTML = `<span class="dot pulse"></span> ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
     await checkVaultStatus(walletAddress);
-    updateFreeEntryUI();
+    await updateFreeEntryUI();
+    await renderTickets();
   }
 
-  // 🧠 Vault Check
   async function checkVaultStatus(wallet) {
     const ref = doc(db, "users", wallet);
     const snap = await getDoc(ref);
     isVaultVerified = snap.exists();
   }
 
-  // 🔁 Free Entry Logic
   async function getFreeEntriesUsed(wallet) {
     const ref = doc(db, "powerball_free_entries", wallet);
     const snap = await getDoc(ref);
@@ -701,53 +306,183 @@
     await setDoc(ref, { [WEEK_KEY]: increment(1) }, { merge: true });
   }
 
-  // 📩 Log Ticket
-  async function logTicket(wallet, method = "free") {
+  async function logTicket(wallet, method, numbers = []) {
     const ref = doc(db, "powerball_tickets", `${WEEK_KEY}_${wallet}_${Date.now()}`);
     await setDoc(ref, {
       wallet,
       method,
+      numbers,
       draw: WEEK_KEY,
       timestamp: Date.now()
     });
   }
 
-  // 💥 Submit Ticket
   async function handleTicket(isFree = true) {
     if (!walletAddress) await connectWallet();
     if (!walletAddress) return;
 
+    const selected = getSelectedNumbers();
+    if (selected.length !== 5) {
+      alert("Pick 5 numbers first.");
+      return;
+    }
+
     if (isFree && isVaultVerified) {
       const used = await getFreeEntriesUsed(walletAddress);
       if (used >= 5) {
-        alert('No free entries left this week.');
+        alert("No free entries left.");
         return;
       }
       await incrementFreeEntry(walletAddress);
-      await logTicket(walletAddress, "free");
+      await logTicket(walletAddress, "free", selected);
     } else {
-      // TODO: Add real CRO tx here before this logs
-      await logTicket(walletAddress, "paid");
+      // TODO: integrate CRO payment here
+      await logTicket(walletAddress, "paid", selected);
     }
 
-    alert('🎟️ Ticket submitted!');
-    updateFreeEntryUI();
+    alert("🎟️ Entry submitted!");
+    await updateFreeEntryUI();
+    await renderTickets();
+    clearSelected();
   }
 
-  // 🔁 Update Free Entry Button
   async function updateFreeEntryUI() {
     const btn = document.getElementById("freeButton");
     if (!btn || !walletAddress) return;
     const used = await getFreeEntriesUsed(walletAddress);
-    btn.querySelector(".button-price").textContent = isVaultVerified ? `${5 - used} LEFT` : `VAULT ONLY`;
+    btn.querySelector(".button-price").textContent = isVaultVerified ? `${5 - used} LEFT` : "VAULT ONLY";
   }
 
-  // 🔘 Button Events
-  document.getElementById("freeButton")?.addEventListener("click", () => handleTicket(true));
-  document.getElementById("buyButton")?.addEventListener("click", () => handleTicket(false));
+  function getSelectedNumbers() {
+    return Array.from(document.querySelectorAll('.number-tile.selected')).map(n => parseInt(n.textContent));
+  }
 
-  // Auto-connect wallet on load (optional)
-  // window.addEventListener("load", connectWallet);
+  function clearSelected() {
+    document.querySelectorAll('.number-tile.selected').forEach(tile => tile.classList.remove('selected'));
+  }
+
+  function quickPick() {
+    clearSelected();
+    const numbers = [];
+    while (numbers.length < 5) {
+      const rand = Math.floor(Math.random() * 69) + 1;
+      if (!numbers.includes(rand)) numbers.push(rand);
+    }
+    numbers.forEach(num => {
+      const tile = document.querySelector(`.number-tile[data-num="${num}"]`);
+      if (tile) tile.classList.add('selected');
+    });
+  }
+
+  function renderNumberGrid() {
+    const grid = document.getElementById("numberGrid");
+    for (let i = 1; i <= 69; i++) {
+      const tile = document.createElement("div");
+      tile.className = "number-tile";
+      tile.textContent = i;
+      tile.dataset.num = i;
+      tile.addEventListener("click", () => {
+        tile.classList.toggle("selected");
+        const selected = getSelectedNumbers();
+        if (selected.length > 5) tile.classList.remove("selected");
+      });
+      grid.appendChild(tile);
+    }
+    document.getElementById("numberPicker").style.display = "block";
+  }
+
+  async function renderTickets() {
+    const ref = collection(db, "powerball_tickets");
+    const q = query(ref, orderBy("timestamp", "desc"), limit(5));
+    const snap = await getDocs(q);
+
+    const container = document.getElementById("ticketGrid");
+    container.innerHTML = "";
+    snap.forEach(doc => {
+      const data = doc.data();
+      const el = document.createElement("div");
+      el.className = "ticket active";
+      el.innerHTML = `
+        <div class="ticket-number">${data.numbers.join(" • ")}</div>
+        <div class="ticket-status">${data.method.toUpperCase()}</div>
+      `;
+      container.appendChild(el);
+    });
+
+    // Add "NEW ENTRY" block
+    const newEntry = document.createElement("div");
+    newEntry.className = "add-ticket";
+    newEntry.innerHTML = `<div class="plus-icon">+</div><div class="add-label">NEW ENTRY</div>`;
+    container.appendChild(newEntry);
+  }
+
+  // Add events
+  document.getElementById("buyButton")?.addEventListener("click", () => handleTicket(false));
+  document.getElementById("freeButton")?.addEventListener("click", () => handleTicket(true));
+
+  // Init
+  window.addEventListener("DOMContentLoaded", () => {
+    connectWallet();
+    renderNumberGrid();
+  });
 </script>
-</body>
-</html>
+
+        // 🟡 TRACK LIVE JACKPOT (based on total paid entries)
+async function updateJackpotDisplay() {
+  const ref = collection(db, "powerball_tickets");
+  const snap = await getDocs(ref);
+  let paidCount = 0;
+
+  snap.forEach(doc => {
+    if (doc.data().method === "paid") paidCount += 1;
+  });
+
+  const croPerEntry = 2;
+  const jackpotTotal = paidCount * croPerEntry;
+
+  document.getElementById("jackpotAmount").textContent = jackpotTotal.toLocaleString();
+}
+
+// 🏆 OPTIONAL: Leaderboard (based on most entries)
+async function renderLeaderboard() {
+  const ref = collection(db, "powerball_tickets");
+  const snap = await getDocs(ref);
+  const entryCount = {};
+
+  snap.forEach(doc => {
+    const { wallet } = doc.data();
+    if (!wallet) return;
+    entryCount[wallet] = (entryCount[wallet] || 0) + 1;
+  });
+
+  const top = Object.entries(entryCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  const container = document.getElementById("winnersList");
+  if (!container) return;
+
+  container.innerHTML = "";
+  top.forEach(([wallet, count]) => {
+    const short = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+    const el = document.createElement("div");
+    el.className = "winner-item";
+    el.innerHTML = `
+      <div class="winner-info">
+        <span class="winner-address">${short}</span>
+        <span class="winner-time">${count} entries</span>
+      </div>
+      <div class="winner-amount">${(count * 2).toLocaleString()} CRO</div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+// 🕒 Init these on load
+window.addEventListener("DOMContentLoaded", () => {
+  updateJackpotDisplay();
+  renderLeaderboard();
+});
+
+        
+    
