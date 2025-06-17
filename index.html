@@ -431,8 +431,8 @@ header {
 </style>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
     getFirestore,
     doc,
     getDoc,
@@ -443,350 +443,223 @@ import {
     limit,
     getDocs,
     increment
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.8.1/dist/ethers.min.js";
 
-const firebaseConfig = {
+  const firebaseConfig = {
     apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
     authDomain: "y2k-arcade.firebaseapp.com",
     projectId: "y2k-arcade",
     storageBucket: "y2k-arcade.appspot.com",
     messagingSenderId: "1063043176357",
     appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-};
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// State
-let state = {
+  const state = {
     walletAddress: null,
     isVaultVerified: false,
     selectedNumbers: new Set(),
-    croPrice: 0,
     weekKey: (() => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
-        return `${year}-W${String(week).padStart(2, '0')}`;
+      const now = new Date();
+      const year = now.getFullYear();
+      const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
+      return `${year}-W${String(week).padStart(2, '0')}`;
     })()
-};
+  };
 
-// Initialize Number Grid
-function initializeNumberGrid() {
-    const grid = document.getElementById('numberGrid');
-    for (let i = 1; i <= 69; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.onclick = () => toggleNumber(i, button);
-        grid.appendChild(button);
+  const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+  const y2kTokenAddress = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
+  const y2kAbi = [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)"
+  ];
+
+  async function connectWallet() {
+    if (!window.ethereum) {
+      alert("No Web3 wallet found. Please install MetaMask or a compatible wallet.");
+      return;
     }
-}
 
-// Toggle Number Selection
-function toggleNumber(num, button) {
-    if (state.selectedNumbers.has(num)) {
-        state.selectedNumbers.delete(num);
-        button.classList.remove('selected');
-    } else if (state.selectedNumbers.size < 5) {
-        state.selectedNumbers.add(num);
-        button.classList.add('selected');
+    try {
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      state.walletAddress = accounts[0].toLowerCase();
+      window.userWallet = state.walletAddress;
+      document.getElementById("walletDisplay").textContent = `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
+      document.getElementById("walletDisplay").classList.add("connected");
+      await checkVaultStatus();
+      await updateUI();
+    } catch (err) {
+      console.error("❌ Wallet connection failed:", err);
+      alert("Wallet connection failed.");
     }
-}
+  }
 
-// Quick Pick
-window.quickPick = () => {
-    clearPicks();
-    const numbers = new Set();
-    while (numbers.size < 5) {
-        numbers.add(Math.floor(Math.random() * 69) + 1);
-    }
-    numbers.forEach(num => {
-        const button = document.querySelector(`#numberGrid button:nth-child(${num})`);
-        if (button) {
-            button.classList.add('selected');
-            state.selectedNumbers.add(num);
-        }
-    });
-};
-
-// Clear Picks
-window.clearPicks = () => {
-    state.selectedNumbers.clear();
-    document.querySelectorAll('#numberGrid button').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-};
-
-// Check Vault Status
-async function checkVaultStatus() {
+  async function checkVaultStatus() {
     if (!state.walletAddress) return;
-    
     const snap = await getDoc(doc(db, "users", state.walletAddress));
     state.isVaultVerified = snap.exists();
     updateFreeEntryButton();
-}
+  }
 
-// Update Free Entry Button
-function updateFreeEntryButton() {
-    const btn = document.getElementById('freeButton');
+  function updateFreeEntryButton() {
+    const btn = document.getElementById("freeButton");
     btn.disabled = !state.isVaultVerified;
-    btn.querySelector('small').textContent = state.isVaultVerified ? '5 LEFT' : 'VAULT ONLY';
-}
+    btn.querySelector("small").textContent = state.isVaultVerified ? "5 LEFT" : "VAULT ONLY";
+  }
 
-// Handle Entry Submission
-async function submitEntry(isFree = false) {
+  function initializeNumberGrid() {
+    const grid = document.getElementById("numberGrid");
+    for (let i = 1; i <= 69; i++) {
+      const button = document.createElement("button");
+      button.textContent = i;
+      button.onclick = () => toggleNumber(i, button);
+      grid.appendChild(button);
+    }
+  }
+
+  function toggleNumber(num, button) {
+    if (state.selectedNumbers.has(num)) {
+      state.selectedNumbers.delete(num);
+      button.classList.remove("selected");
+    } else if (state.selectedNumbers.size < 5) {
+      state.selectedNumbers.add(num);
+      button.classList.add("selected");
+    }
+  }
+
+  window.quickPick = () => {
+    clearPicks();
+    const numbers = new Set();
+    while (numbers.size < 5) {
+      numbers.add(Math.floor(Math.random() * 69) + 1);
+    }
+    numbers.forEach(num => {
+      const button = document.querySelector(`#numberGrid button:nth-child(${num})`);
+      if (button) {
+        button.classList.add("selected");
+        state.selectedNumbers.add(num);
+      }
+    });
+  };
+
+  window.clearPicks = () => {
+    state.selectedNumbers.clear();
+    document.querySelectorAll("#numberGrid button").forEach(btn => btn.classList.remove("selected"));
+  };
+
+  async function incrementFreeEntry() {
+    await setDoc(doc(db, "powerball_free_entries", state.walletAddress), {
+      [state.weekKey]: increment(1)
+    }, { merge: true });
+  }
+
+  async function submitEntry(isFree = false) {
     if (!state.walletAddress) {
-        await connectWallet();
-        if (!state.walletAddress) return;
+      await connectWallet();
+      if (!state.walletAddress) return;
     }
 
     if (state.selectedNumbers.size !== 5) {
-        alert('Please select 5 numbers');
-        return;
+      alert("Pick 5 numbers.");
+      return;
     }
 
-    try {
-        if (isFree && !state.isVaultVerified) {
-            alert('Vault verification required for free entries');
-            return;
-        }
-
-        const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
-        
-        // Create ticket document
-        await setDoc(doc(db, "powerball_tickets", `${state.weekKey}_${state.walletAddress}_${Date.now()}`), {
-            wallet: state.walletAddress,
-            numbers,
-            type: isFree ? 'free' : 'paid',
-            timestamp: Date.now()
-        });
-
-        if (isFree) {
-            await incrementFreeEntry();
-        }
-
-        alert('Entry submitted successfully!');
-        clearPicks();
-        await updateUI();
-    } catch (err) {
-        console.error('Failed to submit entry:', err);
-        alert('Failed to submit entry');
+    if (isFree && !state.isVaultVerified) {
+      alert("You must be in the Vault for free entries.");
+      return;
     }
-}
 
-// Increment Free Entry Count
-async function incrementFreeEntry() {
-    if (!state.walletAddress) return;
-    
-    await setDoc(doc(db, "powerball_free_entries", state.walletAddress), {
-        [state.weekKey]: increment(1)
-    }, { merge: true });
-}
-
-// Update UI
-async function updateUI() {
-    await Promise.all([
-        updateJackpot(),
-        updateEntries(),
-        updateLeaderboard()
-    ]);
-}
-
-// Update Jackpot
-async function updateJackpot() {
-    const jackpotRef = doc(db, "powerball_stats", state.weekKey);
-    const snap = await getDoc(jackpotRef);
-    const data = snap.data() || { totalEntries: 0, jackpotAmount: 0 };
-    
-    document.getElementById("jackpotAmountY2K").innerHTML = `
-  <span class="currency">Y2K</span>
-  <span class="amount">${formattedY2K}</span>
-`;
-
-document.getElementById("jackpotCRO").textContent = `${formattedCRO} CRO`;
-}
-
-// Update Entries
-async function updateEntries() {
-    if (!state.walletAddress) return;
-    
-    const entriesQuery = query(
-        collection(db, "powerball_tickets"),
-        orderBy("timestamp", "desc"),
-        limit(5)
-    );
-    
-    const snap = await getDocs(entriesQuery);
-    const grid = document.getElementById('entryGrid');
-    grid.innerHTML = '';
-    
-    snap.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.className = 'entry';
-        div.innerHTML = `
-            <div class="entry-numbers">${data.numbers.join(' - ')}</div>
-            <div class="entry-type">${data.type.toUpperCase()}</div>
-        `;
-        grid.appendChild(div);
+    const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
+    await setDoc(doc(db, "powerball_tickets", `${state.weekKey}_${state.walletAddress}_${Date.now()}`), {
+      wallet: state.walletAddress,
+      numbers,
+      type: isFree ? "free" : "paid",
+      timestamp: Date.now()
     });
-}
 
-// Update Leaderboard
-async function updateLeaderboard() {
-    const leaderboardQuery = query(
-        collection(db, "powerball_tickets"),
-        orderBy("timestamp", "desc"),
-        limit(50)
-    );
-    
-    const snap = await getDocs(leaderboardQuery);
+    if (isFree) await incrementFreeEntry();
+    alert("✅ Ticket submitted!");
+    clearPicks();
+    await updateUI();
+  }
+
+  async function updateJackpot() {
+    const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+
+    const croBalance = await provider.getBalance(jackpotWallet);
+    const croAmount = parseFloat(ethers.formatEther(croBalance)).toFixed(2);
+    document.getElementById("jackpotCRO").textContent = `${croAmount} CRO`;
+
+    const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+    const raw = await y2k.balanceOf(jackpotWallet);
+    const decimals = await y2k.decimals();
+    const formattedY2K = parseFloat(ethers.formatUnits(raw, decimals)).toFixed(2);
+    document.querySelector("#jackpotAmountY2K .amount").textContent = formattedY2K;
+  }
+
+  async function updateEntries() {
+    if (!state.walletAddress) return;
+    const q = query(collection(db, "powerball_tickets"), orderBy("timestamp", "desc"), limit(5));
+    const snap = await getDocs(q);
+    const grid = document.getElementById("entryGrid");
+    grid.innerHTML = "";
+    snap.forEach(doc => {
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `<div class="entry-numbers">${data.numbers.join(" - ")}</div><div class="entry-type">${data.type.toUpperCase()}</div>`;
+      grid.appendChild(div);
+    });
+  }
+
+  async function updateLeaderboard() {
+    const snap = await getDocs(query(collection(db, "powerball_tickets"), orderBy("timestamp", "desc"), limit(50)));
     const players = {};
-    
     snap.forEach(doc => {
-        const data = doc.data();
-        players[data.wallet] = (players[data.wallet] || 0) + 1;
+      const { wallet } = doc.data();
+      players[wallet] = (players[wallet] || 0) + 1;
     });
-    
-    const sorted = Object.entries(players)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 5);
-    
-    const list = document.getElementById('leaderboard');
-    list.innerHTML = '';
-    
-    sorted.forEach(([wallet, entries]) => {
-        const div = document.createElement('div');
-        div.className = 'leader';
-        div.innerHTML = `
-            <div class="leader-info">
-                <span class="leader-address">${wallet.slice(0,6)}...${wallet.slice(-4)}</span>
-                <span class="leader-entries">${entries} entries</span>
-            </div>
-            <div class="leader-amount">${(entries * 2).toLocaleString()} CRO</div>
-        `;
-        list.appendChild(div);
-    });
-}
 
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
+    const sorted = Object.entries(players).sort(([, a], [, b]) => b - a).slice(0, 5);
+    const list = document.getElementById("leaderboard");
+    list.innerHTML = "";
+    sorted.forEach(([wallet, entries]) => {
+      const div = document.createElement("div");
+      div.className = "leader";
+      div.innerHTML = `<div class="leader-info"><span class="leader-address">${wallet.slice(0, 6)}...${wallet.slice(-4)}</span><span class="leader-entries">${entries} entries</span></div><div class="leader-amount">${(entries * 2).toLocaleString()} CRO</div>`;
+      list.appendChild(div);
+    });
+  }
+
+  async function updateUI() {
+    await Promise.all([updateJackpot(), updateEntries(), updateLeaderboard()]);
+  }
+
+  function disconnectWallet() {
+    document.getElementById("walletDisplay").textContent = "CONNECT";
+    document.getElementById("walletDisplay").classList.remove("connected");
+    state.walletAddress = null;
+    window.userWallet = null;
+    alert("Wallet disconnected");
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
     initializeNumberGrid();
-    
-    document.getElementById('buyButton').onclick = () => submitEntry(false);
-    document.getElementById('freeButton').onclick = () => submitEntry(true);
-    
-    // Start UI update loop
+    document.getElementById("walletTrigger").addEventListener("click", () => {
+      if (state.walletAddress) {
+        if (confirm("Disconnect wallet?")) disconnectWallet();
+      } else {
+        connectWallet();
+      }
+    });
+    document.getElementById("buyButton").onclick = () => submitEntry(false);
+    document.getElementById("freeButton").onclick = () => submitEntry(true);
     updateUI();
     setInterval(updateUI, 30000);
-});
-</script>
-
-    <script type="module">
-  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.8.1/dist/ethers.min.js";
-
-  const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
-
-  async function updateJackpotFromChain() {
-    try {
-      const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
-      const balance = await provider.getBalance(jackpotWallet);
-      const croAmount = parseFloat(ethers.formatEther(balance)).toFixed(2);
-
-      const croDisplay = document.getElementById("jackpotCRO");
-if (croDisplay) croDisplay.textContent = `${croAmount} CRO`;
-    } catch (err) {
-      console.error("Error fetching CRO balance:", err);
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    updateJackpotFromChain();
-    setInterval(updateJackpotFromChain, 30000); // Update every 30 sec
   });
-
-        const y2kTokenAddress = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
-const y2kAbi = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
-
-async function updateY2KBalance() {
-  try {
-    const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
-    const contract = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
-
-    const balance = await contract.balanceOf(jackpotWallet);
-    const decimals = await contract.decimals();
-    const formatted = parseFloat(ethers.formatUnits(balance, decimals)).toFixed(2);
-
-    const y2kDisplay = document.getElementById("y2kBalance");
-    if (y2kDisplay) y2kDisplay.textContent = formatted; // ✅ remove "Y2K" from here
-  } catch (err) {
-    console.error("Error fetching Y2K balance:", err);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  updateY2KBalance();
-  setInterval(updateY2KBalance, 30000); // Refresh every 30 sec
-});
-</script>
-
-    <script>
-let isConnected = false;
-
-async function connectWallet() {
-  if (!window.ethereum) {
-    alert("No Web3 wallet found. Please install MetaMask or a compatible wallet.");
-    return;
-  }
-
-  try {
-    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    const wallet = accounts[0];
-
-    if (!wallet) throw new Error("Wallet not returned");
-
-    // Display wallet
-    document.getElementById("walletDisplay").textContent = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
-    document.getElementById("walletDisplay").classList.add("connected");
-    window.userWallet = wallet.toLowerCase();
-    isConnected = true;
-
-    // Optional: update vault / balance UI here
-    await checkVaultStatus();
-    await updateUI();
-
-    console.log("✅ Connected:", wallet);
-  } catch (err) {
-    console.error("❌ Wallet connection failed:", err);
-    alert("Wallet connection failed. Please try again.");
-  }
-}
-
-function disconnectWallet() {
-  document.getElementById("walletDisplay").textContent = "CONNECT";
-  document.getElementById("walletDisplay").classList.remove("connected");
-  window.userWallet = null;
-  isConnected = false;
-  alert("Disconnected.");
-}
-
-// Add click logic
-window.addEventListener("DOMContentLoaded", () => {
-  const walletEl = document.getElementById("walletTrigger");
-
-  walletEl.addEventListener("click", () => {
-    if (isConnected) {
-      const confirmDisconnect = confirm("Disconnect wallet?");
-      if (confirmDisconnect) disconnectWallet();
-    } else {
-      connectWallet();
-    }
-  });
-});
 </script>
 </body>
 </html>
