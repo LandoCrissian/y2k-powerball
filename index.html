@@ -688,6 +688,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+    <script type="module">
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.8.1/dist/ethers.min.js";
+
+  const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+
+  async function updateJackpotFromChain() {
+    try {
+      const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+      const balance = await provider.getBalance(jackpotWallet);
+      const croAmount = parseFloat(ethers.formatEther(balance)).toFixed(2);
+
+      const jackpotDisplay = document.querySelector("#jackpotAmount .amount");
+      if (jackpotDisplay) jackpotDisplay.textContent = `${croAmount}`;
+    } catch (err) {
+      console.error("Error fetching CRO balance:", err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    updateJackpotFromChain();
+    setInterval(updateJackpotFromChain, 30000); // Update every 30 sec
+  });
+</script>
+
 </body>
 </html>
 
