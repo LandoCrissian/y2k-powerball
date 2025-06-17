@@ -610,11 +610,12 @@ async function updateJackpot() {
     const snap = await getDoc(jackpotRef);
     const data = snap.data() || { totalEntries: 0, jackpotAmount: 0 };
     
-    document.getElementById('jackpotAmount').innerHTML = `
-        <span class="currency">CRO</span>
-        <span class="amount">${data.jackpotAmount.toLocaleString()}</span>
-    `;
-    document.getElementById('entryCount').textContent = data.totalEntries.toLocaleString();
+    document.getElementById("jackpotAmountY2K").innerHTML = `
+  <span class="currency">Y2K</span>
+  <span class="amount">${formattedY2K}</span>
+`;
+
+document.getElementById("jackpotCRO").textContent = `${formattedCRO} CRO`;
 }
 
 // Update Entries
