@@ -8,11 +8,11 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet" />
 
-  <!-- Firebase & Config -->
+  <!-- Firebase Config (Initialized Again in Script) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    
     const firebaseConfig = {
       apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
       authDomain: "y2k-arcade.firebaseapp.com",
@@ -23,14 +23,14 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    window.db = getFirestore(app);
+    window.db = getFirestore(app); // Global DB ref if needed
   </script>
 
-  <!-- Ethers.js for CRO balance -->
+  <!-- Ethers.js for CRO Balance -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 
-    <style>
+  <style>
   :root {
     --primary: #00ffe1;
     --secondary: #ff00f7;
@@ -145,78 +145,128 @@
     .neo-title { font-size: 24px; }
     .number-grid { grid-template-columns: repeat(5, 1fr); }
   }
+
+    .leaderboard-container {
+  margin-top: 40px;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.winners-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.winner-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.winner-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.winner-address {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--primary);
+}
+
+.winner-time {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.winner-amount {
+  font-weight: bold;
+  font-size: 18px;
+}
 </style>
 
-    <body>
-  <div class="noise"></div>
-  <div class="app-container">
+  <!-- 🔌 STATUS BAR -->
+<div class="status-bar">
+  <div class="network-status">
+    <div class="signal-dot active"></div>
+    <div class="signal-dot active"></div>
+    <div class="signal-dot active"></div>
+    <div class="signal-dot"></div>
+    <span>MAINNET</span>
+  </div>
+  <div class="time" id="currentTime">00:00</div>
+  <div class="wallet-status" onclick="connectWallet()">
+    <span class="dot pulse"></span>
+    CONNECT
+  </div>
+</div>
 
-    <!-- 🔌 STATUS BAR -->
-    <div class="status-bar">
-      <div class="network-status">
-        <div class="signal-dot active"></div>
-        <div class="signal-dot active"></div>
-        <div class="signal-dot active"></div>
-        <div class="signal-dot"></div>
-        <span>MAINNET</span>
+<!-- 🧠 HEADER -->
+<header class="main-header">
+  <div class="logo-container">
+    <h1 class="neo-title">Y2K POWERBALL</h1>
+    <div class="version-tag">v2.0</div>
+  </div>
+  <div class="user-stats">
+    <div class="balance-display">
+      <span class="balance-label">BALANCE</span>
+      <span class="balance-amount">--</span>
+      <span class="balance-currency">CRO</span>
+    </div>
+    <div class="badge premium">PREMIUM</div>
+  </div>
+</header>
+
+<!-- 💰 JACKPOT MODULE -->
+<section class="jackpot-module">
+  <div class="jackpot-container neo-brutalism">
+    <div class="jackpot-header">
+      <span class="jackpot-label">CURRENT JACKPOT</span>
+      <div class="jackpot-timer" id="drawTimer">--:--:--</div>
+    </div>
+    <div class="jackpot-amount">
+      <span class="currency">CRO</span>
+      <span class="amount" id="jackpotAmount">Loading...</span>
+    </div>
+    <div class="jackpot-footer">
+      <div class="stat-item">
+        <span class="stat-value" id="entryCount">---</span>
+        <span class="stat-label">ENTRIES</span>
       </div>
-      <div class="time" id="currentTime">00:00</div>
-      <div class="wallet-status" onclick="connectWallet()">
-        <span class="dot pulse"></span>
-        CONNECT
+      <div class="stat-item">
+        <span class="stat-value">???</span>
+        <span class="stat-label">WINNERS</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">∞</span>
+        <span class="stat-label">POTENTIAL</span>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- 🧠 HEADER -->
-    <header class="main-header">
-      <div class="logo-container">
-        <h1 class="neo-title">Y2K POWERBALL</h1>
-        <div class="version-tag">v2.0</div>
-      </div>
-      <div class="user-stats">
-        <div class="balance-display">
-          <span class="balance-label">BALANCE</span>
-          <span class="balance-amount">--</span>
-          <span class="balance-currency">CRO</span>
-        </div>
-        <div class="badge premium">PREMIUM</div>
-      </div>
-    </header>
-
-    <!-- 💰 JACKPOT -->
-    <section class="jackpot-module">
-      <div class="jackpot-container neo-brutalism">
-        <div class="jackpot-header">
-          <span class="jackpot-label">CURRENT JACKPOT</span>
-          <div class="jackpot-timer" id="drawTimer">--:--:--</div>
-        </div>
-        <div class="jackpot-amount">
-          <span class="currency">CRO</span>
-          <span class="amount" id="jackpotAmount">Loading...</span>
-        </div>
-        <div class="jackpot-footer">
-          <div class="stat-item">
-            <span class="stat-value" id="entryCount">---</span>
-            <span class="stat-label">ENTRIES</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">???</span>
-            <span class="stat-label">WINNERS</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">∞</span>
-            <span class="stat-label">POTENTIAL</span>
-          </div>
-        </div>
-      </div>
-
-        <!-- 🎟️ ENTRY MODULE -->
+<!-- 🎟️ ENTRY MODULE -->
 <section class="entry-module">
   <div class="entry-container neo-brutalism">
     <h2 class="section-title">YOUR ENTRIES</h2>
     <div class="ticket-grid" id="ticketGrid">
       <!-- Tickets will populate here -->
     </div>
+
+    <!-- 🏆 LEADERBOARD -->
+<section class="leaderboard-module">
+  <div class="leaderboard-container neo-brutalism">
+    <h2 class="section-title">LEADERBOARD</h2>
+    <div id="winnersList" class="winners-list">
+      <!-- Entries will populate here -->
+    </div>
+  </div>
+</section>
 
     <!-- 🧩 NUMBER PICKER -->
     <div class="number-picker" id="numberPicker" style="display: none;">
@@ -238,6 +288,26 @@
     </div>
   </div>
 </section>
+
+  <!-- 🏆 LEADERBOARD -->
+<section class="leaderboard-module neo-brutalism">
+  <h2 class="section-title">LEADERBOARD</h2>
+  <div id="winnersList" class="winner-list">
+    <!-- Dynamic leaderboard entries will render here -->
+  </div>
+</section>
+
+<!-- ⏳ DRAW COUNTDOWN TIMER (Optional Display) -->
+<section class="draw-info neo-brutalism">
+  <h2 class="section-title">NEXT DRAW</h2>
+  <div id="drawCountdown" class="draw-countdown">00:00:00</div>
+</section>
+
+<!-- 🦾 FOOTER -->
+<footer class="site-footer">
+  <p class="footer-text">Built for Cronos by <strong>Y2K Syndicate</strong>.</p>
+  <p class="footer-sub">Wallet tracked: <code>0x348c2F06C64b4465f90446Fd806aFf3A01220450</code></p>
+</footer>
 
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -269,7 +339,6 @@
   let walletAddress = null;
   let isVaultVerified = false;
   let croToUsd = 0;
-
   const WEEK_KEY = (() => {
     const now = new Date();
     const year = now.getFullYear();
@@ -282,17 +351,13 @@
       const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=crypto-com-chain&vs_currencies=usd");
       const data = await res.json();
       croToUsd = data["crypto-com-chain"].usd;
-    } catch (e) {
-      console.error("❌ CRO price fetch failed:", e);
+    } catch {
       croToUsd = 0.1;
     }
   }
 
   async function connectWallet() {
-    if (!window.ethereum) {
-      alert("No wallet detected");
-      return;
-    }
+    if (!window.ethereum) return alert("No wallet detected");
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     walletAddress = accounts[0].toLowerCase();
     document.querySelector('.wallet-status').innerHTML = `<span class="dot pulse"></span> ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
@@ -302,8 +367,7 @@
   }
 
   async function checkVaultStatus(wallet) {
-    const ref = doc(db, "users", wallet);
-    const snap = await getDoc(ref);
+    const snap = await getDoc(doc(db, "users", wallet));
     isVaultVerified = snap.exists();
   }
 
@@ -320,13 +384,7 @@
 
   async function logTicket(wallet, method, numbers = []) {
     const ref = doc(db, "powerball_tickets", `${WEEK_KEY}_${wallet}_${Date.now()}`);
-    await setDoc(ref, {
-      wallet,
-      method,
-      numbers,
-      draw: WEEK_KEY,
-      timestamp: Date.now()
-    });
+    await setDoc(ref, { wallet, method, numbers, draw: WEEK_KEY, timestamp: Date.now() });
   }
 
   async function handleTicket(isFree = true) {
@@ -334,21 +392,15 @@
     if (!walletAddress) return;
 
     const selected = getSelectedNumbers();
-    if (selected.length !== 5) {
-      alert("Pick 5 numbers first.");
-      return;
-    }
+    if (selected.length !== 5) return alert("Pick 5 numbers.");
 
     if (isFree && isVaultVerified) {
       const used = await getFreeEntriesUsed(walletAddress);
-      if (used >= 5) {
-        alert("No free entries left.");
-        return;
-      }
+      if (used >= 5) return alert("No free entries left.");
       await incrementFreeEntry(walletAddress);
       await logTicket(walletAddress, "free", selected);
     } else {
-      // TODO: integrate CRO payment here
+      // 🧾 ADD REAL PAYMENT LOGIC HERE
       await logTicket(walletAddress, "paid", selected);
     }
 
@@ -375,14 +427,14 @@
 
   function quickPick() {
     clearSelected();
-    const numbers = [];
-    while (numbers.length < 5) {
+    const nums = [];
+    while (nums.length < 5) {
       const rand = Math.floor(Math.random() * 69) + 1;
-      if (!numbers.includes(rand)) numbers.push(rand);
+      if (!nums.includes(rand)) nums.push(rand);
     }
-    numbers.forEach(num => {
-      const tile = document.querySelector(`.number-tile[data-num="${num}"]`);
-      if (tile) tile.classList.add('selected');
+    nums.forEach(n => {
+      const tile = document.querySelector(`.number-tile[data-num="${n}"]`);
+      if (tile) tile.classList.add("selected");
     });
   }
 
@@ -393,94 +445,74 @@
       tile.className = "number-tile";
       tile.textContent = i;
       tile.dataset.num = i;
-      tile.addEventListener("click", () => {
+      tile.onclick = () => {
         tile.classList.toggle("selected");
-        const selected = getSelectedNumbers();
-        if (selected.length > 5) tile.classList.remove("selected");
-      });
+        if (getSelectedNumbers().length > 5) tile.classList.remove("selected");
+      };
       grid.appendChild(tile);
     }
     document.getElementById("numberPicker").style.display = "block";
   }
 
   async function renderTickets() {
-    const ref = collection(db, "powerball_tickets");
-    const q = query(ref, orderBy("timestamp", "desc"), limit(5));
-    const snap = await getDocs(q);
-
-    const container = document.getElementById("ticketGrid");
-    container.innerHTML = "";
+    const snap = await getDocs(query(collection(db, "powerball_tickets"), orderBy("timestamp", "desc"), limit(5)));
+    const grid = document.getElementById("ticketGrid");
+    grid.innerHTML = "";
     snap.forEach(doc => {
-      const data = doc.data();
+      const d = doc.data();
       const el = document.createElement("div");
       el.className = "ticket active";
       el.innerHTML = `
-        <div class="ticket-number">${data.numbers.join(" • ")}</div>
-        <div class="ticket-status">${data.method.toUpperCase()}</div>
+        <div class="ticket-number">${d.numbers.join(" • ")}</div>
+        <div class="ticket-status">${d.method.toUpperCase()}</div>
       `;
-      container.appendChild(el);
+      grid.appendChild(el);
     });
 
     const newEntry = document.createElement("div");
     newEntry.className = "add-ticket";
     newEntry.innerHTML = `<div class="plus-icon">+</div><div class="add-label">NEW ENTRY</div>`;
-    container.appendChild(newEntry);
+    grid.appendChild(newEntry);
   }
 
   async function updateJackpotDisplay() {
-    const ref = collection(db, "powerball_tickets");
-    const snap = await getDocs(ref);
-    let paidCount = 0;
-
+    const snap = await getDocs(collection(db, "powerball_tickets"));
+    let paid = 0;
     snap.forEach(doc => {
-      if (doc.data().method === "paid") paidCount += 1;
+      if (doc.data().method === "paid") paid++;
     });
-
-    const croPerEntry = 2;
-    const jackpotTotalCRO = paidCount * croPerEntry;
-    const jackpotTotalUSD = (jackpotTotalCRO * croToUsd).toFixed(2);
-
+    const cro = paid * 2;
+    const usd = (cro * croToUsd).toFixed(2);
     document.getElementById("jackpotAmount").innerHTML = `
-      ${jackpotTotalCRO.toLocaleString()} CRO
-      <span style="font-size: 14px; color: var(--text-secondary); display: block;">
-        ≈ $${jackpotTotalUSD}
-      </span>
+      ${cro.toLocaleString()} CRO
+      <span style="font-size: 14px; color: var(--text-secondary); display: block;">≈ $${usd}</span>
     `;
-
-    document.getElementById("entryCount").textContent = paidCount.toLocaleString();
+    document.getElementById("entryCount").textContent = paid.toLocaleString();
   }
 
   async function renderLeaderboard() {
-    const ref = collection(db, "powerball_tickets");
-    const snap = await getDocs(ref);
-    const entryCount = {};
-
+    const snap = await getDocs(collection(db, "powerball_tickets"));
+    const count = {};
     snap.forEach(doc => {
       const { wallet } = doc.data();
-      if (!wallet) return;
-      entryCount[wallet] = (entryCount[wallet] || 0) + 1;
+      count[wallet] = (count[wallet] || 0) + 1;
     });
-
-    const top = Object.entries(entryCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-
-    const container = document.getElementById("winnersList");
-    if (!container) return;
-
-    container.innerHTML = "";
-    top.forEach(([wallet, count]) => {
-      const short = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+    const top = Object.entries(count).sort((a,b) => b[1]-a[1]).slice(0,5);
+    const list = document.getElementById("winnersList");
+    if (!list) return;
+    list.innerHTML = "";
+    top.forEach(([addr, num]) => {
+      const short = `${addr.slice(0,6)}...${addr.slice(-4)}`;
       const el = document.createElement("div");
       el.className = "winner-item";
       el.innerHTML = `
         <div class="winner-info">
           <span class="winner-address">${short}</span>
-          <span class="winner-time">${count} entries</span>
+          <span class="winner-time">${num} entries</span>
         </div>
-        <div class="winner-amount">${(count * 2).toLocaleString()} CRO</div>
+        <div class="winner-amount">${(num * 2).toLocaleString()} CRO</div>
       `;
-      container.appendChild(el);
+      list.appendChild(el);
     });
   }
 
@@ -493,10 +525,11 @@
     renderNumberGrid();
     await updateJackpotDisplay();
     await renderLeaderboard();
-  });
+  }); // End of DOMContentLoaded
 </script>
+
 </body>
-</html
+</html>
 
         
     
