@@ -710,8 +710,34 @@ document.addEventListener('DOMContentLoaded', () => {
     updateJackpotFromChain();
     setInterval(updateJackpotFromChain, 30000); // Update every 30 sec
   });
-</script>
 
+        const y2kTokenAddress = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
+const y2kAbi = [
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)"
+];
+
+async function updateY2KBalance() {
+  try {
+    const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+    const contract = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+
+    const balance = await contract.balanceOf(jackpotWallet);
+    const decimals = await contract.decimals();
+    const formatted = parseFloat(ethers.formatUnits(balance, decimals)).toFixed(2);
+
+    const y2kDisplay = document.getElementById("y2kBalance");
+    if (y2kDisplay) y2kDisplay.textContent = `${formatted} Y2K`;
+  } catch (err) {
+    console.error("Error fetching Y2K balance:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateY2KBalance();
+  setInterval(updateY2KBalance, 30000); // Refresh every 30 sec
+});
+</script>
 </body>
 </html>
 
