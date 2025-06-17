@@ -47,7 +47,7 @@
             <!-- 💰 Jackpot Area -->
 <div class="jackpot-amount" id="jackpotAmountY2K">
   <span class="currency">Y2K</span>
-  <span class="amount">123,456</span>
+  <span class="amount" id="y2kBalance">--</span>
 </div>
 
 <div class="jackpot-subline">
@@ -707,8 +707,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const balance = await provider.getBalance(jackpotWallet);
       const croAmount = parseFloat(ethers.formatEther(balance)).toFixed(2);
 
-      const jackpotDisplay = document.querySelector("#jackpotAmount .amount");
-      if (jackpotDisplay) jackpotDisplay.textContent = `${croAmount}`;
+      const croDisplay = document.getElementById("jackpotCRO");
+if (croDisplay) croDisplay.textContent = `${croAmount} CRO`;
     } catch (err) {
       console.error("Error fetching CRO balance:", err);
     }
