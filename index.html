@@ -728,35 +728,57 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
     <script>
-let userWallet = null;
+let isConnected = false;
 
-window.connectWallet = async () => {
+async function connectWallet() {
   if (!window.ethereum) {
-    alert('Please install a Web3 wallet like MetaMask.');
+    alert("No Web3 wallet found. Please install MetaMask or a compatible wallet.");
     return;
   }
 
   try {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    userWallet = accounts[0].toLowerCase();
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    const wallet = accounts[0];
 
-    // Update UI
-    document.getElementById('walletDisplay').textContent = `${userWallet.slice(0, 6)}...${userWallet.slice(-4)}`;
-    document.querySelector('.wallet')?.classList.add('connected');
+    if (!wallet) throw new Error("Wallet not returned");
 
-    // Optional: trigger data sync
+    // Display wallet
+    document.getElementById("walletDisplay").textContent = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+    document.getElementById("walletDisplay").classList.add("connected");
+    window.userWallet = wallet.toLowerCase();
+    isConnected = true;
+
+    // Optional: update vault / balance UI here
     await checkVaultStatus();
     await updateUI();
 
-    console.log("✅ Wallet connected:", userWallet);
+    console.log("✅ Connected:", wallet);
   } catch (err) {
     console.error("❌ Wallet connection failed:", err);
     alert("Wallet connection failed. Please try again.");
   }
-};
+}
 
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('walletTrigger').addEventListener('click', connectWallet);
+function disconnectWallet() {
+  document.getElementById("walletDisplay").textContent = "CONNECT";
+  document.getElementById("walletDisplay").classList.remove("connected");
+  window.userWallet = null;
+  isConnected = false;
+  alert("Disconnected.");
+}
+
+// Add click logic
+window.addEventListener("DOMContentLoaded", () => {
+  const walletEl = document.getElementById("walletTrigger");
+
+  walletEl.addEventListener("click", () => {
+    if (isConnected) {
+      const confirmDisconnect = confirm("Disconnect wallet?");
+      if (confirmDisconnect) disconnectWallet();
+    } else {
+      connectWallet();
+    }
+  });
 });
 </script>
 </body>
