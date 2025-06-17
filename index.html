@@ -28,6 +28,15 @@
             <h1>Y2K POWERBALL</h1>
             <div class="version">v2.1</div>
         </div>
+       
+        <!-- Place this somewhere in your body, like under the wallet bar -->
+<div id="playerProfile" class="profile-card" style="display:none; margin-bottom: 24px;">
+  <div class="profile-inner">
+    <h2 id="profileUsername"></h2>
+    <p><strong>𝕏:</strong> <span id="profileX"></span></p>
+    <p>Games: <span id="profileGames"></span> Wins: <span id="profileWins"></span> Y2K: <span id="profileY2K"></span></p>
+  </div>
+</div>
         <div class="stats">
             <div class="balance">
                 <span class="label">BALANCE</span>
@@ -450,6 +459,18 @@ header {
         grid-template-columns: 1fr;
     }
 }
+
+    .profile-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 14px;
+}
+.profile-inner h2 {
+  color: var(--primary);
+  margin-bottom: 4px;
+}
 </style>
 
 <script type="module">
@@ -584,6 +605,7 @@ async function connectWallet() {
         setupWalletListeners();
         await checkVaultStatus();
         await updateUI();
+        await loadPlayerProfile();
 
         console.log("✅ Connected:", state.walletAddress);
     } catch (err) {
@@ -786,34 +808,37 @@ async function updateLeaderboard() {
         orderBy("timestamp", "desc"),
         limit(50)
     );
-    
+
     const snap = await getDocs(leaderboardQuery);
     const players = {};
-    
+
     snap.forEach(doc => {
         const data = doc.data();
         players[data.wallet] = (players[data.wallet] || 0) + 1;
     });
-    
+
     const sorted = Object.entries(players)
-        .sort(([,a], [,b]) => b - a)
+        .sort(([, a], [, b]) => b - a)
         .slice(0, 5);
-    
+
     const list = document.getElementById("leaderboard");
-    list.innerHTML = "";
-    
-    sorted.forEach(([wallet, entries]) => {
+    list.innerHTML = '';
+
+    for (const [wallet, entries] of sorted) {
+        const profileSnap = await getDoc(doc(db, "users", wallet));
+        const profile = profileSnap.exists() ? profileSnap.data() : null;
+
         const div = document.createElement("div");
         div.className = "leader";
         div.innerHTML = `
             <div class="leader-info">
-                <span class="leader-address">${wallet.slice(0,6)}...${wallet.slice(-4)}</span>
+                <span class="leader-address">${profile?.username || wallet.slice(0, 6) + "..." + wallet.slice(-4)}</span>
                 <span class="leader-entries">${entries} entries</span>
             </div>
             <div class="leader-amount">${(entries * 2).toLocaleString()} CRO</div>
         `;
         list.appendChild(div);
-    });
+    }
 }
 
 async function updateUI() {
@@ -843,6 +868,28 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUI();
     setInterval(updateUI, 30000);
 });
+
+   // Show profile after wallet connect
+async function loadPlayerProfile() {
+    if (!state.walletAddress) return;
+
+    const userDoc = await getDoc(doc(db, "users", state.walletAddress));
+    const profile = userDoc.exists() ? userDoc.data() : null;
+
+    const profileCard = document.getElementById("playerProfile");
+    if (!profileCard) return;
+
+    if (profile) {
+        document.getElementById("profileUsername").textContent = profile.username || "Unnamed";
+        document.getElementById("profileX").textContent = profile.xHandle || "N/A";
+        document.getElementById("profileGames").textContent = profile.games || 0;
+        document.getElementById("profileWins").textContent = profile.wins || 0;
+        document.getElementById("profileY2K").textContent = profile.earnings?.toLocaleString() || 0;
+        profileCard.style.display = "block";
+    } else {
+        profileCard.style.display = "none";
+    }
+} 
 </script>
 </body>
 </html>
