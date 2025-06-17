@@ -735,7 +735,7 @@ async function updateY2KBalance() {
     const formatted = parseFloat(ethers.formatUnits(balance, decimals)).toFixed(2);
 
     const y2kDisplay = document.getElementById("y2kBalance");
-    if (y2kDisplay) y2kDisplay.textContent = `${formatted} Y2K`;
+    if (y2kDisplay) y2kDisplay.textContent = formatted; // ✅ remove "Y2K" from here
   } catch (err) {
     console.error("Error fetching Y2K balance:", err);
   }
