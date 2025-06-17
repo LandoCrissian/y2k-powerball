@@ -749,35 +749,43 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
     <script>
+  let PrivyInstance; // Global so we can reuse
+
   window.addEventListener('DOMContentLoaded', async () => {
-    const privy = new Privy({
-      appId: "cmc0u57fq01jfju0ngql2g9jd",
-      showWalletLoginFirst: true,
-      embeddedWallets: {
-        createOnLogin: "users-without-wallets",
-      },
-    });
+    try {
+      PrivyInstance = new Privy({
+        appId: "cmc0u57fq01jfju0ngql2g9jd",
+        showWalletLoginFirst: true,
+        embeddedWallets: {
+          createOnLogin: "users-without-wallets",
+        },
+      });
 
-    await privy.ready();
+      await PrivyInstance.ready();
 
-    document.getElementById('walletTrigger')?.addEventListener('click', async () => {
-      try {
-        await privy.login();
-        const user = await privy.getUser();
-        const wallet = user.wallet?.address;
+      const trigger = document.getElementById('walletTrigger');
+      if (trigger) {
+        trigger.addEventListener('click', async () => {
+          try {
+            await PrivyInstance.login();
+            const user = await PrivyInstance.getUser();
+            const wallet = user.wallet?.address;
 
-        if (!wallet) throw new Error("Wallet not returned.");
+            if (!wallet) throw new Error("Wallet not returned");
 
-        // Update UI
-        document.getElementById('walletDisplay').textContent = `${wallet.slice(0,6)}...${wallet.slice(-4)}`;
-        window.userWallet = wallet; // Save for use elsewhere
-        console.log("✅ Connected via Privy:", wallet);
+            document.getElementById('walletDisplay').textContent = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+            window.userWallet = wallet; // global access
 
-      } catch (err) {
-        console.error("Privy login error:", err);
-        alert("❌ Failed to connect wallet.");
+            console.log("✅ Connected via Privy:", wallet);
+          } catch (err) {
+            console.error("❌ Privy login error:", err);
+            alert("Failed to connect wallet.");
+          }
+        });
       }
-    });
+    } catch (err) {
+      console.error("❌ Privy init failed:", err);
+    }
   });
 </script>
 </body>
