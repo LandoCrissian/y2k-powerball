@@ -239,7 +239,7 @@
   </div>
 </section>
 
-        <script type="module">
+  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getFirestore,
@@ -268,6 +268,7 @@
 
   let walletAddress = null;
   let isVaultVerified = false;
+  let croToUsd = 0;
 
   const WEEK_KEY = (() => {
     const now = new Date();
@@ -275,6 +276,17 @@
     const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
     return `${year}-W${String(week).padStart(2, '0')}`;
   })();
+
+  async function fetchCroPrice() {
+    try {
+      const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=crypto-com-chain&vs_currencies=usd");
+      const data = await res.json();
+      croToUsd = data["crypto-com-chain"].usd;
+    } catch (e) {
+      console.error("❌ CRO price fetch failed:", e);
+      croToUsd = 0.1;
+    }
+  }
 
   async function connectWallet() {
     if (!window.ethereum) {
@@ -409,80 +421,82 @@
       container.appendChild(el);
     });
 
-    // Add "NEW ENTRY" block
     const newEntry = document.createElement("div");
     newEntry.className = "add-ticket";
     newEntry.innerHTML = `<div class="plus-icon">+</div><div class="add-label">NEW ENTRY</div>`;
     container.appendChild(newEntry);
   }
 
-  // Add events
+  async function updateJackpotDisplay() {
+    const ref = collection(db, "powerball_tickets");
+    const snap = await getDocs(ref);
+    let paidCount = 0;
+
+    snap.forEach(doc => {
+      if (doc.data().method === "paid") paidCount += 1;
+    });
+
+    const croPerEntry = 2;
+    const jackpotTotalCRO = paidCount * croPerEntry;
+    const jackpotTotalUSD = (jackpotTotalCRO * croToUsd).toFixed(2);
+
+    document.getElementById("jackpotAmount").innerHTML = `
+      ${jackpotTotalCRO.toLocaleString()} CRO
+      <span style="font-size: 14px; color: var(--text-secondary); display: block;">
+        ≈ $${jackpotTotalUSD}
+      </span>
+    `;
+
+    document.getElementById("entryCount").textContent = paidCount.toLocaleString();
+  }
+
+  async function renderLeaderboard() {
+    const ref = collection(db, "powerball_tickets");
+    const snap = await getDocs(ref);
+    const entryCount = {};
+
+    snap.forEach(doc => {
+      const { wallet } = doc.data();
+      if (!wallet) return;
+      entryCount[wallet] = (entryCount[wallet] || 0) + 1;
+    });
+
+    const top = Object.entries(entryCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    const container = document.getElementById("winnersList");
+    if (!container) return;
+
+    container.innerHTML = "";
+    top.forEach(([wallet, count]) => {
+      const short = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+      const el = document.createElement("div");
+      el.className = "winner-item";
+      el.innerHTML = `
+        <div class="winner-info">
+          <span class="winner-address">${short}</span>
+          <span class="winner-time">${count} entries</span>
+        </div>
+        <div class="winner-amount">${(count * 2).toLocaleString()} CRO</div>
+      `;
+      container.appendChild(el);
+    });
+  }
+
   document.getElementById("buyButton")?.addEventListener("click", () => handleTicket(false));
   document.getElementById("freeButton")?.addEventListener("click", () => handleTicket(true));
 
-  // Init
-  window.addEventListener("DOMContentLoaded", () => {
-    connectWallet();
+  window.addEventListener("DOMContentLoaded", async () => {
+    await fetchCroPrice();
+    await connectWallet();
     renderNumberGrid();
+    await updateJackpotDisplay();
+    await renderLeaderboard();
   });
 </script>
-
-        // 🟡 TRACK LIVE JACKPOT (based on total paid entries)
-async function updateJackpotDisplay() {
-  const ref = collection(db, "powerball_tickets");
-  const snap = await getDocs(ref);
-  let paidCount = 0;
-
-  snap.forEach(doc => {
-    if (doc.data().method === "paid") paidCount += 1;
-  });
-
-  const croPerEntry = 2;
-  const jackpotTotal = paidCount * croPerEntry;
-
-  document.getElementById("jackpotAmount").textContent = jackpotTotal.toLocaleString();
-}
-
-// 🏆 OPTIONAL: Leaderboard (based on most entries)
-async function renderLeaderboard() {
-  const ref = collection(db, "powerball_tickets");
-  const snap = await getDocs(ref);
-  const entryCount = {};
-
-  snap.forEach(doc => {
-    const { wallet } = doc.data();
-    if (!wallet) return;
-    entryCount[wallet] = (entryCount[wallet] || 0) + 1;
-  });
-
-  const top = Object.entries(entryCount)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-
-  const container = document.getElementById("winnersList");
-  if (!container) return;
-
-  container.innerHTML = "";
-  top.forEach(([wallet, count]) => {
-    const short = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
-    const el = document.createElement("div");
-    el.className = "winner-item";
-    el.innerHTML = `
-      <div class="winner-info">
-        <span class="winner-address">${short}</span>
-        <span class="winner-time">${count} entries</span>
-      </div>
-      <div class="winner-amount">${(count * 2).toLocaleString()} CRO</div>
-    `;
-    container.appendChild(el);
-  });
-}
-
-// 🕒 Init these on load
-window.addEventListener("DOMContentLoaded", () => {
-  updateJackpotDisplay();
-  renderLeaderboard();
-});
+</body>
+</html
 
         
     
