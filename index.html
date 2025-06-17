@@ -728,47 +728,36 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
     <script>
-  let PrivyInstance;
+let userWallet = null;
 
-  window.addEventListener('DOMContentLoaded', async () => {
-    PrivyInstance = new Privy({
-      appId: "cmc0u57fq01jfju0ngql2g9jd",
-      showWalletLoginFirst: true,
-      embeddedWallets: {
-        createOnLogin: "users-without-wallets"
-      }
-    });
+window.connectWallet = async () => {
+  if (!window.ethereum) {
+    alert('Please install a Web3 wallet like MetaMask.');
+    return;
+  }
 
-    await PrivyInstance.ready();
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    userWallet = accounts[0].toLowerCase();
 
-    // Listen for connect button click
-    document.getElementById("walletTrigger").addEventListener("click", async () => {
-      try {
-        const user = await PrivyInstance.login();
-        if (!user) throw new Error("Login failed");
+    // Update UI
+    document.getElementById('walletDisplay').textContent = `${userWallet.slice(0, 6)}...${userWallet.slice(-4)}`;
+    document.querySelector('.wallet')?.classList.add('connected');
 
-        const wallet = user?.wallet?.address;
-        if (!wallet) throw new Error("No wallet found");
+    // Optional: trigger data sync
+    await checkVaultStatus();
+    await updateUI();
 
-        // Update display
-        document.getElementById('walletDisplay').textContent = `${wallet.slice(0,6)}...${wallet.slice(-4)}`;
-        document.querySelector('.wallet').classList.add('connected');
+    console.log("✅ Wallet connected:", userWallet);
+  } catch (err) {
+    console.error("❌ Wallet connection failed:", err);
+    alert("Wallet connection failed. Please try again.");
+  }
+};
 
-        // Sync global
-        window.userWallet = wallet.toLowerCase();
-
-        console.log("✅ Privy wallet connected:", wallet);
-
-        // Optional: Call your Vault check here
-        // await checkVaultStatus(wallet);
-        // await updateUI();
-
-      } catch (err) {
-        console.error("❌ Privy connection failed:", err);
-        alert("Connection failed. Try again.");
-      }
-    });
-  });
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('walletTrigger').addEventListener('click', connectWallet);
+});
 </script>
 </body>
 </html>
