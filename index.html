@@ -511,27 +511,6 @@ window.clearPicks = () => {
     });
 };
 
-// Connect Wallet
-window.connectWallet = async () => {
-    if (!window.ethereum) {
-        alert('Please install a Web3 wallet');
-        return;
-    }
-
-    try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        state.walletAddress = accounts[0].toLowerCase();
-        document.getElementById('walletDisplay').textContent = 
-            `${state.walletAddress.slice(0,6)}...${state.walletAddress.slice(-4)}`;
-        
-        await checkVaultStatus();
-        await updateUI();
-    } catch (err) {
-        console.error('Failed to connect wallet:', err);
-        alert('Failed to connect wallet');
-    }
-};
-
 // Check Vault Status
 async function checkVaultStatus() {
     if (!state.walletAddress) return;
