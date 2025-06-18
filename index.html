@@ -642,39 +642,43 @@ async function checkAndRequestNetwork() {
 
 async function connectWallet() {
   if (!window.ethereum) {
-    alert("Please install MetaMask or another Web3 wallet.");
+    alert("No Web3 wallet found. Please install MetaMask.");
     return;
   }
 
   try {
-    const networkValid = await checkAndRequestNetwork();
-    if (!networkValid) return;
-
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    state.walletAddress = accounts[0].toLowerCase();
-    window.userWallet = state.walletAddress;
+    const wallet = accounts[0];
+    if (!wallet) throw new Error("Wallet not returned");
 
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
-    const raw = await y2k.balanceOf(state.walletAddress);
-    state.y2kBalance = parseFloat(ethers.formatUnits(raw, 18)); // ✅ SET BEFORE VAULT CHECK
-
-    document.getElementById("walletDisplay").textContent = 
-      `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
+    // Show address
+    document.getElementById("walletDisplay").textContent = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
     document.getElementById("walletDisplay").classList.add("connected");
+    window.userWallet = wallet.toLowerCase();
+    state.walletAddress = wallet.toLowerCase();
+    isConnected = true;
 
-    setupWalletListeners();
+    // ✅ Get Y2K balance
+    const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+    const token = new ethers.Contract("0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d", [
+      "function balanceOf(address owner) view returns (uint256)"
+    ], provider);
+    const raw = await token.balanceOf(state.walletAddress);
+    state.y2kBalance = parseFloat(ethers.formatUnits(raw, 18));
 
-    await ensureProfileExists();         // 1
-    await loadPlayerProfile();           // 2
-    await checkVaultStatus();            // 3 (now runs with Y2K balance set ✅)
-    await updateUI();                    // 4
+    // ✅ Only LOAD profile if it exists
+    await loadPlayerProfile();
 
-    console.log("✅ Connected:", state.walletAddress);
+    // ✅ This determines FOMO + free ticket eligibility
+    await checkVaultStatus();
+
+    // ✅ Update UI
+    await updateUI();
+
+    console.log("✅ Connected:", wallet);
   } catch (err) {
     console.error("❌ Wallet connection failed:", err);
-    alert("Failed to connect wallet: " + (err.message || "Please try again"));
-    state.walletAddress = null;
+    alert("Wallet connection failed. Try again.");
   }
 }
 
@@ -716,33 +720,29 @@ function disconnectWallet() {
 
 // Vault and UI Functions
 async function checkVaultStatus() {
-  if (!state.walletAddress) return;
+  const hasProfile = await checkIfUserHasProfile();
+  const hasEnoughY2K = state.y2kBalance >= 4000000;
 
-  const userSnap = await getDoc(doc(db, "users", state.walletAddress));
-  state.isVaultVerified = userSnap.exists();
+  const fomoEl = document.getElementById("vaultFomoBlock");
+  const ctaEl = document.getElementById("createProfileCTA");
 
-  const bal = state.y2kBalance || 0;
-  const fomo = document.getElementById("vaultFomoBlock");
-  const cta = document.getElementById("createProfileCTA");
+  state.isVaultVerified = hasProfile;
 
-  console.log("🧠 Y2K Balance:", bal);
-  console.log("🔐 Is Vault Verified:", state.isVaultVerified);
-  console.log("🎯 FOMO Element:", fomo, "CTA Element:", cta);
-
-  if (!fomo || !cta) return; // 👈 DOM guard to prevent silent failure
-
-  if (bal >= 4000000 && !state.isVaultVerified) {
-    cta.style.display = "block";
-    fomo.style.display = "none";
-  } else if (bal < 4000000 && !state.isVaultVerified) {
-    fomo.style.display = "block";
-    cta.style.display = "none";
-  } else {
-    fomo.style.display = "none";
-    cta.style.display = "none";
+  if (!hasEnoughY2K) {
+    fomoEl.style.display = "block";
+    ctaEl.style.display = "none";
+    return;
   }
 
-  updateFreeEntryButton();
+  if (!hasProfile && hasEnoughY2K) {
+    fomoEl.style.display = "none";
+    ctaEl.style.display = "block";
+  } else {
+    fomoEl.style.display = "none";
+    ctaEl.style.display = "none";
+  }
+
+  updateFreeEntryButton(); // ✅ Also updates after FOMO check
 }
 
     async function ensureProfileExists() {
@@ -762,10 +762,21 @@ async function checkVaultStatus() {
   }
 }
 
-function updateFreeEntryButton() {
-    const btn = document.getElementById("freeButton");
-    btn.disabled = !state.isVaultVerified;
-    btn.querySelector("small").textContent = state.isVaultVerified ? "5 LEFT" : "VAULT ONLY";
+async function updateFreeEntryButton() {
+  const btn = document.getElementById("freeButton");
+
+  if (!state.walletAddress || !state.isVaultVerified) {
+    btn.disabled = true;
+    btn.querySelector("small").textContent = "VAULT ONLY";
+    return;
+  }
+
+  const entryRef = doc(db, "powerball_free_entries", state.walletAddress);
+  const snap = await getDoc(entryRef);
+  const count = snap.exists() ? (snap.data()[state.weekKey] || 0) : 0;
+
+  btn.disabled = count >= 5;
+  btn.querySelector("small").textContent = `${5 - count} LEFT`;
 }
 
 // Number Grid Functions
