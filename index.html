@@ -693,7 +693,15 @@ async function checkVaultStatus() {
   const cta = document.getElementById("createProfileCTA");
 
   // ✅ Show CTA only if they hold enough Y2K and do NOT have a profile
-  if (bal >= 4000000 && !userSnap.exists() && cta) {
+  if (
+  bal >= 4000000 &&
+  (!profile || !profile.xHandle || profile.xHandle === "Not linked") &&
+  cta
+) {
+  cta.style.display = "block";
+} else if (cta) {
+  cta.style.display = "none";
+}
     cta.style.display = "block";
   } else {
     cta.style.display = "none";
