@@ -692,18 +692,14 @@ async function checkVaultStatus() {
 
   const cta = document.getElementById("createProfileCTA");
 
-  // ✅ Show CTA only if they hold enough Y2K and do NOT have a profile
+  // ✅ Show CTA only if they hold enough Y2K and do NOT have a valid profile
   if (
-  bal >= 4000000 &&
-  (!profile || !profile.xHandle || profile.xHandle === "Not linked") &&
-  cta
-) {
-  cta.style.display = "block";
-} else if (cta) {
-  cta.style.display = "none";
-}
+    bal >= 4000000 &&
+    (!profile || !profile.xHandle || profile.xHandle === "Not linked") &&
+    cta
+  ) {
     cta.style.display = "block";
-  } else {
+  } else if (cta) {
     cta.style.display = "none";
   }
 }
