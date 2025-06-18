@@ -725,6 +725,12 @@ async function checkVaultStatus() {
   const fomo = document.getElementById("vaultFomoBlock");
   const cta = document.getElementById("createProfileCTA");
 
+  console.log("🧠 Y2K Balance:", bal);
+  console.log("🔐 Is Vault Verified:", state.isVaultVerified);
+  console.log("🎯 FOMO Element:", fomo, "CTA Element:", cta);
+
+  if (!fomo || !cta) return; // 👈 DOM guard to prevent silent failure
+
   if (bal >= 4000000 && !state.isVaultVerified) {
     cta.style.display = "block";
     fomo.style.display = "none";
