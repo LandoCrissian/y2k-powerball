@@ -54,6 +54,25 @@
     🎯 You hold 4M+ Y2K. Create Your Player Profile →
   </a>
 </div>
+
+        <div id="needY2KCTA" style="display:none; margin-bottom: 24px;">
+  <div style="
+    display: block;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+  ">
+    🔒 Hold 4M+ Y2K to unlock your player profile & 5 free weekly entries.
+    <br>
+    <a href="https://cronos.org/dex" target="_blank" style="color: var(--primary); text-decoration: underline;">Buy Y2K</a>
+  </div>
+</div>
+        
         <div class="stats">
             <div class="balance">
                 <span class="label">BALANCE</span>
@@ -691,17 +710,17 @@ async function checkVaultStatus() {
   const bal = parseFloat(ethers.formatUnits(raw, 18));
 
   const cta = document.getElementById("createProfileCTA");
+  const fallback = document.getElementById("needY2KCTA");
 
-  // ✅ Show CTA only if they hold enough Y2K and do NOT have a valid profile
-  if (
-    bal >= 4000000 &&
-    (!profile || !profile.xHandle || profile.xHandle === "Not linked") &&
-    cta
-  ) {
-    cta.style.display = "block";
-  } else if (cta) {
-    cta.style.display = "none";
-  }
+if (bal >= 4000000 && (!profile || profile.xHandle === "Not linked")) {
+  if (cta) cta.style.display = "block";
+  if (fallback) fallback.style.display = "none";
+} else if (bal < 4000000 && (!profile || profile.xHandle === "Not linked")) {
+  if (cta) cta.style.display = "none";
+  if (fallback) fallback.style.display = "block";
+} else {
+  if (cta) cta.style.display = "none";
+  if (fallback) fallback.style.display = "none";
 }
 
     async function ensureProfileExists() {
