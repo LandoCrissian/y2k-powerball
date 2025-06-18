@@ -1,164 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Y2K Powerball v2.1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://widget.privy.io/v1/privy.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Y2K Powerball v2.1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+  <!-- No Privy script here since we use our own wallet connect -->
 </head>
 <body>
-
 <div class="app-container">
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div class="network">
-            <span class="pulse"></span>
-            <span id="networkDisplay">CRONOS MAINNET</span>
-        </div>
-        <div class="wallet" id="walletTrigger">
-            <span class="pulse"></span>
-            <span id="walletDisplay">CONNECT</span>
-        </div>
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="network">
+      <span class="pulse"></span>
+      <span id="networkDisplay">CRONOS MAINNET</span>
+    </div>
+    <div class="wallet" id="walletTrigger">
+      <span class="pulse"></span>
+      <span id="walletDisplay">CONNECT</span>
+    </div>
+  </div>
+
+  <!-- Vault Profile CTA for users who hold enough Y2K but have not yet set up a profile -->
+  <div id="createProfileCTA" style="display:none; margin-bottom: 16px;">
+    <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
+      display: block;
+      background: var(--primary);
+      color: #000;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 0 10px var(--primary);
+    ">
+      🎯 You hold 4M+ Y2K. Create Your Player Profile →
+    </a>
+  </div>
+
+  <!-- FOMO block for users who do NOT hold enough Y2K -->
+  <div id="needY2KCTA" style="display:none; margin-bottom: 16px;">
+    <div style="
+      display: block;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-dim);
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+    ">
+      🔒 Hold 4M+ Y2K to unlock your player profile & 5 free weekly entries.
+      <br>
+      <a href="https://cronos.org/dex" target="_blank" style="color: var(--primary); text-decoration: underline;">Buy Y2K</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <h1>Y2K POWERBALL</h1>
+      <div class="version">v2.1</div>
     </div>
 
-    <!-- FOMO (if not enough Y2K) -->
-<div id="vaultFomoBlock" style="display:none; margin-bottom: 20px;">
-  <div style="
-    background: linear-gradient(135deg, #220000, #1a0000);
-    border: 2px dashed #ff4d4d;
-    color: #ffcccc;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 15px;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    animation: glowFomo 1.8s infinite alternate;
-  ">
-    🔒 VAULT ACCESS LOCKED<br>
-    <span style="color: #ff6b6b;">Hold 4,000,000+ Y2K</span><br>to unlock free Powerball entries and<br><strong style="color: #00ffe1;">your player identity</strong>.
-  </div>
-</div>
+    <!-- Player Profile Card -->
+    <div id="playerProfile" class="profile-card" style="display:none; margin-bottom: 16px;">
+      <div class="profile-inner">
+        <h2 id="profileUsername"></h2>
+        <p><strong>𝕏:</strong> <span id="profileX"></span></p>
+        <p>Games: <span id="profileGames"></span> Wins: <span id="profileWins"></span> Y2K: <span id="profileY2K"></span></p>
+      </div>
+    </div>
 
-<!-- UNLOCK CTA (enough Y2K, no profile) -->
-<div id="createProfileCTA" style="display:none; margin-bottom: 20px;">
-  <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
-    display: block;
-    background: linear-gradient(135deg, #00ffe1, #ff00f7);
-    color: #000;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 16px;
-    text-align: center;
-    text-decoration: none;
-    text-shadow: 0 0 10px #fff;
-    box-shadow: 0 0 20px rgba(0,255,225,0.4);
-    animation: pulseProfile 2s infinite;
-    letter-spacing: 0.5px;
-  ">
-    🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
-  </a>
-</div>
+    <div class="stats">
+      <div class="balance">
+        <span class="label">BALANCE</span>
+        <span class="amount" id="balance">--</span>
+        <span class="currency">CRO</span>
+      </div>
+    </div>
+  </header>
 
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <h1>Y2K POWERBALL</h1>
-            <div class="version">v2.1</div>
+  <!-- Jackpot Display -->
+  <section class="jackpot">
+    <div class="jackpot-inner">
+      <div class="jackpot-header">
+        <span>CURRENT JACKPOT</span>
+        <div id="timer" class="timer">23:59:59</div>
+      </div>
+      <div class="jackpot-amount" id="jackpotAmountY2K">
+        <span class="currency">Y2K</span>
+        <span class="amount" id="y2kBalance">--</span>
+      </div>
+      <div class="jackpot-subline">
+        <span class="text-dim">Pool funded by</span>
+        <strong id="jackpotCRO">-- CRO</strong>
+      </div>
+      <div class="jackpot-stats">
+        <div>
+          <span class="value" id="entryCount">--</span>
+          <span class="label">ENTRIES</span>
         </div>
-       
-        <!-- Place this somewhere in your body, like under the wallet bar -->
-<div id="playerProfile" class="profile-card" style="display:none; margin-bottom: 24px;">
-  <div class="profile-inner">
-    <h2 id="profileUsername"></h2>
-    <p><strong>𝕏:</strong> <span id="profileX"></span></p>
-    <p>Games: <span id="profileGames"></span> Wins: <span id="profileWins"></span> Y2K: <span id="profileY2K"></span></p>
-  </div>
-</div>
-        <div class="stats">
-            <div class="balance">
-                <span class="label">BALANCE</span>
-                <span class="amount" id="balance">--</span>
-                <span class="currency">CRO</span>
-            </div>
+        <div>
+          <span class="value">5</span>
+          <span class="label">WINNERS</span>
         </div>
-    </header>
+      </div>
+    </div>
+  </section>
 
-    <!-- Jackpot Display -->
-    <section class="jackpot">
-        <div class="jackpot-inner">
-            <div class="jackpot-header">
-                <span>CURRENT JACKPOT</span>
-                <div id="timer" class="timer">23:59:59</div>
-            </div>
-            
-            <div class="jackpot-amount" id="jackpotAmountY2K">
-                <span class="currency">Y2K</span>
-                <span class="amount" id="y2kBalance">--</span>
-            </div>
+  <!-- Number Picker -->
+  <section class="number-picker">
+    <h2>PICK YOUR NUMBERS</h2>
+    <div class="grid" id="numberGrid"></div>
+    <div class="picker-actions">
+      <button onclick="quickPick()" class="btn secondary">
+        <span>QUICK PICK</span>
+      </button>
+      <button onclick="clearPicks()" class="btn danger">
+        <span>CLEAR</span>
+      </button>
+    </div>
+  </section>
 
-            <div class="jackpot-subline">
-                <span class="text-dim">Pool funded by</span>
-                <strong id="jackpotCRO">-- CRO</strong>
-            </div>
-            <div class="jackpot-stats">
-                <div>
-                    <span class="value" id="entryCount">--</span>
-                    <span class="label">ENTRIES</span>
-                </div>
-                <div>
-                    <span class="value">5</span>
-                    <span class="label">WINNERS</span>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Entry Actions -->
+  <section class="entry-actions">
+    <button class="btn primary" id="buyButton">
+      <span>BUY ENTRY</span>
+      <small>2 CRO</small>
+    </button>
+    <button class="btn secondary" id="freeButton">
+      <span>FREE ENTRY</span>
+      <small id="freeCount">5 LEFT</small>
+    </button>
+  </section>
 
-    <!-- Number Picker -->
-    <section class="number-picker">
-        <h2>PICK YOUR NUMBERS</h2>
-        <div class="grid" id="numberGrid"></div>
-        <div class="picker-actions">
-            <button onclick="quickPick()" class="btn secondary">
-                <span>QUICK PICK</span>
-            </button>
-            <button onclick="clearPicks()" class="btn danger">
-                <span>CLEAR</span>
-            </button>
-        </div>
-    </section>
+  <!-- Recent Entries -->
+  <section class="entries">
+    <h2>YOUR ENTRIES</h2>
+    <div class="entry-grid" id="entryGrid"></div>
+  </section>
 
-    <!-- Entry Actions -->
-    <section class="entry-actions">
-        <button class="btn primary" id="buyButton">
-            <span>BUY ENTRY</span>
-            <small>2 CRO</small>
-        </button>
-        <button class="btn secondary" id="freeButton">
-            <span>FREE ENTRY</span>
-            <small id="freeCount">5 LEFT</small>
-        </button>
-    </section>
-
-    <!-- Recent Entries -->
-    <section class="entries">
-        <h2>YOUR ENTRIES</h2>
-        <div class="entry-grid" id="entryGrid"></div>
-    </section>
-
-    <!-- Leaderboard -->
-    <section class="leaderboard">
-        <h2>TOP PLAYERS</h2>
-        <div class="leaderboard-list" id="leaderboard"></div>
-    </section>
+  <!-- Leaderboard -->
+  <section class="leaderboard">
+    <h2>TOP PLAYERS</h2>
+    <div class="leaderboard-list" id="leaderboard"></div>
+  </section>
 </div>
 
 <style>
-:root {
+  :root {
     --primary: #00ffe1;
     --secondary: #ff00f7;
     --accent: #6e56cf;
@@ -169,42 +161,36 @@
     --danger: #ff4747;
     --success: #00ff9d;
     --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-
-* {
+  }
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-html {
+  }
+  html {
     background-color: var(--background);
-}
-
-body {
+  }
+  body {
     font-family: 'Inter', sans-serif;
     color: var(--text);
     line-height: 1.5;
     background: radial-gradient(circle at top, var(--surface), var(--background));
     min-height: 100vh;
-}
-
-.app-container {
+  }
+  .app-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 16px;
-}
-
-/* Status Bar */
-.status-bar {
+  }
+  /* ––––– Status Bar ––––– */
+  .status-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
     margin-bottom: 24px;
-}
-
-.network, .wallet {
+  }
+  .network, .wallet {
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -212,13 +198,11 @@ body {
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.network:hover, .wallet:hover {
+  }
+  .network:hover, .wallet:hover {
     background: rgba(255,255,255,0.1);
-}
-
-.pulse {
+  }
+  .pulse {
     display: inline-block;
     width: 8px;
     height: 8px;
@@ -226,20 +210,17 @@ body {
     background: var(--primary);
     margin-right: 8px;
     animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
+  }
+  @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
     100% { opacity: 1; }
-}
-
-/* Header */
-header {
+  }
+  /* ––––– Header ––––– */
+  header {
     margin-bottom: 24px;
-}
-
-.logo h1 {
+  }
+  .logo h1 {
     font-family: 'Orbitron', sans-serif;
     font-size: 36px;
     font-weight: 900;
@@ -247,111 +228,93 @@ header {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 20px rgba(0,255,225,0.5);
-}
-
-.version {
+  }
+  .version {
     display: inline-block;
     padding: 4px 8px;
     background: rgba(255,255,255,0.1);
     border-radius: 4px;
     font-size: 12px;
     margin-top: 8px;
-}
-
-.stats {
+  }
+  .stats {
     margin-top: 16px;
-}
-
-.balance {
+  }
+  .balance {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-}
-
-.balance .label {
+  }
+  .balance .label {
     font-size: 12px;
     color: var(--text-dim);
-}
-
-.balance .amount {
+  }
+  .balance .amount {
     font-size: 24px;
     font-weight: bold;
-}
-
-/* Jackpot */
-.jackpot {
+  }
+  /* ––––– Jackpot ––––– */
+  .jackpot {
     margin-bottom: 32px;
-}
-
-.jackpot-inner {
+  }
+  .jackpot-inner {
     background: rgba(255,255,255,0.05);
     border-radius: 16px;
     padding: 24px;
     border: 1px solid rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
-}
-
-.jackpot-header {
+  }
+  .jackpot-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 16px;
-}
-
-.timer {
+  }
+  .timer {
     font-family: 'Orbitron', sans-serif;
     color: var(--primary);
-}
-
-.jackpot-amount {
+  }
+  .jackpot-amount {
     font-size: 48px;
     font-weight: 900;
     margin-bottom: 24px;
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-.jackpot-subline {
+  }
+  .jackpot-subline {
     margin-bottom: 24px;
     font-size: 14px;
-}
-
-.jackpot-stats {
+  }
+  .jackpot-stats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     text-align: center;
-}
-
-.jackpot-stats .value {
+  }
+  .jackpot-stats .value {
     display: block;
     font-size: 24px;
     font-weight: bold;
-}
-
-.jackpot-stats .label {
+  }
+  .jackpot-stats .label {
     font-size: 12px;
     color: var(--text-dim);
-}
-
-/* Number Picker */
-.number-picker {
+  }
+  /* ––––– Number Picker ––––– */
+  .number-picker {
     margin-bottom: 32px;
-}
-
-.number-picker h2 {
+  }
+  .number-picker h2 {
     margin-bottom: 16px;
     font-family: 'Orbitron', sans-serif;
-}
-
-.grid {
+  }
+  .grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
     margin-bottom: 16px;
-}
-
-.grid button {
+  }
+  .grid button {
     aspect-ratio: 1;
     border: none;
     background: rgba(255,255,255,0.1);
@@ -360,22 +323,19 @@ header {
     font-size: 18px;
     cursor: pointer;
     transition: all 0.2s ease;
-}
-
-.grid button.selected {
+  }
+  .grid button.selected {
     background: var(--primary);
     color: var(--background);
     font-weight: bold;
     transform: scale(0.95);
-}
-
-.picker-actions {
+  }
+  .picker-actions {
     display: flex;
     gap: 8px;
-}
-
-/* Buttons */
-.btn {
+  }
+  /* ––––– Buttons ––––– */
+  .btn {
     width: 100%;
     padding: 16px;
     border: none;
@@ -386,73 +346,61 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.btn:disabled {
+  }
+  .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.btn.primary {
+  }
+  .btn.primary {
     background: var(--gradient);
     color: var(--background);
     font-weight: bold;
-}
-
-.btn.secondary {
+  }
+  .btn.secondary {
     background: rgba(255,255,255,0.1);
     color: var(--text);
-}
-
-.btn.danger {
+  }
+  .btn.danger {
     background: rgba(255,71,71,0.2);
     color: var(--danger);
-}
-
-.btn small {
+  }
+  .btn small {
     font-size: 12px;
     opacity: 0.8;
     margin-top: 4px;
-}
-
-/* Entry Actions */
-.entry-actions {
+  }
+  /* ––––– Entry Actions ––––– */
+  .entry-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
     margin-bottom: 32px;
-}
-
-/* Entries */
-.entries {
+  }
+  /* ––––– Entries ––––– */
+  .entries {
     margin-bottom: 32px;
-}
-
-.entry-grid {
+  }
+  .entry-grid {
     display: grid;
     gap: 8px;
     margin-top: 16px;
-}
-
-.entry {
+  }
+  .entry {
     background: rgba(255,255,255,0.05);
     padding: 16px;
     border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-/* Leaderboard */
-.leaderboard {
+  }
+  /* ––––– Leaderboard ––––– */
+  .leaderboard {
     margin-bottom: 32px;
-}
-
-.leaderboard-list {
+  }
+  .leaderboard-list {
     margin-top: 16px;
-}
-
-.leader {
+  }
+  .leader {
     background: rgba(255,255,255,0.05);
     padding: 16px;
     border-radius: 12px;
@@ -460,81 +408,55 @@ header {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
-}
-
-.leader-info {
+  }
+  .leader-info {
     display: flex;
     flex-direction: column;
-}
-
-.leader-address {
+  }
+  .leader-address {
     font-weight: 600;
     color: var(--primary);
-}
-
-.leader-entries {
+  }
+  .leader-entries {
     font-size: 12px;
     color: var(--text-dim);
-}
-
-#walletDisplay.connected {
+  }
+  #walletDisplay.connected {
     color: var(--primary);
     font-weight: bold;
     text-shadow: 0 0 8px var(--primary);
-}
-
-/* Mobile Optimizations */
-@media (max-width: 480px) {
+  }
+  /* ––––– Mobile Optimizations ––––– */
+  @media (max-width: 480px) {
     .logo h1 {
-        font-size: 28px;
+      font-size: 28px;
     }
-    
     .jackpot-amount {
-        font-size: 36px;
+      font-size: 36px;
     }
-    
     .grid {
-        grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
-    
     .entry-actions {
-        grid-template-columns: 1fr;
+      grid-template-columns: 1fr;
     }
-}
-
-    .profile-card {
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  font-size: 14px;
-}
-.profile-inner h2 {
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-
-    <style>
-@keyframes glowFomo {
-  from {
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
   }
-  to {
-    box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
+  .profile-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 14px;
   }
-}
-
-@keyframes pulseProfile {
-  0% { transform: scale(1); box-shadow: 0 0 12px rgba(0,255,225,0.3); }
-  50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(255,0,247,0.5); }
-  100% { transform: scale(1); box-shadow: 0 0 12px rgba(0,255,225,0.3); }
-}
-</style>
+  .profile-inner h2 {
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
 </style>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
+  import {
     getFirestore,
     doc,
     getDoc,
@@ -545,463 +467,426 @@ import {
     limit,
     getDocs,
     increment
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.8.1/dist/ethers.min.js";
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js";
 
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
-    authDomain: "y2k-arcade.firebaseapp.com",
-    projectId: "y2k-arcade",
-    storageBucket: "y2k-arcade.appspot.com",
-    messagingSenderId: "1063043176357",
-    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-};
+  // Firebase Configuration
+  const firebaseConfig = {
+      apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+      authDomain: "y2k-arcade.firebaseapp.com",
+      projectId: "y2k-arcade",
+      storageBucket: "y2k-arcade.appspot.com",
+      messagingSenderId: "1063043176357",
+      appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// Constants
-const CRONOS_CHAIN_ID = '0x19'; // Cronos Mainnet
-const CRONOS_RPC = 'https://evm.cronos.org';
-const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
-const y2kTokenAddress = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
-const y2kAbi = [
-    "function balanceOf(address owner) view returns (uint256)",
-    "function decimals() view returns (uint8)"
-];
+  // Constants
+  const CRONOS_CHAIN_ID = '0x19'; // Cronos Mainnet
+  const CRONOS_RPC = 'https://evm.cronos.org';
+  const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+  const y2kTokenAddress = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
+  const y2kAbi = [
+      "function balanceOf(address owner) view returns (uint256)",
+      "function decimals() view returns (uint8)"
+  ];
 
-// State Management
-const state = {
-    walletAddress: null,
-    isVaultVerified: false,
-    selectedNumbers: new Set(),
-    weekKey: (() => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
-        return `${year}-W${String(week).padStart(2, '0')}`;
-    })()
-};
+  // State Management
+  const state = {
+      walletAddress: null,
+      isVaultVerified: false,
+      selectedNumbers: new Set(),
+      weekKey: (() => {
+          const now = new Date();
+          const year = now.getFullYear();
+          const week = Math.ceil((((now - new Date(year, 0, 1)) / 86400000) + new Date(year, 0, 1).getDay() + 1) / 7);
+          return `${year}-W${String(week).padStart(2, '0')}`;
+      })()
+  };
 
-// Wallet Connection Functions
-async function switchToCronosNetwork() {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: CRONOS_CHAIN_ID }],
-        });
-        return true;
-    } catch (switchError) {
-        if (switchError.code === 4902) {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: CRONOS_CHAIN_ID,
-                        chainName: 'Cronos Mainnet',
-                        nativeCurrency: {
-                            name: 'CRO',
-                            symbol: 'CRO',
-                            decimals: 18
-                        },
-                        rpcUrls: [CRONOS_RPC],
-                        blockExplorerUrls: ['https://cronoscan.com/']
-                    }]
-                });
-                return true;
-            } catch (addError) {
-                console.error('Failed to add Cronos network:', addError);
-                return false;
-            }
-        }
-        console.error('Failed to switch to Cronos network:', switchError);
-        return false;
-    }
-}
-
-async function checkAndRequestNetwork() {
-    if (!window.ethereum) return false;
-    
-    try {
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== CRONOS_CHAIN_ID) {
-            const switched = await switchToCronosNetwork();
-            if (!switched) {
-                alert('Please switch to Cronos Mainnet network in your wallet.');
-                return false;
-            }
-        }
-        return true;
-    } catch (err) {
-        console.error('Network check failed:', err);
-        return false;
-    }
-}
-
-async function connectWallet() {
-    if (!window.ethereum) {
-        alert("Please install MetaMask or another Web3 wallet.");
-        return;
-    }
-
-    try {
-        const networkValid = await checkAndRequestNetwork();
-        if (!networkValid) return;
-
-        const accounts = await window.ethereum.request({ 
-            method: "eth_requestAccounts" 
-        });
-        
-        state.walletAddress = accounts[0].toLowerCase();
-        window.userWallet = state.walletAddress;
-
-        document.getElementById("walletDisplay").textContent = 
-            `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
-        document.getElementById("walletDisplay").classList.add("connected");
-
-        setupWalletListeners();
-        await checkVaultStatus();
-        await updateUI();
-        await loadPlayerProfile();
-        await ensureProfileExists();
-        await loadPlayerProfile();
-
-        console.log("✅ Connected:", state.walletAddress);
-    } catch (err) {
-        console.error("❌ Wallet connection failed:", err);
-        alert("Failed to connect wallet: " + (err.message || "Please try again"));
-        state.walletAddress = null;
-    }
-}
-
-function setupWalletListeners() {
-    if (!window.ethereum) return;
-
-    window.ethereum.on('accountsChanged', (accounts) => {
-        if (accounts.length === 0) {
-            disconnectWallet();
-        } else {
-            state.walletAddress = accounts[0].toLowerCase();
-            document.getElementById("walletDisplay").textContent = 
-                `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
-            checkVaultStatus();
-            updateUI();
-        }
-    });
-
-    window.ethereum.on('chainChanged', (chainId) => {
-        if (chainId !== CRONOS_CHAIN_ID) {
-            alert('Please switch back to Cronos Mainnet');
-            disconnectWallet();
-        }
-    });
-
-    window.ethereum.on('disconnect', () => {
-        disconnectWallet();
-    });
-}
-
-function disconnectWallet() {
-    document.getElementById("walletDisplay").textContent = "CONNECT";
-    document.getElementById("walletDisplay").classList.remove("connected");
-    state.walletAddress = null;
-    window.userWallet = null;
-    document.getElementById('entryGrid').innerHTML = '';
-    updateFreeEntryButton();
-}
-
-// Vault and UI Functions
-async function checkVaultStatus() {
-  if (!state.walletAddress) return;
-
-  const userSnap = await getDoc(doc(db, "users", state.walletAddress));
-  state.isVaultVerified = userSnap.exists();
-
-  const bal = state.y2kBalance || 0;
-  const fomo = document.getElementById("vaultFomoBlock");
-  const cta = document.getElementById("createProfileCTA");
-
-  if (bal >= 4000000 && !state.isVaultVerified) {
-    cta.style.display = "block";
-    fomo.style.display = "none";
-  } else if (bal < 4000000 && !state.isVaultVerified) {
-    fomo.style.display = "block";
-    cta.style.display = "none";
-  } else {
-    fomo.style.display = "none";
-    cta.style.display = "none";
+  // ▸ Wallet Connection Functions
+  async function switchToCronosNetwork() {
+      try {
+          await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: CRONOS_CHAIN_ID }],
+          });
+          return true;
+      } catch (switchError) {
+          if (switchError.code === 4902) {
+              try {
+                  await window.ethereum.request({
+                      method: 'wallet_addEthereumChain',
+                      params: [{
+                          chainId: CRONOS_CHAIN_ID,
+                          chainName: 'Cronos Mainnet',
+                          nativeCurrency: {
+                              name: 'CRO',
+                              symbol: 'CRO',
+                              decimals: 18
+                          },
+                          rpcUrls: [CRONOS_RPC],
+                          blockExplorerUrls: ['https://cronoscan.com/']
+                      }]
+                  });
+                  return true;
+              } catch (addError) {
+                  console.error('Failed to add Cronos network:', addError);
+                  return false;
+              }
+          }
+          console.error('Failed to switch to Cronos network:', switchError);
+          return false;
+      }
   }
 
-  updateFreeEntryButton();
-}
-
-    async function ensureProfileExists() {
-  if (!state.walletAddress) return;
-  const userRef = doc(db, "users", state.walletAddress);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) {
-    await setDoc(userRef, {
-      username: `Player-${state.walletAddress.slice(-4)}`,
-      xHandle: "Not linked",
-      badgeColor: "gray",
-      games: 0,
-      wins: 0,
-      earnings: 0
-    });
-    console.log("🆕 Created new placeholder profile");
+  async function checkAndRequestNetwork() {
+      if (!window.ethereum) return false;
+      try {
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          if (chainId !== CRONOS_CHAIN_ID) {
+              const switched = await switchToCronosNetwork();
+              if (!switched) {
+                  alert('Please switch to Cronos Mainnet network in your wallet.');
+                  return false;
+              }
+          }
+          return true;
+      } catch (err) {
+          console.error('Network check failed:', err);
+          return false;
+      }
   }
-}
 
-function updateFreeEntryButton() {
-    const btn = document.getElementById("freeButton");
-    btn.disabled = !state.isVaultVerified;
-    btn.querySelector("small").textContent = state.isVaultVerified ? "5 LEFT" : "VAULT ONLY";
-}
+  async function connectWallet() {
+      if (!window.ethereum) {
+          alert("Please install MetaMask or another Web3 wallet.");
+          return;
+      }
+      try {
+          const networkValid = await checkAndRequestNetwork();
+          if (!networkValid) return;
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          state.walletAddress = accounts[0].toLowerCase();
+          window.userWallet = state.walletAddress;
+          document.getElementById("walletDisplay").textContent =
+              `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
+          document.getElementById("walletDisplay").classList.add("connected");
+          setupWalletListeners();
+          await loadPlayerProfile();
+          await ensureProfileExists();
+          await loadPlayerProfile(); // reload to update display if placeholder was created
+          await updateUI();
+          await checkVaultStatus();
+          console.log("✅ Connected:", state.walletAddress);
+      } catch (err) {
+          console.error("❌ Wallet connection failed:", err);
+          alert("Failed to connect wallet: " + (err.message || "Please try again"));
+          state.walletAddress = null;
+      }
+  }
 
-// Number Grid Functions
-function initializeNumberGrid() {
-    const grid = document.getElementById("numberGrid");
-    for (let i = 1; i <= 69; i++) {
-        const button = document.createElement("button");
-        button.textContent = i;
-        button.onclick = () => toggleNumber(i, button);
-        grid.appendChild(button);
-    }
-}
+  function setupWalletListeners() {
+      if (!window.ethereum) return;
+      window.ethereum.on('accountsChanged', (accounts) => {
+          if (accounts.length === 0) {
+              disconnectWallet();
+          } else {
+              state.walletAddress = accounts[0].toLowerCase();
+              document.getElementById("walletDisplay").textContent =
+                  `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
+              checkVaultStatus();
+              updateUI();
+          }
+      });
+      window.ethereum.on('chainChanged', (chainId) => {
+          if (chainId !== CRONOS_CHAIN_ID) {
+              alert('Please switch back to Cronos Mainnet');
+              disconnectWallet();
+          }
+      });
+      window.ethereum.on('disconnect', () => {
+          disconnectWallet();
+      });
+  }
 
-function toggleNumber(num, button) {
-    if (state.selectedNumbers.has(num)) {
-        state.selectedNumbers.delete(num);
-        button.classList.remove("selected");
-    } else if (state.selectedNumbers.size < 5) {
-        state.selectedNumbers.add(num);
-        button.classList.add("selected");
-    }
-}
+  function disconnectWallet() {
+      document.getElementById("walletDisplay").textContent = "CONNECT";
+      document.getElementById("walletDisplay").classList.remove("connected");
+      state.walletAddress = null;
+      window.userWallet = null;
+      document.getElementById('entryGrid').innerHTML = '';
+      updateFreeEntryButton();
+  }
 
-window.quickPick = () => {
-    clearPicks();
-    const numbers = new Set();
-    while (numbers.size < 5) {
-        numbers.add(Math.floor(Math.random() * 69) + 1);
-    }
-    numbers.forEach(num => {
-        const button = document.querySelector(`#numberGrid button:nth-child(${num})`);
-        if (button) {
-            button.classList.add("selected");
-            state.selectedNumbers.add(num);
-        }
-    });
-};
+  // ▸ Vault and UI Functions
+  async function checkVaultStatus() {
+      if (!state.walletAddress) return;
+      const userSnap = await getDoc(doc(db, "users", state.walletAddress));
+      const profile = userSnap.exists() ? userSnap.data() : null;
+      // A user is “vault verified” only if they have an xHandle that isn’t "Not linked"
+      state.isVaultVerified = !!(profile && profile.xHandle && profile.xHandle !== "Not linked");
+      updateFreeEntryButton();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+      const raw = await y2k.balanceOf(state.walletAddress);
+      const bal = parseFloat(ethers.formatUnits(raw, 18));
+      const cta = document.getElementById("createProfileCTA");
+      const fallback = document.getElementById("needY2KCTA");
+      // Show the appropriate block depending on balance and profile state:
+      if (bal >= 4000000 && (!profile || profile.xHandle === "Not linked")) {
+          if (cta) cta.style.display = "block";
+          if (fallback) fallback.style.display = "none";
+      } else if (bal < 4000000 && (!profile || profile.xHandle === "Not linked")) {
+          if (cta) cta.style.display = "none";
+          if (fallback) fallback.style.display = "block";
+      } else {
+          if (cta) cta.style.display = "none";
+          if (fallback) fallback.style.display = "none";
+      }
+  }
 
-window.clearPicks = () => {
-    state.selectedNumbers.clear();
-    document.querySelectorAll("#numberGrid button").forEach(btn => {
-        btn.classList.remove("selected");
-    });
-};
+  async function ensureProfileExists() {
+      if (!state.walletAddress) return;
+      const userRef = doc(db, "users", state.walletAddress);
+      const snap = await getDoc(userRef);
+      if (!snap.exists()) {
+          await setDoc(userRef, {
+              username: `Player-${state.walletAddress.slice(-4)}`,
+              xHandle: "Not linked",
+              badgeColor: "gray",
+              games: 0,
+              wins: 0,
+              earnings: 0
+          });
+          console.log("🆕 Created new placeholder profile");
+      }
+  }
 
-// Entry Submission
-async function submitEntry(isFree = false) {
-    if (!state.walletAddress) {
-        await connectWallet();
-        if (!state.walletAddress) return;
-    }
+  function updateFreeEntryButton() {
+      const btn = document.getElementById("freeButton");
+      btn.disabled = !state.isVaultVerified;
+      btn.querySelector("small").textContent = state.isVaultVerified ? "5 LEFT" : "VAULT ONLY";
+  }
 
-    if (state.selectedNumbers.size !== 5) {
-        alert("Please select 5 numbers");
-        return;
-    }
+  // ▸ Number Grid Functions
+  function initializeNumberGrid() {
+      const grid = document.getElementById("numberGrid");
+      for (let i = 1; i <= 69; i++) {
+          const button = document.createElement("button");
+          button.textContent = i;
+          button.onclick = () => toggleNumber(i, button);
+          grid.appendChild(button);
+      }
+  }
 
-    if (isFree && !state.isVaultVerified) {
-        alert("Vault verification required for free entries");
-        return;
-    }
+  function toggleNumber(num, button) {
+      if (state.selectedNumbers.has(num)) {
+          state.selectedNumbers.delete(num);
+          button.classList.remove("selected");
+      } else if (state.selectedNumbers.size < 5) {
+          state.selectedNumbers.add(num);
+          button.classList.add("selected");
+      }
+  }
 
-    try {
-        const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
-        
-        await setDoc(doc(db, "powerball_tickets", `${state.weekKey}_${state.walletAddress}_${Date.now()}`), {
-            wallet: state.walletAddress,
-            numbers,
-            type: isFree ? "free" : "paid",
-            timestamp: Date.now()
-        });
+  window.quickPick = () => {
+      clearPicks();
+      const numbers = new Set();
+      while (numbers.size < 5) {
+          numbers.add(Math.floor(Math.random() * 69) + 1);
+      }
+      numbers.forEach(num => {
+          const button = document.querySelector(`#numberGrid button:nth-child(${num})`);
+          if (button) {
+              button.classList.add("selected");
+              state.selectedNumbers.add(num);
+          }
+      });
+  };
 
-        // Bump stats in profile
-const userRef = doc(db, "users", state.walletAddress);
-await setDoc(userRef, {
-  games: increment(1),
-  earnings: increment(isFree ? 0 : 0), // you can change this later to match rewards
-}, { merge: true });
+  window.clearPicks = () => {
+      state.selectedNumbers.clear();
+      document.querySelectorAll("#numberGrid button").forEach(btn => {
+          btn.classList.remove("selected");
+      });
+  };
 
-        if (isFree) {
-            await incrementFreeEntry();
-        }
+  // ▸ Entry Submission
+  async function submitEntry(isFree = false) {
+      if (!state.walletAddress) {
+          await connectWallet();
+          if (!state.walletAddress) return;
+      }
+      if (state.selectedNumbers.size !== 5) {
+          alert("Please select 5 numbers");
+          return;
+      }
+      if (isFree && !state.isVaultVerified) {
+          alert("Vault verification required for free entries");
+          return;
+      }
+      try {
+          const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
+          await setDoc(doc(db, "powerball_tickets", `${state.weekKey}_${state.walletAddress}_${Date.now()}`), {
+              wallet: state.walletAddress,
+              numbers,
+              type: isFree ? "free" : "paid",
+              timestamp: Date.now()
+          });
+          // Bump stats in profile
+          const userRef = doc(db, "users", state.walletAddress);
+          await setDoc(userRef, {
+              games: increment(1),
+              earnings: increment(isFree ? 0 : 0)
+          }, { merge: true });
+          if (isFree) {
+              await incrementFreeEntry();
+          }
+          alert("Entry submitted successfully!");
+          clearPicks();
+          await updateUI();
+      } catch (err) {
+          console.error("Failed to submit entry:", err);
+          alert("Failed to submit entry");
+      }
+  }
 
-        alert("Entry submitted successfully!");
-        clearPicks();
-        await updateUI();
-    } catch (err) {
-        console.error("Failed to submit entry:", err);
-        alert("Failed to submit entry");
-    }
-}
+  async function incrementFreeEntry() {
+      if (!state.walletAddress) return;
+      await setDoc(doc(db, "powerball_free_entries", state.walletAddress), {
+          [state.weekKey]: increment(1)
+      }, { merge: true });
+  }
 
-async function incrementFreeEntry() {
-    if (!state.walletAddress) return;
-    
-    await setDoc(doc(db, "powerball_free_entries", state.walletAddress), {
-        [state.weekKey]: increment(1)
-    }, { merge: true });
-}
+  // ▸ Update UI Functions
+  async function updateJackpot() {
+      try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          // Get CRO balance
+          const croBalance = await provider.getBalance(jackpotWallet);
+          const croAmount = parseFloat(ethers.formatEther(croBalance)).toFixed(2);
+          document.getElementById("jackpotCRO").textContent = `${croAmount} CRO`;
+          // Get Y2K balance
+          const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+          const rawBalance = await y2k.balanceOf(jackpotWallet);
+          const decimals = await y2k.decimals();
+          const formattedY2K = parseFloat(ethers.formatUnits(rawBalance, decimals)).toFixed(2);
+          document.getElementById("y2kBalance").textContent = formattedY2K;
+          const y2kBalanceNum = parseFloat(formattedY2K);
+          // If user holds enough Y2K but has no profile, we redirect them (optional)
+          const userDoc = await getDoc(doc(db, "users", state.walletAddress));
+          const hasProfile = userDoc.exists();
+          if (y2kBalanceNum >= 4000000 && !hasProfile) {
+              alert("You hold enough Y2K to play, but you need to create your player profile first in the Vault.");
+              window.location.href = "https://y2k-the-vault.netlify.app/";
+              return;
+          }
+      } catch (err) {
+          console.error("Failed to update jackpot:", err);
+      }
+  }
 
-// Update UI Functions
-async function updateJackpot() {
-    try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
+  async function updateEntries() {
+      if (!state.walletAddress) return;
+      const entriesQuery = query(
+          collection(db, "powerball_tickets"),
+          orderBy("timestamp", "desc"),
+          limit(5)
+      );
+      const snap = await getDocs(entriesQuery);
+      const grid = document.getElementById("entryGrid");
+      grid.innerHTML = "";
+      snap.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.className = "entry";
+          div.innerHTML = `
+              <div class="entry-numbers">${data.numbers.join(" - ")}</div>
+              <div class="entry-type">${data.type.toUpperCase()}</div>
+          `;
+          grid.appendChild(div);
+      });
+  }
 
-        // Get CRO balance
-        const croBalance = await provider.getBalance(jackpotWallet);
-        const croAmount = parseFloat(ethers.formatEther(croBalance)).toFixed(2);
-        document.getElementById("jackpotCRO").textContent = `${croAmount} CRO`;
+  async function updateLeaderboard() {
+      const leaderboardQuery = query(
+          collection(db, "powerball_tickets"),
+          orderBy("timestamp", "desc"),
+          limit(50)
+      );
+      const snap = await getDocs(leaderboardQuery);
+      const players = {};
+      snap.forEach(doc => {
+          const data = doc.data();
+          players[data.wallet] = (players[data.wallet] || 0) + 1;
+      });
+      const sorted = Object.entries(players)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 5);
+      const list = document.getElementById("leaderboard");
+      list.innerHTML = '';
+      for (const [wallet, entries] of sorted) {
+          const profileSnap = await getDoc(doc(db, "users", wallet));
+          const profile = profileSnap.exists() ? profileSnap.data() : null;
+          const div = document.createElement("div");
+          div.className = "leader";
+          div.innerHTML = `
+              <div class="leader-info">
+                  <span class="leader-address">${profile?.username || wallet.slice(0, 6) + "..." + wallet.slice(-4)}</span>
+                  <span class="leader-entries">${entries} entries</span>
+              </div>
+              <div class="leader-amount">${(entries * 2).toLocaleString()} CRO</div>
+          `;
+          list.appendChild(div);
+      }
+  }
 
-        // Get Y2K balance
-        const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
-        const rawBalance = await y2k.balanceOf(jackpotWallet);
-        const decimals = await y2k.decimals();
-        const formattedY2K = parseFloat(ethers.formatUnits(rawBalance, decimals)).toFixed(2);
-        document.getElementById("y2kBalance").textContent = formattedY2K;
+  async function updateUI() {
+      await Promise.all([
+          updateJackpot(),
+          updateEntries(),
+          updateLeaderboard()
+      ]);
+  }
 
-        const y2kBalanceNum = parseFloat(formattedY2K);
-const userDoc = await getDoc(doc(db, "users", state.walletAddress));
-const hasProfile = userDoc.exists();
+  // ▸ Load Player Profile (for display in the profile card)
+  async function loadPlayerProfile() {
+      if (!state.walletAddress) return;
+      const userDoc = await getDoc(doc(db, "users", state.walletAddress));
+      const profile = userDoc.exists() ? userDoc.data() : null;
+      const profileCard = document.getElementById("playerProfile");
+      if (!profileCard) return;
+      if (profile) {
+          document.getElementById("profileUsername").textContent = profile.username || "Unnamed";
+          document.getElementById("profileX").textContent = profile.xHandle || "N/A";
+          document.getElementById("profileGames").textContent = profile.games || 0;
+          document.getElementById("profileWins").textContent = profile.wins || 0;
+          document.getElementById("profileY2K").textContent = profile.earnings?.toLocaleString() || 0;
+          profileCard.style.display = "block";
+      } else {
+          profileCard.style.display = "none";
+      }
+  }
 
-if (y2kBalanceNum >= 4000000 && !hasProfile) {
-    alert("You hold enough Y2K to play, but you need to create your player profile first in the Vault.");
-    window.location.href = "https://y2k-the-vault.netlify.app/";
-    return;
-}
-    } catch (err) {
-        console.error("Failed to update jackpot:", err);
-    }
-}
-
-async function updateEntries() {
-    if (!state.walletAddress) return;
-    
-    const entriesQuery = query(
-        collection(db, "powerball_tickets"),
-        orderBy("timestamp", "desc"),
-        limit(5)
-    );
-    
-    const snap = await getDocs(entriesQuery);
-    const grid = document.getElementById("entryGrid");
-    grid.innerHTML = "";
-    
-    snap.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className = "entry";
-        div.innerHTML = `
-            <div class="entry-numbers">${data.numbers.join(" - ")}</div>
-            <div class="entry-type">${data.type.toUpperCase()}</div>
-        `;
-        grid.appendChild(div);
-    });
-}
-
-async function updateLeaderboard() {
-    const leaderboardQuery = query(
-        collection(db, "powerball_tickets"),
-        orderBy("timestamp", "desc"),
-        limit(50)
-    );
-
-    const snap = await getDocs(leaderboardQuery);
-    const players = {};
-
-    snap.forEach(doc => {
-        const data = doc.data();
-        players[data.wallet] = (players[data.wallet] || 0) + 1;
-    });
-
-    const sorted = Object.entries(players)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 5);
-
-    const list = document.getElementById("leaderboard");
-    list.innerHTML = '';
-
-    for (const [wallet, entries] of sorted) {
-        const profileSnap = await getDoc(doc(db, "users", wallet));
-        const profile = profileSnap.exists() ? profileSnap.data() : null;
-
-        const div = document.createElement("div");
-        div.className = "leader";
-        div.innerHTML = `
-            <div class="leader-info">
-                <span class="leader-address">${profile?.username || wallet.slice(0, 6) + "..." + wallet.slice(-4)}</span>
-                <span class="leader-entries">${entries} entries</span>
-            </div>
-            <div class="leader-amount">${(entries * 2).toLocaleString()} CRO</div>
-        `;
-        list.appendChild(div);
-    }
-}
-
-async function updateUI() {
-    await Promise.all([
-        updateJackpot(),
-        updateEntries(),
-        updateLeaderboard()
-    ]);
-}
-
-// Initialize App
-document.addEventListener("DOMContentLoaded", () => {
-    initializeNumberGrid();
-    
-    document.getElementById("walletTrigger").addEventListener("click", () => {
-        if (state.walletAddress) {
-            if (confirm("Disconnect wallet?")) disconnectWallet();
-        } else {
-            connectWallet();
-        }
-    });
-    
-    document.getElementById("buyButton").onclick = () => submitEntry(false);
-    document.getElementById("freeButton").onclick = () => submitEntry(true);
-    
-    // Start UI update loop
-    updateUI();
-    setInterval(updateUI, 30000);
-});
-
-   // Show profile after wallet connect
-async function loadPlayerProfile() {
-    if (!state.walletAddress) return;
-
-    const userDoc = await getDoc(doc(db, "users", state.walletAddress));
-    const profile = userDoc.exists() ? userDoc.data() : null;
-
-    const profileCard = document.getElementById("playerProfile");
-    if (!profileCard) return;
-
-    if (profile) {
-        document.getElementById("profileUsername").textContent = profile.username || "Unnamed";
-        document.getElementById("profileX").textContent = profile.xHandle || "N/A";
-        document.getElementById("profileGames").textContent = profile.games || 0;
-        document.getElementById("profileWins").textContent = profile.wins || 0;
-        document.getElementById("profileY2K").textContent = profile.earnings?.toLocaleString() || 0;
-        profileCard.style.display = "block";
-    } else {
-        profileCard.style.display = "none";
-    }
-} 
+  // ▸ Initialize App
+  document.addEventListener("DOMContentLoaded", () => {
+      initializeNumberGrid();
+      document.getElementById("walletTrigger").addEventListener("click", () => {
+          if (state.walletAddress) {
+              if (confirm("Disconnect wallet?")) disconnectWallet();
+          } else {
+              connectWallet();
+          }
+      });
+      document.getElementById("buyButton").onclick = () => submitEntry(false);
+      document.getElementById("freeButton").onclick = () => submitEntry(true);
+      updateUI();
+      setInterval(updateUI, 30000);
+  });
 </script>
 </body>
 </html>
