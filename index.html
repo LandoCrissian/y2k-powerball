@@ -684,7 +684,7 @@ async function checkVaultStatus() {
   updateFreeEntryButton();
 
   // If user has enough Y2K but no profile, show CTA
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const provider = new ethers.BrowserProvider(window.ethereum);
   const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
   const raw = await y2k.balanceOf(state.walletAddress);
   const bal = parseFloat(ethers.formatUnits(raw, 18));
@@ -821,7 +821,7 @@ async function incrementFreeEntry() {
 // Update UI Functions
 async function updateJackpot() {
     try {
-        const provider = new ethers.JsonRpcProvider(CRONOS_RPC);
+        const provider = new ethers.BrowserProvider(window.ethereum);
 
         // Get CRO balance
         const croBalance = await provider.getBalance(jackpotWallet);
