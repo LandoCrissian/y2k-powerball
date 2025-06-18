@@ -859,25 +859,31 @@ async function updateJackpot() {
         const decimals = await y2k.decimals();
         const formattedY2K = parseFloat(ethers.formatUnits(rawBalance, decimals)).toFixed(2);
         document.getElementById("y2kBalance").textContent = formattedY2K;
-
-        // Optional redirect to Vault if user has 4M+ Y2K but no Vault profile
-        if (state.walletAddress) {
-            const userDoc = await getDoc(doc(db, "users", state.walletAddress));
-            const profile = userDoc.exists() ? userDoc.data() : null;
-
-            const hasLinkedProfile = profile && profile.xHandle && profile.xHandle !== "Not linked";
-
-            const userRaw = await y2k.balanceOf(state.walletAddress);
-            const userY2K = parseFloat(ethers.formatUnits(userRaw, 18));
-
-            if (userY2K >= 4000000 && !hasLinkedProfile) {
-                alert("You hold enough Y2K to play, but you need to create your player profile first in the Vault.");
-                window.location.href = "https://y2k-the-vault.netlify.app/";
-                return;
-            }
-        }
     } catch (err) {
         console.error("Failed to update jackpot:", err);
+    }
+}
+
+    async function checkVaultRedirect() {
+    try {
+        if (!state.walletAddress) return;
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+
+        const raw = await y2k.balanceOf(state.walletAddress);
+        const y2kBal = parseFloat(ethers.formatUnits(raw, 18));
+
+        const userDoc = await getDoc(doc(db, "users", state.walletAddress));
+        const profile = userDoc.exists() ? userDoc.data() : null;
+        const hasProfile = profile && profile.xHandle && profile.xHandle !== "Not linked";
+
+        if (y2kBal >= 4000000 && !hasProfile) {
+            alert("You hold enough Y2K to play, but you need to create your player profile first in the Vault.");
+            window.location.href = "https://y2k-the-vault.netlify.app/";
+        }
+    } catch (err) {
+        console.error("Vault redirect check failed:", err);
     }
 }
 
