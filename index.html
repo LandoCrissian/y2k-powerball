@@ -739,12 +739,6 @@ if (bal >= 4000000 && (!profile || profile.xHandle === "Not linked")) {
   if (fallback) fallback.style.display = "none";
 }
 
-function updateFreeEntryButton() {
-    const btn = document.getElementById("freeButton");
-    btn.disabled = !state.isVaultVerified;
-    btn.querySelector("small").textContent = state.isVaultVerified ? "5 LEFT" : "VAULT ONLY";
-}
-
 // Number Grid Functions
 function initializeNumberGrid() {
     const grid = document.getElementById("numberGrid");
@@ -1000,6 +994,12 @@ async function loadPlayerProfile() {
         profileCard.style.display = "none";
     }
 } 
+
+    function updateFreeEntryButton() {
+    const btn = document.getElementById("freeButton");
+    btn.disabled = !state.isVaultVerified;
+    btn.querySelector("small").textContent = state.isVaultVerified ? "5 LEFT" : "VAULT ONLY";
+}
 </script>
 </body>
 </html>
