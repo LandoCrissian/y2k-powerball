@@ -22,6 +22,23 @@
         </div>
     </div>
 
+    <!-- Vault Profile CTA -->
+<div id="createProfileCTA" style="display:none; margin-bottom: 16px;">
+  <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
+    display: block;
+    background: var(--primary);
+    color: #000;
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 0 10px var(--primary);
+  ">
+    Create Your Player Profile in the Vault →
+  </a>
+</div>
+
     <!-- Header -->
     <header>
         <div class="logo">
@@ -655,10 +672,29 @@ function disconnectWallet() {
 
 // Vault and UI Functions
 async function checkVaultStatus() {
-    if (!state.walletAddress) return;
-    const snap = await getDoc(doc(db, "users", state.walletAddress));
-    state.isVaultVerified = snap.exists();
-    updateFreeEntryButton();
+  if (!state.walletAddress) return;
+
+  const userSnap = await getDoc(doc(db, "users", state.walletAddress));
+  const profile = userSnap.exists() ? userSnap.data() : null;
+
+  // Free entries = only if they exist + have X handle (as profile proxy)
+  state.isVaultVerified = !!(profile && profile.xHandle && profile.xHandle !== "Not linked");
+
+  // Update UI
+  updateFreeEntryButton();
+
+  // If user has enough Y2K but no profile, show CTA
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+  const raw = await y2k.balanceOf(state.walletAddress);
+  const bal = parseFloat(ethers.formatUnits(raw, 18));
+
+  const cta = document.getElementById("createProfileCTA");
+  if (bal >= 4000000 && !state.isVaultVerified && cta) {
+    cta.style.display = "block";
+  } else if (cta) {
+    cta.style.display = "none";
+  }
 }
 
     async function ensureProfileExists() {
