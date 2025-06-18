@@ -641,42 +641,41 @@ async function checkAndRequestNetwork() {
 }
 
 async function connectWallet() {
-    if (!window.ethereum) {
-        alert("Please install MetaMask or another Web3 wallet.");
-        return;
-    }
+  if (!window.ethereum) {
+    alert("Please install MetaMask or another Web3 wallet.");
+    return;
+  }
 
-    try {
-        const networkValid = await checkAndRequestNetwork();
-        if (!networkValid) return;
+  try {
+    const networkValid = await checkAndRequestNetwork();
+    if (!networkValid) return;
 
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        state.walletAddress = accounts[0].toLowerCase();
-        window.userWallet = state.walletAddress;
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    state.walletAddress = accounts[0].toLowerCase();
+    window.userWallet = state.walletAddress;
 
-        // ✅ GET Y2K BALANCE & STORE
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
-        const raw = await y2k.balanceOf(state.walletAddress);
-        state.y2kBalance = parseFloat(ethers.formatUnits(raw, 18));
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
+    const raw = await y2k.balanceOf(state.walletAddress);
+    state.y2kBalance = parseFloat(ethers.formatUnits(raw, 18)); // ✅ SET BEFORE VAULT CHECK
 
-        document.getElementById("walletDisplay").textContent = 
-            `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
-        document.getElementById("walletDisplay").classList.add("connected");
+    document.getElementById("walletDisplay").textContent = 
+      `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
+    document.getElementById("walletDisplay").classList.add("connected");
 
-        setupWalletListeners();
-        await checkVaultStatus(); // ✅ now uses actual balance
-        await updateUI();
-        await loadPlayerProfile();
-        await ensureProfileExists();
-        await loadPlayerProfile();
+    setupWalletListeners();
 
-        console.log("✅ Connected:", state.walletAddress);
-    } catch (err) {
-        console.error("❌ Wallet connection failed:", err);
-        alert("Failed to connect wallet: " + (err.message || "Please try again"));
-        state.walletAddress = null;
-    }
+    await ensureProfileExists();         // 1
+    await loadPlayerProfile();           // 2
+    await checkVaultStatus();            // 3 (now runs with Y2K balance set ✅)
+    await updateUI();                    // 4
+
+    console.log("✅ Connected:", state.walletAddress);
+  } catch (err) {
+    console.error("❌ Wallet connection failed:", err);
+    alert("Failed to connect wallet: " + (err.message || "Please try again"));
+    state.walletAddress = null;
+  }
 }
 
 function setupWalletListeners() {
