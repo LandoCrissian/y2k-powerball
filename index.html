@@ -22,20 +22,45 @@
         </div>
     </div>
 
-    <!-- Vault Profile CTA -->
-<div id="createProfileCTA" style="display:none; margin-bottom: 16px;">
+    <!-- FOMO (if not enough Y2K) -->
+<div id="vaultFomoBlock" style="display:none; margin-bottom: 20px;">
+  <div style="
+    background: linear-gradient(135deg, #220000, #1a0000);
+    border: 2px dashed #ff4d4d;
+    color: #ffcccc;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: glowFomo 1.8s infinite alternate;
+  ">
+    🔒 VAULT ACCESS LOCKED<br>
+    <span style="color: #ff6b6b;">Hold 4,000,000+ Y2K</span><br>to unlock free Powerball entries and<br><strong style="color: #00ffe1;">your player identity</strong>.
+  </div>
+</div>
+
+<!-- UNLOCK CTA (enough Y2K, no profile) -->
+<div id="createProfileCTA" style="display:none; margin-bottom: 20px;">
   <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
     display: block;
-    background: var(--primary);
+    background: linear-gradient(135deg, #00ffe1, #ff00f7);
     color: #000;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 16px;
     text-align: center;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-weight: bold;
     text-decoration: none;
-    box-shadow: 0 0 10px var(--primary);
+    text-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 20px rgba(0,255,225,0.4);
+    animation: pulseProfile 2s infinite;
+    letter-spacing: 0.5px;
   ">
-    Create Your Player Profile in the Vault →
+    🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
   </a>
 </div>
 
@@ -488,6 +513,23 @@ header {
   color: var(--primary);
   margin-bottom: 4px;
 }
+
+    <style>
+@keyframes glowFomo {
+  from {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
+  }
+}
+
+@keyframes pulseProfile {
+  0% { transform: scale(1); box-shadow: 0 0 12px rgba(0,255,225,0.3); }
+  50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(255,0,247,0.5); }
+  100% { transform: scale(1); box-shadow: 0 0 12px rgba(0,255,225,0.3); }
+}
+</style>
 </style>
 
 <script type="module">
@@ -675,26 +717,24 @@ async function checkVaultStatus() {
   if (!state.walletAddress) return;
 
   const userSnap = await getDoc(doc(db, "users", state.walletAddress));
-  const profile = userSnap.exists() ? userSnap.data() : null;
+  state.isVaultVerified = userSnap.exists();
 
-  // Free entries = only if they exist + have X handle (as profile proxy)
-  state.isVaultVerified = !!(profile && profile.xHandle && profile.xHandle !== "Not linked");
-
-  // Update UI
-  updateFreeEntryButton();
-
-  // If user has enough Y2K but no profile, show CTA
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
-  const raw = await y2k.balanceOf(state.walletAddress);
-  const bal = parseFloat(ethers.formatUnits(raw, 18));
-
+  const bal = state.y2kBalance || 0;
+  const fomo = document.getElementById("vaultFomoBlock");
   const cta = document.getElementById("createProfileCTA");
-  if (bal >= 4000000 && !state.isVaultVerified && cta) {
+
+  if (bal >= 4000000 && !state.isVaultVerified) {
     cta.style.display = "block";
-  } else if (cta) {
+    fomo.style.display = "none";
+  } else if (bal < 4000000 && !state.isVaultVerified) {
+    fomo.style.display = "block";
+    cta.style.display = "none";
+  } else {
+    fomo.style.display = "none";
     cta.style.display = "none";
   }
+
+  updateFreeEntryButton();
 }
 
     async function ensureProfileExists() {
