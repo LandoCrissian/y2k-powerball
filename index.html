@@ -22,23 +22,6 @@
         </div>
     </div>
 
-    <!-- Vault Profile CTA -->
-<div id="createProfileCTA" style="display:none; margin-bottom: 16px;">
-  <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
-    display: block;
-    background: var(--primary);
-    color: #000;
-    text-align: center;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 0 10px var(--primary);
-  ">
-    Create Your Player Profile in the Vault →
-  </a>
-</div>
-
     <!-- Header -->
     <header>
         <div class="logo">
@@ -698,37 +681,23 @@ async function checkVaultStatus() {
   const userSnap = await getDoc(doc(db, "users", state.walletAddress));
   const profile = userSnap.exists() ? userSnap.data() : null;
 
-  // Free entries = only if they exist + have X handle (as profile proxy)
   state.isVaultVerified = !!(profile && profile.xHandle && profile.xHandle !== "Not linked");
 
-  // Update UI
   updateFreeEntryButton();
 
-  // If user has enough Y2K but no profile, show CTA
   const provider = new ethers.BrowserProvider(window.ethereum);
   const y2k = new ethers.Contract(y2kTokenAddress, y2kAbi, provider);
   const raw = await y2k.balanceOf(state.walletAddress);
   const bal = parseFloat(ethers.formatUnits(raw, 18));
 
   const cta = document.getElementById("createProfileCTA");
-if (bal >= 4000000 && !state.isVaultVerified && cta) {
-  cta.innerHTML = `
-    <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
-      display: block;
-      background: var(--primary);
-      color: #000;
-      text-align: center;
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-weight: bold;
-      text-decoration: none;
-      box-shadow: 0 0 10px var(--primary);
-    ">
-      🎯 You hold 4M+ Y2K. Create Your Player Profile →
-    </a>`;
-  cta.style.display = "block";
-} else if (cta) {
-  cta.style.display = "none";
+
+  // ✅ Show CTA only if they hold enough Y2K and do NOT have a profile
+  if (bal >= 4000000 && !userSnap.exists() && cta) {
+    cta.style.display = "block";
+  } else {
+    cta.style.display = "none";
+  }
 }
 
     async function ensureProfileExists() {
