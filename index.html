@@ -606,6 +606,8 @@ async function connectWallet() {
         await checkVaultStatus();
         await updateUI();
         await loadPlayerProfile();
+        await ensureProfileExists();
+        await loadPlayerProfile();
 
         console.log("✅ Connected:", state.walletAddress);
     } catch (err) {
@@ -657,6 +659,23 @@ async function checkVaultStatus() {
     const snap = await getDoc(doc(db, "users", state.walletAddress));
     state.isVaultVerified = snap.exists();
     updateFreeEntryButton();
+}
+
+    async function ensureProfileExists() {
+  if (!state.walletAddress) return;
+  const userRef = doc(db, "users", state.walletAddress);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      username: `Player-${state.walletAddress.slice(-4)}`,
+      xHandle: "Not linked",
+      badgeColor: "gray",
+      games: 0,
+      wins: 0,
+      earnings: 0
+    });
+    console.log("🆕 Created new placeholder profile");
+  }
 }
 
 function updateFreeEntryButton() {
@@ -734,6 +753,13 @@ async function submitEntry(isFree = false) {
             type: isFree ? "free" : "paid",
             timestamp: Date.now()
         });
+
+        // Bump stats in profile
+const userRef = doc(db, "users", state.walletAddress);
+await setDoc(userRef, {
+  games: increment(1),
+  earnings: increment(isFree ? 0 : 0), // you can change this later to match rewards
+}, { merge: true });
 
         if (isFree) {
             await incrementFreeEntry();
