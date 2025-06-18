@@ -692,6 +692,23 @@ function disconnectWallet() {
     updateFreeEntryButton();
 }
 
+    async function ensureProfileExists() {
+  if (!state.walletAddress) return;
+  const userRef = doc(db, "users", state.walletAddress);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      username: `Player-${state.walletAddress.slice(-4)}`,
+      xHandle: "Not linked",
+      badgeColor: "gray",
+      games: 0,
+      wins: 0,
+      earnings: 0
+    });
+    console.log("🆕 Created new placeholder profile");
+  }
+}
+
 // Vault and UI Functions
 async function checkVaultStatus() {
   if (!state.walletAddress) return;
@@ -720,23 +737,6 @@ if (bal >= 4000000 && (!profile || profile.xHandle === "Not linked")) {
 } else {
   if (cta) cta.style.display = "none";
   if (fallback) fallback.style.display = "none";
-}
-
-    async function ensureProfileExists() {
-  if (!state.walletAddress) return;
-  const userRef = doc(db, "users", state.walletAddress);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) {
-    await setDoc(userRef, {
-      username: `Player-${state.walletAddress.slice(-4)}`,
-      xHandle: "Not linked",
-      badgeColor: "gray",
-      games: 0,
-      wins: 0,
-      earnings: 0
-    });
-    console.log("🆕 Created new placeholder profile");
-  }
 }
 
 function updateFreeEntryButton() {
@@ -860,15 +860,22 @@ async function updateJackpot() {
         const formattedY2K = parseFloat(ethers.formatUnits(rawBalance, decimals)).toFixed(2);
         document.getElementById("y2kBalance").textContent = formattedY2K;
 
-        const y2kBalanceNum = parseFloat(formattedY2K);
-const userDoc = await getDoc(doc(db, "users", state.walletAddress));
-const hasProfile = userDoc.exists();
+        // Optional redirect to Vault if user has 4M+ Y2K but no Vault profile
+        if (state.walletAddress) {
+            const userDoc = await getDoc(doc(db, "users", state.walletAddress));
+            const profile = userDoc.exists() ? userDoc.data() : null;
 
-if (y2kBalanceNum >= 4000000 && !hasProfile) {
-    alert("You hold enough Y2K to play, but you need to create your player profile first in the Vault.");
-    window.location.href = "https://y2k-the-vault.netlify.app/";
-    return;
-}
+            const hasLinkedProfile = profile && profile.xHandle && profile.xHandle !== "Not linked";
+
+            const userRaw = await y2k.balanceOf(state.walletAddress);
+            const userY2K = parseFloat(ethers.formatUnits(userRaw, 18));
+
+            if (userY2K >= 4000000 && !hasLinkedProfile) {
+                alert("You hold enough Y2K to play, but you need to create your player profile first in the Vault.");
+                window.location.href = "https://y2k-the-vault.netlify.app/";
+                return;
+            }
+        }
     } catch (err) {
         console.error("Failed to update jackpot:", err);
     }
