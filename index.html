@@ -46,13 +46,30 @@
             <div class="version">v2.1</div>
         </div>
        
-        <!-- Place this somewhere in your body, like under the wallet bar -->
-<div id="playerProfile" class="profile-card" style="display:none; margin-bottom: 24px;">
+        <!-- Player Profile Card -->
+<div id="playerProfile" class="profile-card" style="display:none; margin-bottom: 16px;">
   <div class="profile-inner">
     <h2 id="profileUsername"></h2>
     <p><strong>𝕏:</strong> <span id="profileX"></span></p>
     <p>Games: <span id="profileGames"></span> Wins: <span id="profileWins"></span> Y2K: <span id="profileY2K"></span></p>
   </div>
+</div>
+
+<!-- Vault Profile CTA (moved here below the profile card) -->
+<div id="createProfileCTA" style="display:none; margin-bottom: 24px;">
+  <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
+    display: block;
+    background: var(--primary);
+    color: #000;
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 0 10px var(--primary);
+  ">
+    🎯 You hold 4M+ Y2K. Create Your Player Profile →
+  </a>
 </div>
         <div class="stats">
             <div class="balance">
@@ -620,11 +637,15 @@ async function connectWallet() {
         document.getElementById("walletDisplay").classList.add("connected");
 
         setupWalletListeners();
-        await checkVaultStatus();
-        await updateUI();
+
+        // Load profile and UI
         await loadPlayerProfile();
         await ensureProfileExists();
-        await loadPlayerProfile();
+        await loadPlayerProfile(); // ensure display again after placeholder created
+        await updateUI();
+
+        // ✅ Final call to checkVaultStatus AFTER all above is complete
+        await checkVaultStatus();
 
         console.log("✅ Connected:", state.walletAddress);
     } catch (err) {
@@ -690,11 +711,24 @@ async function checkVaultStatus() {
   const bal = parseFloat(ethers.formatUnits(raw, 18));
 
   const cta = document.getElementById("createProfileCTA");
-  if (bal >= 4000000 && !state.isVaultVerified && cta) {
-    cta.style.display = "block";
-  } else if (cta) {
-    cta.style.display = "none";
-  }
+if (bal >= 4000000 && !state.isVaultVerified && cta) {
+  cta.innerHTML = `
+    <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
+      display: block;
+      background: var(--primary);
+      color: #000;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 0 10px var(--primary);
+    ">
+      🎯 You hold 4M+ Y2K. Create Your Player Profile →
+    </a>`;
+  cta.style.display = "block";
+} else if (cta) {
+  cta.style.display = "none";
 }
 
     async function ensureProfileExists() {
