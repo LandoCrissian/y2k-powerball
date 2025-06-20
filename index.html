@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Y2K Powerball v2.1</title>
+    <title>Y2K Powerball v3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://widget.privy.io/v1/privy.js"></script>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- Status Bar -->
+    <!-- Network Status -->
     <div class="status-bar">
         <div class="network">
             <span class="pulse"></span>
@@ -22,112 +21,168 @@
         </div>
     </div>
 
-    <!-- FOMO (if not enough Y2K) -->
-<div id="vaultFomoBlock" style="display:none; margin-bottom: 20px;">
-  <div style="
-    background: linear-gradient(135deg, #220000, #1a0000);
-    border: 2px dashed #ff4d4d;
-    color: #ffcccc;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 15px;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    animation: glowFomo 1.8s infinite alternate;
-  ">
-    🔒 VAULT ACCESS LOCKED<br>
-    <span style="color: #ff6b6b;">Hold 4,000,000+ Y2K</span><br>to unlock free Powerball entries and<br><strong style="color: #00ffe1;">your player identity</strong>.
-  </div>
-</div>
+    <!-- Live Stats Banner -->
+    <div class="live-stats">
+        <div class="stat">
+            <div class="stat-label">VOLUME</div>
+            <div class="stat-value">1.2M CRO</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">PLAYERS</div>
+            <div class="stat-value">2,481</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">WINNERS</div>
+            <div class="stat-value">147</div>
+        </div>
+    </div>
 
-<!-- UNLOCK CTA (enough Y2K, no profile) -->
-<div id="createProfileCTA" style="display:none; margin-bottom: 20px;">
-  <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
-    display: block;
-    background: linear-gradient(135deg, #00ffe1, #ff00f7);
-    color: #000;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 16px;
-    text-align: center;
-    text-decoration: none;
-    text-shadow: 0 0 10px #fff;
-    box-shadow: 0 0 20px rgba(0,255,225,0.4);
-    animation: pulseProfile 2s infinite;
-    letter-spacing: 0.5px;
-  ">
-    🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
-  </a>
-</div>
+    <!-- Dynamic Alerts -->
+    <div id="alertsContainer"></div>
 
-    <!-- Header -->
+    <!-- FOMO Block -->
+    <div id="vaultFomoBlock" class="premium-alert" style="display:none">
+        <div class="alert-content">
+            <div class="alert-icon">🔒</div>
+            <div class="alert-text">
+                <h3>VAULT ACCESS REQUIRED</h3>
+                <p>Hold <span class="highlight">4M+ Y2K</span> to unlock:</p>
+                <ul class="benefits-list">
+                    <li>✨ Free Daily Entries</li>
+                    <li>🎯 Auto-Pick AI</li>
+                    <li>🏆 Exclusive Rewards</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile CTA -->
+    <div id="createProfileCTA" class="profile-prompt" style="display:none">
+        <a href="https://y2k-the-vault.netlify.app/" class="cta-button">
+            <div class="cta-content">
+                <div class="cta-icon">🔓</div>
+                <div class="cta-text">
+                    <h3>VERIFIED HOLDER</h3>
+                    <p>Create your player profile now</p>
+                </div>
+                <div class="cta-arrow">→</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Main Header -->
     <header>
         <div class="logo">
             <h1>Y2K POWERBALL</h1>
-            <div class="version">v2.1</div>
+            <div class="version">v3.0</div>
         </div>
-       
-        <!-- Place this somewhere in your body, like under the wallet bar -->
-<div id="playerProfile" class="profile-card" style="display:none; margin-bottom: 24px;">
-  <div class="profile-inner">
-    <h2 id="profileUsername"></h2>
-    <p><strong>𝕏:</strong> <span id="profileX"></span></p>
-    <p>Games: <span id="profileGames"></span> Wins: <span id="profileWins"></span> Y2K: <span id="profileY2K"></span></p>
-  </div>
-</div>
-        <div class="stats">
-            <div class="balance">
-                <span class="label">BALANCE</span>
-                <span class="amount" id="balance">--</span>
-                <span class="currency">CRO</span>
+
+        <!-- Player Profile Card -->
+        <div id="playerProfile" class="profile-card" style="display:none">
+            <div class="profile-header">
+                <h2 id="profileUsername"></h2>
+                <div class="profile-tier">DIAMOND</div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat">
+                    <label>𝕏</label>
+                    <span id="profileX"></span>
+                </div>
+                <div class="stat">
+                    <label>Games</label>
+                    <span id="profileGames"></span>
+                </div>
+                <div class="stat">
+                    <label>Wins</label>
+                    <span id="profileWins"></span>
+                </div>
+                <div class="stat">
+                    <label>Y2K</label>
+                    <span id="profileY2K"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Balance Display -->
+        <div class="balance-display">
+            <div class="balance primary">
+                <span class="label">CRO BALANCE</span>
+                <div class="amount-container">
+                    <span class="amount" id="croBalance">--</span>
+                    <span class="currency">CRO</span>
+                </div>
+            </div>
+            <div class="balance secondary">
+                <span class="label">Y2K BALANCE</span>
+                <div class="amount-container">
+                    <span class="amount" id="y2kBalance">--</span>
+                    <span class="currency">Y2K</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Jackpot Display -->
+    <!-- Jackpot Section -->
     <section class="jackpot">
-        <div class="jackpot-inner">
+        <div class="jackpot-container">
             <div class="jackpot-header">
-                <span>CURRENT JACKPOT</span>
-                <div id="timer" class="timer">23:59:59</div>
+                <div class="title">CURRENT JACKPOT</div>
+                <div class="timer-container">
+                    <div class="timer-label">NEXT DRAW</div>
+                    <div id="timer" class="timer">23:59:59</div>
+                </div>
             </div>
             
-            <div class="jackpot-amount" id="jackpotAmountY2K">
-                <span class="currency">Y2K</span>
-                <span class="amount" id="y2kBalance">--</span>
-            </div>
-
-            <div class="jackpot-subline">
-                <span class="text-dim">Pool funded by</span>
-                <strong id="jackpotCRO">-- CRO</strong>
-            </div>
-            <div class="jackpot-stats">
-                <div>
-                    <span class="value" id="entryCount">--</span>
-                    <span class="label">ENTRIES</span>
+            <div class="jackpot-main">
+                <div class="jackpot-amount" id="jackpotAmountY2K">
+                    <div class="amount-wrapper">
+                        <span class="currency">Y2K</span>
+                        <span class="amount">12,500,000</span>
+                    </div>
+                    <div class="usd-value">≈ $125,000 USD</div>
                 </div>
-                <div>
-                    <span class="value">5</span>
-                    <span class="label">WINNERS</span>
+
+                <div class="jackpot-info">
+                    <div class="info-item">
+                        <span class="label">Pool Funded By</span>
+                        <span class="value" id="jackpotCRO">24,150 CRO</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Total Entries</span>
+                        <span class="value" id="entryCount">1,205</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Win Chance</span>
+                        <span class="value">1 in 241</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Number Picker -->
+    <!-- Number Selection -->
     <section class="number-picker">
-        <h2>PICK YOUR NUMBERS</h2>
+        <div class="section-header">
+            <h2>SELECT YOUR NUMBERS</h2>
+            <div class="selection-count">
+                <span id="selectedCount">0</span>/5
+            </div>
+        </div>
+
         <div class="grid" id="numberGrid"></div>
+
         <div class="picker-actions">
             <button onclick="quickPick()" class="btn secondary">
-                <span>QUICK PICK</span>
+                <span class="btn-icon">🎲</span>
+                <span class="btn-text">QUICK PICK</span>
+            </button>
+            <button onclick="aiPick()" class="btn premium">
+                <span class="btn-icon">🤖</span>
+                <span class="btn-text">AI PICK</span>
             </button>
             <button onclick="clearPicks()" class="btn danger">
-                <span>CLEAR</span>
+                <span class="btn-icon">×</span>
+                <span class="btn-text">CLEAR</span>
             </button>
         </div>
     </section>
@@ -135,24 +190,49 @@
     <!-- Entry Actions -->
     <section class="entry-actions">
         <button class="btn primary" id="buyButton">
-            <span>BUY ENTRY</span>
-            <small>2 CRO</small>
+            <div class="btn-content">
+                <span class="btn-text">BUY ENTRY</span>
+                <span class="btn-price">2 CRO</span>
+            </div>
         </button>
-        <button class="btn secondary" id="freeButton">
-            <span>FREE ENTRY</span>
-            <small id="freeCount">5 LEFT</small>
+        <button class="btn premium" id="freeButton">
+            <div class="btn-content">
+                <span class="btn-text">FREE ENTRY</span>
+                <span class="btn-count" id="freeCount">5 LEFT</span>
+            </div>
         </button>
     </section>
 
-    <!-- Recent Entries -->
+    <!-- My Entries -->
     <section class="entries">
-        <h2>YOUR ENTRIES</h2>
+        <div class="section-header">
+            <h2>MY ENTRIES</h2>
+            <div class="entry-stats">
+                <span id="activeEntries">3</span> Active
+            </div>
+        </div>
         <div class="entry-grid" id="entryGrid"></div>
+    </section>
+
+    <!-- Recent Winners -->
+    <section class="winners">
+        <div class="section-header">
+            <h2>RECENT WINNERS</h2>
+            <a href="#" class="view-all">View All</a>
+        </div>
+        <div class="winners-grid" id="winnersGrid"></div>
     </section>
 
     <!-- Leaderboard -->
     <section class="leaderboard">
-        <h2>TOP PLAYERS</h2>
+        <div class="section-header">
+            <h2>TOP PLAYERS</h2>
+            <div class="time-filter">
+                <button class="active">24H</button>
+                <button>7D</button>
+                <button>30D</button>
+            </div>
+        </div>
         <div class="leaderboard-list" id="leaderboard"></div>
     </section>
 </div>
@@ -162,19 +242,25 @@
     --primary: #00ffe1;
     --secondary: #ff00f7;
     --accent: #6e56cf;
+    --premium: #ffd700;
     --background: #030014;
     --surface: #0a0a23;
+    --surface-2: #131342;
     --text: #ffffff;
     --text-dim: rgba(255,255,255,0.7);
     --danger: #ff4747;
     --success: #00ff9d;
     --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+    --premium-gradient: linear-gradient(135deg, #ffd700, #ff6b6b);
+    --card-bg: rgba(255,255,255,0.05);
+    --card-border: 1px solid rgba(255,255,255,0.1);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -187,6 +273,7 @@ body {
     line-height: 1.5;
     background: radial-gradient(circle at top, var(--surface), var(--background));
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
 }
 
 .app-container {
@@ -200,26 +287,25 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .network, .wallet {
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    background: rgba(255,255,255,0.05);
+    background: var(--card-bg);
     border-radius: 20px;
+    font-size: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
-.network:hover, .wallet:hover {
-    background: rgba(255,255,255,0.1);
+.network:active, .wallet:active {
+    transform: scale(0.97);
 }
 
 .pulse {
-    display: inline-block;
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -228,10 +314,107 @@ body {
     animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
+/* Live Stats */
+.live-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.live-stats .stat {
+    background: var(--card-bg);
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Premium Alert */
+.premium-alert {
+    background: linear-gradient(135deg, #1a1a00, #000033);
+    border: 2px dashed var(--premium);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.alert-content {
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.alert-icon {
+    font-size: 24px;
+}
+
+.alert-text h3 {
+    color: var(--premium);
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.benefits-list {
+    list-style: none;
+    margin-top: 8px;
+}
+
+.benefits-list li {
+    margin: 4px 0;
+    font-size: 14px;
+    color: var(--text-dim);
+}
+
+/* Profile Prompt */
+.profile-prompt {
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    display: block;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.cta-content {
+    background: var(--premium-gradient);
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.cta-icon {
+    font-size: 24px;
+}
+
+.cta-text h3 {
+    color: var(--background);
+    margin-bottom: 4px;
+}
+
+.cta-text p {
+    color: rgba(0,0,0,0.7);
+    font-size: 14px;
+}
+
+.cta-arrow {
+    margin-left: auto;
+    font-size: 24px;
+    color: var(--background);
 }
 
 /* Header */
@@ -246,36 +429,93 @@ header {
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(0,255,225,0.5);
+    margin-bottom: 8px;
 }
 
 .version {
     display: inline-block;
     padding: 4px 8px;
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     border-radius: 4px;
     font-size: 12px;
-    margin-top: 8px;
 }
 
-.stats {
+/* Profile Card */
+.profile-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    border: var(--card-border);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.profile-tier {
+    background: var(--premium-gradient);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--background);
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.profile-stats .stat {
+    text-align: center;
+}
+
+.profile-stats label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+}
+
+/* Balance Display */
+.balance-display {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
     margin-top: 16px;
 }
 
 .balance {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    background: var(--card-bg);
+    padding: 12px;
+    border-radius: 12px;
 }
 
 .balance .label {
     font-size: 12px;
     color: var(--text-dim);
+    margin-bottom: 4px;
 }
 
-.balance .amount {
-    font-size: 24px;
-    font-weight: bold;
+.amount-container {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.amount {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.currency {
+    font-size: 12px;
+    color: var(--text-dim);
 }
 
 /* Jackpot */
@@ -283,55 +523,79 @@ header {
     margin-bottom: 32px;
 }
 
-.jackpot-inner {
-    background: rgba(255,255,255,0.05);
+.jackpot-container {
+    background: var(--surface-2);
     border-radius: 16px;
     padding: 24px;
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
+    border: var(--card-border);
 }
 
 .jackpot-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 16px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.timer-container {
+    text-align: right;
+}
+
+.timer-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
 }
 
 .timer {
     font-family: 'Orbitron', sans-serif;
     color: var(--primary);
+    font-size: 18px;
 }
 
-.jackpot-amount {
-    font-size: 48px;
-    font-weight: 900;
-    margin-bottom: 24px;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.jackpot-subline {
-    margin-bottom: 24px;
-    font-size: 14px;
-}
-
-.jackpot-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+.jackpot-main {
     text-align: center;
 }
 
-.jackpot-stats .value {
-    display: block;
-    font-size: 24px;
-    font-weight: bold;
+.jackpot-amount {
+    margin-bottom: 24px;
 }
 
-.jackpot-stats .label {
-    font-size: 12px;
+.amount-wrapper {
+    font-size: 48px;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+.usd-value {
+    font-size: 14px;
     color: var(--text-dim);
+}
+
+.jackpot-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-item .label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+}
+
+.info-item .value {
+    font-size: 14px;
+    font-weight: 600;
 }
 
 /* Number Picker */
@@ -339,9 +603,23 @@ header {
     margin-bottom: 32px;
 }
 
-.number-picker h2 {
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 16px;
+}
+
+.section-header h2 {
     font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+}
+
+.selection-count {
+    background: var(--card-bg);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
 }
 
 .grid {
@@ -354,7 +632,7 @@ header {
 .grid button {
     aspect-ratio: 1;
     border: none;
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     color: var(--text);
     border-radius: 8px;
     font-size: 18px;
@@ -362,16 +640,14 @@ header {
     transition: all 0.2s ease;
 }
 
+.grid button:active {
+    transform: scale(0.95);
+}
+
 .grid button.selected {
     background: var(--primary);
     color: var(--background);
     font-weight: bold;
-    transform: scale(0.95);
-}
-
-.picker-actions {
-    display: flex;
-    gap: 8px;
 }
 
 /* Buttons */
@@ -381,16 +657,19 @@ header {
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     font-family: 'Inter', sans-serif;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    gap: 4px;
 }
 
 .btn.primary {
@@ -400,8 +679,14 @@ header {
 }
 
 .btn.secondary {
-    background: rgba(255,255,255,0.1);
+    background: var(--card-bg);
     color: var(--text);
+}
+
+.btn.premium {
+    background: var(--premium-gradient);
+    color: var(--background);
+    font-weight: bold;
 }
 
 .btn.danger {
@@ -409,38 +694,62 @@ header {
     color: var(--danger);
 }
 
-.btn small {
+.btn-price, .btn-count {
     font-size: 12px;
     opacity: 0.8;
-    margin-top: 4px;
 }
 
-/* Entry Actions */
-.entry-actions {
+/* Picker Actions */
+.picker-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 32px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
 }
 
-/* Entries */
+.btn-icon {
+    margin-right: 8px;
+}
+
+/* Entries Section */
 .entries {
     margin-bottom: 32px;
+}
+
+.entry-stats {
+    background: var(--card-bg);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
 }
 
 .entry-grid {
     display: grid;
     gap: 8px;
-    margin-top: 16px;
 }
 
 .entry {
-    background: rgba(255,255,255,0.05);
+    background: var(--card-bg);
     padding: 16px;
     border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Winners Section */
+.winners {
+    margin-bottom: 32px;
+}
+
+.view-all {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.winners-grid {
+    display: grid;
+    gap: 12px;
 }
 
 /* Leaderboard */
@@ -448,88 +757,198 @@ header {
     margin-bottom: 32px;
 }
 
+.time-filter {
+    display: flex;
+    gap: 8px;
+}
+
+.time-filter button {
+    background: var(--card-bg);
+    border: none;
+    color: var(--text);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.time-filter button.active {
+    background: var(--primary);
+    color: var(--background);
+}
+
 .leaderboard-list {
     margin-top: 16px;
 }
 
-.leader {
-    background: rgba(255,255,255,0.05);
-    padding: 16px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.leader-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.leader-address {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.leader-entries {
-    font-size: 12px;
-    color: var(--text-dim);
-}
-
-#walletDisplay.connected {
-    color: var(--primary);
-    font-weight: bold;
-    text-shadow: 0 0 8px var(--primary);
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 /* Mobile Optimizations */
 @media (max-width: 480px) {
+    .app-container {
+        padding: 12px;
+    }
+    
     .logo h1 {
         font-size: 28px;
     }
     
-    .jackpot-amount {
+    .jackpot-amount .amount-wrapper {
         font-size: 36px;
     }
     
-    .grid {
-        grid-template-columns: repeat(5, 1fr);
+    .grid button {
+        font-size: 16px;
     }
     
-    .entry-actions {
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .jackpot-info {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
 }
-
-    .profile-card {
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  font-size: 14px;
-}
-.profile-inner h2 {
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-
-    <style>
-@keyframes glowFomo {
-  from {
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
-  }
-  to {
-    box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
-  }
-}
-
-@keyframes pulseProfile {
-  0% { transform: scale(1); box-shadow: 0 0 12px rgba(0,255,225,0.3); }
-  50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(255,0,247,0.5); }
-  100% { transform: scale(1); box-shadow: 0 0 12px rgba(0,255,225,0.3); }
-}
 </style>
+
+<script>
+// State Management
+let state = {
+    selectedNumbers: new Set(),
+    maxSelections: 5,
+    freeEntriesLeft: 5,
+    aiEnabled: false
+};
+
+// Initialize number grid
+const initializeGrid = () => {
+    const grid = document.getElementById('numberGrid');
+    for(let i = 1; i <= 25; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.addEventListener('click', () => toggleNumber(btn, i));
+        grid.appendChild(btn);
+    }
+    updateSelectionCount();
+};
+
+// Number selection logic
+const toggleNumber = (btn, num) => {
+    if(btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        state.selectedNumbers.delete(num);
+    } else if(state.selectedNumbers.size < state.maxSelections) {
+        btn.classList.add('selected');
+        state.selectedNumbers.add(num);
+        // Add selection animation
+        btn.style.animation = 'none';
+        btn.offsetHeight; // Trigger reflow
+        btn.style.animation = 'selectPop 0.3s ease';
+    }
+    updateSelectionCount();
+};
+
+// Update selection counter
+const updateSelectionCount = () => {
+    const counter = document.getElementById('selectedCount');
+    counter.textContent = state.selectedNumbers.size;
+};
+
+// Quick pick functionality
+const quickPick = () => {
+    clearPicks();
+    const numbers = new Set();
+    while(numbers.size < state.maxSelections) {
+        numbers.add(Math.floor(Math.random() * 25) + 1);
+    }
+    const buttons = document.querySelectorAll('#numberGrid button');
+    numbers.forEach(num => {
+        buttons[num-1].classList.add('selected');
+        state.selectedNumbers.add(num);
+    });
+    updateSelectionCount();
+};
+
+// AI pick functionality
+const aiPick = () => {
+    if(!state.aiEnabled) {
+        showAlert('AI Pick requires Premium Access', 'warning');
+        return;
+    }
+    // AI selection logic would go here
+    quickPick(); // Fallback to quick pick for now
+};
+
+// Clear selections
+const clearPicks = () => {
+    document.querySelectorAll('#numberGrid button').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    state.selectedNumbers.clear();
+    updateSelectionCount();
+};
+
+// Alert system
+const showAlert = (message, type = 'info') => {
+    const alertsContainer = document.getElementById('alertsContainer');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
+    alertsContainer.appendChild(alert);
+    setTimeout(() => alert.remove(), 3000);
+};
+
+// Entry submission
+const submitEntry = (isFree = false) => {
+    if(state.selectedNumbers.size !== state.maxSelections) {
+        showAlert('Please select 5 numbers', 'warning');
+        return;
+    }
+    
+    if(isFree && state.freeEntriesLeft <= 0) {
+        showAlert('No free entries remaining', 'warning');
+        return;
+    }
+    
+    // Handle entry submission
+    const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
+    addEntry(numbers, isFree);
+    clearPicks();
+    
+    if(isFree) {
+        state.freeEntriesLeft--;
+        document.getElementById('freeCount').textContent = `${state.freeEntriesLeft} LEFT`;
+    }
+};
+
+// Add entry to grid
+const addEntry = (numbers, isFree) => {
+    const entryGrid = document.getElementById('entryGrid');
+    const entry = document.createElement('div');
+    entry.className = 'entry';
+    entry.innerHTML = `
+        <div class="entry-numbers">
+            ${numbers.map(n => `<span class="number">${n}</span>`).join(' ')}
+        </div>
+        <div class="entry-type">${isFree ? 'FREE' : '2 CRO'}</div>
+    `;
+    entryGrid.prepend(entry);
+};
+
+// Initialize on load
+window.addEventListener('load', () => {
+    initializeGrid();
+    
+    // Add button listeners
+    document.getElementById('buyButton').addEventListener('click', () => submitEntry(false));
+    document.getElementById('freeButton').addEventListener('click', () => submitEntry(true));
+});
 </script>
-</body>
+
 </html>
