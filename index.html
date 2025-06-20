@@ -141,10 +141,6 @@
                     <span>🎲</span>
                     QUICK PICK
                 </button>
-                <button class="tool-btn ai" onclick="aiSelect()">
-                    <span>🤖</span>
-                    AI BOOST
-                </button>
                 <button class="tool-btn clear" onclick="clearSelection()">
                     <span>🗑️</span>
                     CLEAR
@@ -774,17 +770,6 @@ function quickSelect() {
         }
     }
     updateSelectionCount();
-}
-
-// AI Select
-function aiSelect() {
-    if (!state.connected) {
-        showNotification('Please connect your wallet first', 'warning');
-        return;
-    }
-
-    // Premium feature notification
-    showNotification('AI Boost requires Premium subscription', 'warning');
 }
 
 // Clear Selection
