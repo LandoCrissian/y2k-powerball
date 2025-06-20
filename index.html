@@ -8,6 +8,20 @@
 </head>
 <body>
 
+    <!-- 🔮 GL1TCHBALL HEADER -->
+<div class="glitchball-hero">
+  <h1 class="glitch-title">GL1TCHBALL</h1>
+  <div class="glitch-subtext">Jackpot Protocol // Cronos Chain</div>
+
+  <div class="jackpot-display">
+    <div class="jackpot-label">MEGA JACKPOT</div>
+    <div class="jackpot-amount">
+      <span id="jackpotCRO">0</span> CRO
+    </div>
+    <div class="jackpot-timer" id="drawTimer">--:--:--</div>
+  </div>
+</div>
+
 <div class="app-wrapper">
     <!-- Network Indicator -->
     <div class="network-status">
@@ -543,6 +557,73 @@ body {
     from { transform: translate(-50%, 100%); opacity: 0; }
     to { transform: translate(-50%, 0); opacity: 1; }
 }
+
+    /* === GL1TCHBALL HERO === */
+.glitchball-hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.glitch-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 36px;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #00ffe1, #ff00f7);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: glitchPulse 2s infinite alternate;
+}
+
+.glitch-subtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+.jackpot-display {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.15);
+}
+
+.jackpot-label {
+  font-size: 14px;
+  color: #ff00f7;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.jackpot-amount {
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00ffe1, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+
+.jackpot-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  color: #00ffe1;
+  text-shadow: 0 0 4px #00ffe1;
+}
+
+/* Animation */
+@keyframes glitchPulse {
+  0% { transform: scale(1); text-shadow: 0 0 8px #ff00f7; }
+  100% { transform: scale(1.02); text-shadow: 0 0 12px #00ffe1; }
+}
 </style>
 
 <script>
@@ -797,5 +878,35 @@ function setupEventListeners() {
         showNotification('Multi-entry feature coming soon!', 'info');
     });
 }
+
+    // GL1TCHBALL Jackpot Timer
+function startDrawTimer() {
+  const timerElement = document.getElementById('drawTimer');
+  const getNextDrawTime = () => {
+    const now = new Date();
+    const nextDraw = new Date();
+    nextDraw.setHours(24, 0, 0, 0); // Midnight UTC
+    return Math.floor((nextDraw - now) / 1000);
+  };
+
+  let timeLeft = getNextDrawTime();
+
+  setInterval(() => {
+    const hours = Math.floor(timeLeft / 3600);
+    const minutes = Math.floor((timeLeft % 3600) / 60);
+    const seconds = timeLeft % 60;
+
+    timerElement.textContent = 
+      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    
+    timeLeft--;
+    if (timeLeft <= 0) {
+      timeLeft = getNextDrawTime();
+    }
+  }, 1000);
+}
+
+// Initialize Glitchball Timer on Load
+document.addEventListener('DOMContentLoaded', startDrawTimer);
 </script>
 </html>
