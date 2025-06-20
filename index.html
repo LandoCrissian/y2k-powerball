@@ -642,43 +642,29 @@ async function checkAndRequestNetwork() {
 
 async function connectWallet() {
   if (!window.ethereum) {
-    alert("No Web3 wallet found. Please install MetaMask.");
+    alert("No Web3 wallet found. Please install MetaMask or a compatible wallet.");
     return;
   }
 
   try {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     const wallet = accounts[0];
+
     if (!wallet) throw new Error("Wallet not returned");
 
-    // Show address
+    // Set wallet and UI
+    window.userWallet = wallet.toLowerCase();
+    isConnected = true;
     document.getElementById("walletDisplay").textContent = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
     document.getElementById("walletDisplay").classList.add("connected");
-    window.userWallet = wallet.toLowerCase();
-    state.walletAddress = wallet.toLowerCase();
-    isConnected = true;
 
-    // ✅ Get Y2K balance
-    const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
-    const token = new ethers.Contract("0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d", [
-      "function balanceOf(address owner) view returns (uint256)"
-    ], provider);
-    const raw = await token.balanceOf(state.walletAddress);
-    state.y2kBalance = parseFloat(ethers.formatUnits(raw, 18));
-
-    // ✅ Only LOAD profile if it exists
-    await loadPlayerProfile();
-
-    // ✅ This determines FOMO + free ticket eligibility
-    await checkVaultStatus();
-
-    // ✅ Update UI
-    await updateUI();
+    // ✅ Now check Y2K balance and Vault status in a separate block
+    await fetchY2KBalanceAndCheckVault();
 
     console.log("✅ Connected:", wallet);
   } catch (err) {
     console.error("❌ Wallet connection failed:", err);
-    alert("Wallet connection failed. Try again.");
+    alert("Wallet connection failed. Please try again.");
   }
 }
 
@@ -1021,6 +1007,53 @@ async function loadPlayerProfile() {
         profileCard.style.display = "none";
     }
 } 
+
+    async function fetchY2KBalanceAndCheckVault() {
+  const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+  const contract = new ethers.Contract("0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d", [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)"
+  ], provider);
+
+  try {
+    const wallet = window.userWallet;
+    const rawBalance = await contract.balanceOf(wallet);
+    const decimals = await contract.decimals();
+    const y2kBalance = parseFloat(ethers.formatUnits(rawBalance, decimals));
+
+    // Fetch player profile
+    const docSnap = await getDoc(doc(db, "users", wallet));
+    const hasProfile = docSnap.exists();
+
+    // Update UI logic
+    const fomo = document.getElementById("vaultFomoBlock");
+    const cta = document.getElementById("createProfileCTA");
+    const freeButton = document.getElementById("freeButton");
+
+    if (y2kBalance >= 4000000) {
+      if (hasProfile) {
+        fomo.style.display = "none";
+        cta.style.display = "none";
+        freeButton.disabled = false;
+        freeButton.querySelector("small").textContent = "5 LEFT";
+        state.isVaultVerified = true;
+      } else {
+        fomo.style.display = "none";
+        cta.style.display = "block";
+        freeButton.disabled = true;
+        freeButton.querySelector("small").textContent = "VAULT ONLY";
+      }
+    } else {
+      fomo.style.display = "block";
+      cta.style.display = "none";
+      freeButton.disabled = true;
+      freeButton.querySelector("small").textContent = "VAULT ONLY";
+    }
+
+  } catch (error) {
+    console.error("Vault/Profile check failed:", error);
+  }
+}
 </script>
 </body>
 </html>
