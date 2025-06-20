@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quantum Powerball X</title>
+    <title>Quantum Powerball X | Cronos</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="network-status">
         <div class="status-pill">
             <span class="status-dot"></span>
-            <span id="networkName">POLYGON</span>
+            <span id="networkName">CRONOS</span>
         </div>
         <div id="walletConnect" class="wallet-pill">
             <span class="status-dot"></span>
@@ -24,15 +24,15 @@
     <!-- Live Metrics -->
     <div class="metrics-bar">
         <div class="metric">
-            <div class="metric-value" id="tvl">$2.4M</div>
+            <div class="metric-value" id="tvl">-</div>
             <div class="metric-label">TVL</div>
         </div>
         <div class="metric">
-            <div class="metric-value" id="entries">4.2K</div>
+            <div class="metric-value" id="entries">-</div>
             <div class="metric-label">ENTRIES</div>
         </div>
         <div class="metric">
-            <div class="metric-value" id="apy">248%</div>
+            <div class="metric-value" id="apy">-</div>
             <div class="metric-label">APY</div>
         </div>
     </div>
@@ -42,23 +42,23 @@
         <div class="jackpot-card">
             <div class="jackpot-header">
                 <h2>MEGA JACKPOT</h2>
-                <div class="draw-timer" id="drawTimer">12:14:33</div>
+                <div class="draw-timer" id="drawTimer">--:--:--</div>
             </div>
             <div class="prize-amount">
                 <div class="token-amount">
-                    <span id="prizeAmount">1,842,650</span>
-                    <span class="token-symbol">MATIC</span>
+                    <span id="prizeAmount">0</span>
+                    <span class="token-symbol">CRO</span>
                 </div>
-                <div class="usd-value" id="prizeUsd">$2,947,240</div>
+                <div class="usd-value" id="prizeUsd">$0.00</div>
             </div>
             <div class="jackpot-stats">
                 <div class="stat">
                     <span>WIN ODDS</span>
-                    <span id="odds">1:12,482</span>
+                    <span id="odds">1:13,983,816</span>
                 </div>
                 <div class="stat">
                     <span>ROUND</span>
-                    <span id="round">#482</span>
+                    <span id="round">#1</span>
                 </div>
             </div>
         </div>
@@ -95,13 +95,13 @@
             <button id="submitEntry" class="entry-btn primary">
                 <div class="btn-content">
                     <span>ENTER DRAW</span>
-                    <span class="entry-cost">10 MATIC</span>
+                    <span class="entry-cost">5 CRO</span>
                 </div>
             </button>
             <button id="multiEntry" class="entry-btn secondary">
                 <div class="btn-content">
                     <span>MULTI ENTRY</span>
-                    <span class="entry-cost">SAVE 20%</span>
+                    <span class="entry-cost">SAVE 15%</span>
                 </div>
             </button>
         </div>
@@ -128,19 +128,19 @@
 
 <style>
 :root {
-    /* Colors */
-    --bg-primary: #08051E;
-    --bg-surface: #12103A;
-    --accent-primary: #FF3DFF;
-    --accent-secondary: #3D8FFF;
+    /* Colors - Cronos Theme */
+    --bg-primary: #1B0740;
+    --bg-surface: #2A1155;
+    --accent-primary: #7C3AED;
+    --accent-secondary: #3B82F6;
     --text-primary: #FFFFFF;
     --text-secondary: rgba(255,255,255,0.7);
-    --success: #00FFB2;
-    --warning: #FFB800;
-    --error: #FF3D3D;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    --gradient-primary: linear-gradient(135deg, #7C3AED, #3B82F6);
     --gradient-surface: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
     
     /* Shadows */
@@ -244,6 +244,7 @@ body {
     border-radius: var(--glass-radius);
     padding: 24px;
     margin-bottom: 24px;
+    box-shadow: var(--shadow-lg);
 }
 
 .jackpot-header {
@@ -308,6 +309,7 @@ body {
     border-radius: var(--glass-radius);
     padding: 24px;
     margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
 }
 
 .selection-header {
@@ -404,6 +406,7 @@ body {
 .entry-btn.primary {
     background: var(--gradient-primary);
     color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .entry-btn.secondary {
@@ -431,6 +434,7 @@ body {
     border-radius: var(--glass-radius);
     padding: 24px;
     margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
 }
 
 .section-header {
@@ -459,6 +463,41 @@ body {
     align-items: center;
 }
 
+.entry-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.number {
+    background: var(--glass-bg);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* History Section */
+.history-section {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-radius: var(--glass-radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.history-btn {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.history-btn:active {
+    transform: scale(0.97);
+}
+
 /* Animations */
 @keyframes pulse {
     0% { opacity: 1; }
@@ -472,28 +511,67 @@ body {
     100% { transform: scale(1); }
 }
 
+/* Notifications */
+.notification {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    color: var(--text-primary);
+    font-size: 14px;
+    animation: slideUp 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.success {
+    background: var(--success);
+}
+
+.notification.warning {
+    background: var(--warning);
+}
+
+.notification.error {
+    background: var(--error);
+}
+
+@keyframes slideUp {
+    from { transform: translate(-50%, 100%); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
 </style>
 
 <script>
 // State Management
-const state = {
+let state = {
     selectedNumbers: new Set(),
     maxNumbers: 6,
-    currentJackpot: 1842650,
     entries: [],
-    ticketPrice: 10,
-    timer: null
+    ticketPrice: 5, // CRO
+    timer: null,
+    connected: false,
+    contract: null
 };
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
-    initializeNumberGrid();
+    initializeUI();
     startDrawTimer();
     setupEventListeners();
-    loadUserEntries();
+    initializeWallet();
 });
 
-// Number Grid Initialization
+// Initialize UI
+function initializeUI() {
+    initializeNumberGrid();
+    initializeLocalStorage();
+}
+
+// Initialize Number Grid
 function initializeNumberGrid() {
     const grid = document.getElementById('numberGrid');
     for (let i = 1; i <= 49; i++) {
@@ -505,18 +583,30 @@ function initializeNumberGrid() {
     }
 }
 
-// Number Selection Logic
+// Initialize Local Storage
+function initializeLocalStorage() {
+    const storedEntries = localStorage.getItem('cronosLotteryEntries');
+    if (storedEntries) {
+        state.entries = JSON.parse(storedEntries);
+        state.entries.forEach(entry => addEntryToUI(entry));
+    }
+}
+
+// Toggle Number Selection
 function toggleNumber(num, btn) {
+    if (!state.connected) {
+        showNotification('Please connect your wallet first', 'warning');
+        return;
+    }
+
     if (btn.classList.contains('selected')) {
         state.selectedNumbers.delete(num);
         btn.classList.remove('selected');
     } else if (state.selectedNumbers.size < state.maxNumbers) {
         state.selectedNumbers.add(num);
         btn.classList.add('selected');
-        
-        // Add selection animation
         btn.style.animation = 'none';
-        btn.offsetHeight; // Trigger reflow
+        btn.offsetHeight;
         btn.style.animation = 'selectPop 0.3s ease';
     }
     updateSelectionCount();
@@ -530,6 +620,11 @@ function updateSelectionCount() {
 
 // Quick Select
 function quickSelect() {
+    if (!state.connected) {
+        showNotification('Please connect your wallet first', 'warning');
+        return;
+    }
+
     clearSelection();
     while (state.selectedNumbers.size < state.maxNumbers) {
         const num = Math.floor(Math.random() * 49) + 1;
@@ -541,27 +636,15 @@ function quickSelect() {
     updateSelectionCount();
 }
 
-// AI Select (Premium Feature)
+// AI Select
 function aiSelect() {
-    // Simulate AI-powered selection with weighted probabilities
-    const weights = new Array(49).fill(0).map(() => Math.random() * 0.5 + 0.5);
-    clearSelection();
-    
-    for (let i = 0; i < state.maxNumbers; i++) {
-        let maxWeight = -1;
-        let selectedNum = -1;
-        
-        weights.forEach((weight, index) => {
-            if (weight > maxWeight && !state.selectedNumbers.has(index + 1)) {
-                maxWeight = weight;
-                selectedNum = index + 1;
-            }
-        });
-        
-        state.selectedNumbers.add(selectedNum);
-        document.querySelectorAll('.number-btn')[selectedNum-1].classList.add('selected');
+    if (!state.connected) {
+        showNotification('Please connect your wallet first', 'warning');
+        return;
     }
-    updateSelectionCount();
+
+    // Premium feature notification
+    showNotification('AI Boost requires Premium subscription', 'warning');
 }
 
 // Clear Selection
@@ -573,10 +656,17 @@ function clearSelection() {
     updateSelectionCount();
 }
 
-// Draw Timer
+// Start Draw Timer
 function startDrawTimer() {
     const timerElement = document.getElementById('drawTimer');
-    let timeLeft = 12 * 3600; // 12 hours in seconds
+    const getNextDrawTime = () => {
+        const now = new Date();
+        const nextDraw = new Date();
+        nextDraw.setHours(24, 0, 0, 0); // Next draw at midnight
+        return Math.floor((nextDraw - now) / 1000);
+    };
+
+    let timeLeft = getNextDrawTime();
     
     state.timer = setInterval(() => {
         const hours = Math.floor(timeLeft / 3600);
@@ -588,48 +678,58 @@ function startDrawTimer() {
         if (timeLeft <= 0) {
             clearInterval(state.timer);
             executeDraw();
+            timeLeft = getNextDrawTime();
         }
         timeLeft--;
     }, 1000);
 }
 
 // Execute Draw
-function executeDraw() {
-    // Simulate blockchain confirmation
-    setTimeout(() => {
-        const winningNumbers = new Array(6).fill(0).map(() => Math.floor(Math.random() * 49) + 1);
-        checkWinners(winningNumbers);
-        resetDraw();
-    }, 2000);
-}
-
-// Check Winners
-function checkWinners(winningNumbers) {
-    state.entries.forEach(entry => {
-        const matches = entry.numbers.filter(num => winningNumbers.includes(num)).length;
-        if (matches >= 3) {
-            notifyWinner(entry, matches);
-        }
-    });
+async function executeDraw() {
+    if (!state.contract) return;
+    
+    try {
+        showNotification('Drawing numbers...', 'info');
+        // Simulate contract interaction
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        showNotification('Draw completed!', 'success');
+        startDrawTimer();
+    } catch (error) {
+        showNotification('Draw failed. Please try again.', 'error');
+    }
 }
 
 // Submit Entry
-function submitEntry() {
+async function submitEntry() {
+    if (!state.connected) {
+        showNotification('Please connect your wallet first', 'warning');
+        return;
+    }
+
     if (state.selectedNumbers.size !== state.maxNumbers) {
         showNotification('Please select 6 numbers', 'warning');
         return;
     }
     
-    const entry = {
-        id: Date.now(),
-        numbers: Array.from(state.selectedNumbers).sort((a, b) => a - b),
-        timestamp: new Date().toISOString()
-    };
-    
-    state.entries.push(entry);
-    addEntryToUI(entry);
-    clearSelection();
-    showNotification('Entry submitted successfully!', 'success');
+    try {
+        showNotification('Processing entry...', 'info');
+        // Simulate contract interaction
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const entry = {
+            id: Date.now(),
+            numbers: Array.from(state.selectedNumbers).sort((a, b) => a - b),
+            timestamp: new Date().toISOString()
+        };
+        
+        state.entries.push(entry);
+        addEntryToUI(entry);
+        saveToLocalStorage();
+        clearSelection();
+        showNotification('Entry submitted successfully!', 'success');
+    } catch (error) {
+        showNotification('Transaction failed. Please try again.', 'error');
+    }
 }
 
 // Add Entry to UI
@@ -639,44 +739,46 @@ function addEntryToUI(entry) {
     entryElement.className = 'entry-item';
     entryElement.innerHTML = `
         <div class="entry-numbers">
-            ${entry.numbers.map(n => `<span class="number">${n}</span>`).join(' ')}
+            ${entry.numbers.map(n => `<span class="number">${String(n).padStart(2, '0')}</span>`).join('')}
         </div>
         <div class="entry-timestamp">${new Date(entry.timestamp).toLocaleTimeString()}</div>
     `;
     entriesList.prepend(entryElement);
     
-    // Update active count
     document.getElementById('activeCount').textContent = `${state.entries.length} Active`;
 }
 
-// Notifications
+// Save to Local Storage
+function saveToLocalStorage() {
+    localStorage.setItem('cronosLotteryEntries', JSON.stringify(state.entries));
+}
+
+// Show Notification
 function showNotification(message, type = 'info') {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
-    
-    // Add to document
     document.body.appendChild(notification);
     
-    // Remove after delay
     setTimeout(() => {
         notification.remove();
     }, 3000);
 }
 
-// Setup Event Listeners
-function setupEventListeners() {
-    document.getElementById('submitEntry').addEventListener('click', submitEntry);
-    document.getElementById('multiEntry').addEventListener('click', () => {
-        showNotification('Multi-entry feature coming soon!', 'info');
-    });
+// Initialize Wallet Connection
+async function initializeWallet() {
+    const connectBtn = document.getElementById('walletConnect');
     
-    document.getElementById('walletConnect').addEventListener('click', async () => {
+    connectBtn.addEventListener('click', async () => {
+        if (state.connected) return;
+        
         try {
-            // Simulated wallet connection
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            document.getElementById('walletConnect').querySelector('span:last-child').textContent = '0x1234...5678';
+            showNotification('Connecting to Cronos...', 'info');
+            // Simulate wallet connection
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            state.connected = true;
+            connectBtn.querySelector('span:last-child').textContent = '0x7C3...F6B2';
             showNotification('Wallet connected successfully!', 'success');
         } catch (error) {
             showNotification('Failed to connect wallet', 'error');
@@ -684,25 +786,15 @@ function setupEventListeners() {
     });
 }
 
-// Load User Entries
-function loadUserEntries() {
-    // Simulate loading existing entries
-    const mockEntries = [
-        {
-            id: Date.now() - 1000,
-            numbers: [7, 13, 24, 31, 42, 48],
-            timestamp: new Date(Date.now() - 1000000).toISOString()
-        },
-        {
-            id: Date.now() - 2000,
-            numbers: [3, 11, 19, 27, 35, 44],
-            timestamp: new Date(Date.now() - 2000000).toISOString()
+// Setup Event Listeners
+function setupEventListeners() {
+    document.getElementById('submitEntry').addEventListener('click', submitEntry);
+    document.getElementById('multiEntry').addEventListener('click', () => {
+        if (!state.connected) {
+            showNotification('Please connect your wallet first', 'warning');
+            return;
         }
-    ];
-    
-    mockEntries.forEach(entry => {
-        state.entries.push(entry);
-        addEntryToUI(entry);
+        showNotification('Multi-entry feature coming soon!', 'info');
     });
 }
 </script>
