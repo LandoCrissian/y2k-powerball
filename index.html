@@ -35,6 +35,54 @@
         </div>
     </div>
 
+    <!-- 🔐 VAULT + Y2K VERIFICATION GATE -->
+<div id="fomoGate" style="margin: 20px 0; display: none;">
+
+  <!-- 🟡 Vault Qualifier (has 4M+ Y2K but no profile) -->
+  <div id="createProfileCTA" style="display:none;">
+    <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
+      display: block;
+      background: linear-gradient(135deg, #00ffe1, #ff00f7);
+      color: #000;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      text-shadow: 0 0 10px #fff;
+      box-shadow: 0 0 20px rgba(0,255,225,0.4);
+      animation: pulseProfile 2s infinite;
+      letter-spacing: 0.5px;
+    ">
+      🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
+    </a>
+  </div>
+
+  <!-- 🔴 FOMO Block (does not hold enough Y2K) -->
+  <div id="vaultFomoBlock" style="display:none;">
+    <div style="
+      background: linear-gradient(135deg, #220000, #1a0000);
+      border: 2px dashed #ff4d4d;
+      color: #ffcccc;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      animation: glowFomo 1.8s infinite alternate;
+    ">
+      🔒 VAULT ACCESS LOCKED<br>
+      <span style="color: #ff6b6b;">Hold 4,000,000+ Y2K</span><br>
+      to unlock free Powerball entries and<br><strong style="color: #00ffe1;">your player identity</strong>.
+    </div>
+  </div>
+
+</div>
+
     <!-- Live Metrics -->
     <div class="metrics-bar">
         <div class="metric">
@@ -624,6 +672,17 @@ body {
   0% { transform: scale(1); text-shadow: 0 0 8px #ff00f7; }
   100% { transform: scale(1.02); text-shadow: 0 0 12px #00ffe1; }
 }
+
+    @keyframes glowFomo {
+  0% { box-shadow: 0 0 5px red; }
+  100% { box-shadow: 0 0 20px red; }
+}
+
+@keyframes pulseProfile {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+  100% { transform: scale(1); opacity: 1; }
+}
 </style>
 
 <script>
@@ -859,12 +918,50 @@ async function initializeWallet() {
             await new Promise(resolve => setTimeout(resolve, 1500));
             
             state.connected = true;
-            connectBtn.querySelector('span:last-child').textContent = '0x7C3...F6B2';
+            connectBtn.querySelector('span:last-child').textContent = shortWallet(address); // you can define `shortWallet()` to slice the addr
             showNotification('Wallet connected successfully!', 'success');
+            checkVaultEligibility(address);
         } catch (error) {
             showNotification('Failed to connect wallet', 'error');
         }
     });
+}
+
+    async function checkVaultEligibility(address) {
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const y2kContract = new ethers.Contract(
+    "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
+    ["function balanceOf(address) view returns (uint256)"],
+    provider
+  );
+
+  const balance = await y2kContract.balanceOf(address);
+  const heldY2K = Number(ethers.formatUnits(balance, 18));
+
+  const fomoBlock = document.getElementById('vaultFomoBlock');
+  const profileCTA = document.getElementById('createProfileCTA');
+  const fomoGate = document.getElementById('fomoGate');
+
+  fomoGate.style.display = 'block';
+
+  if (heldY2K < 4000000) {
+    fomoBlock.style.display = 'block';
+    profileCTA.style.display = 'none';
+    return;
+  }
+
+  // Check Firebase for profile
+  const userRef = firebase.firestore().collection('users').doc(address);
+  const doc = await userRef.get();
+
+  if (!doc.exists) {
+    // Has enough Y2K, no profile yet
+    profileCTA.style.display = 'block';
+    fomoBlock.style.display = 'none';
+  } else {
+    // Has profile — optionally show something later
+    fomoGate.style.display = 'none';
+  }
 }
 
 // Setup Event Listeners
