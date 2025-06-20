@@ -157,6 +157,48 @@
     </section>
 </div>
 
+    <!-- FOMO (not enough Y2K) -->
+<div id="vaultFomoBlock" style="display:none; margin-bottom: 20px;">
+  <div style="
+    background: linear-gradient(135deg, #220000, #1a0000);
+    border: 2px dashed #ff4d4d;
+    color: #ffcccc;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: glowFomo 1.8s infinite alternate;
+  ">
+    🔒 VAULT ACCESS LOCKED<br>
+    <span style="color: #ff6b6b;">Hold 4,000,000+ Y2K</span><br>to unlock free Powerball entries and<br><strong style="color: #00ffe1;">your player identity</strong>.
+  </div>
+</div>
+
+<!-- UNLOCK CTA (has Y2K, no profile) -->
+<div id="createProfileCTA" style="display:none; margin-bottom: 20px;">
+  <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
+    display: block;
+    background: linear-gradient(135deg, #00ffe1, #ff00f7);
+    color: #000;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 20px rgba(0,255,225,0.4);
+    animation: pulseProfile 2s infinite;
+    letter-spacing: 0.5px;
+  ">
+    🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
+  </a>
+</div>
+
 <style>
 :root {
     --primary: #00ffe1;
@@ -640,32 +682,86 @@ async function checkAndRequestNetwork() {
     }
 }
 
+let isConnected = false;
+
 async function connectWallet() {
   if (!window.ethereum) {
-    alert("No Web3 wallet found. Please install MetaMask or a compatible wallet.");
+    alert("No Web3 wallet found. Please install MetaMask.");
     return;
   }
 
   try {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     const wallet = accounts[0];
+    if (!wallet) throw new Error("No wallet returned");
 
-    if (!wallet) throw new Error("Wallet not returned");
-
-    // Set wallet and UI
     window.userWallet = wallet.toLowerCase();
-    isConnected = true;
     document.getElementById("walletDisplay").textContent = `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
     document.getElementById("walletDisplay").classList.add("connected");
+    isConnected = true;
 
-    // ✅ Now check Y2K balance and Vault status in a separate block
-    await fetchY2KBalanceAndCheckVault();
+    await updateUserAccess(window.userWallet); // 🔥 Core logic here
+    await updateUI();
 
     console.log("✅ Connected:", wallet);
   } catch (err) {
-    console.error("❌ Wallet connection failed:", err);
-    alert("Wallet connection failed. Please try again.");
+    console.error("❌ Wallet connection failed:", err.message);
+    // Don't alert if MetaMask returns connection after error
   }
+}
+
+async function updateUserAccess(currentWallet) {
+  const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+  const y2k = new ethers.Contract(
+    "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
+    ["function balanceOf(address) view returns (uint256)", "function decimals() view returns (uint8)"],
+    provider
+  );
+
+  try {
+    const balRaw = await y2k.balanceOf(currentWallet);
+    const decimals = await y2k.decimals();
+    const y2kBalanceNum = parseFloat(ethers.formatUnits(balRaw, decimals));
+
+    const userDoc = await getDoc(doc(db, "users", currentWallet));
+    const hasProfile = userDoc.exists();
+    state.isVaultVerified = hasProfile;
+
+    // Update UI logic
+    document.getElementById("createProfileCTA").style.display = (y2kBalanceNum >= 4000000 && !hasProfile) ? "block" : "none";
+    document.getElementById("vaultFomoBlock").style.display = (y2kBalanceNum < 4000000) ? "block" : "none";
+
+    const freeBtn = document.getElementById("freeButton");
+    freeBtn.disabled = !hasProfile;
+    freeBtn.querySelector("small").textContent = hasProfile ? "5 LEFT" : "VAULT ONLY";
+
+  } catch (err) {
+    console.error("Error checking profile/Y2K:", err);
+  }
+}
+
+// Click behavior
+window.addEventListener("DOMContentLoaded", () => {
+  const walletBtn = document.getElementById("walletTrigger");
+  walletBtn.addEventListener("click", () => {
+    if (!isConnected) {
+      connectWallet();
+    } else {
+      const confirmLogout = confirm("Disconnect wallet?");
+      if (confirmLogout) {
+        disconnectWallet();
+      }
+    }
+  });
+});
+
+function disconnectWallet() {
+  document.getElementById("walletDisplay").textContent = "CONNECT";
+  document.getElementById("walletDisplay").classList.remove("connected");
+  window.userWallet = null;
+  isConnected = false;
+  document.getElementById("createProfileCTA").style.display = "none";
+  document.getElementById("vaultFomoBlock").style.display = "none";
 }
 
 function setupWalletListeners() {
