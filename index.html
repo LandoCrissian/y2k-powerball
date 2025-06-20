@@ -3,715 +3,549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GL!TCHBALL | Next-Gen Crypto Gaming</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.ethers.io/lib/ethers-5.4.umd.min.js"></script>
+    <title>Quantum Powerball X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Particle Canvas Background -->
-    <canvas id="particleCanvas"></canvas>
-    
-    <!-- Neural Network Visualization -->
-    <canvas id="neuralCanvas"></canvas>
 
-    <!-- Main App Container -->
-    <div class="app-container">
-        <!-- 3D Rotating Logo -->
-        <div class="logo-container">
-            <div class="logo-3d">
-                <div class="logo-text" data-text="GL!TCHBALL">GL!TCHBALL</div>
+<div class="app-wrapper">
+    <!-- Network Indicator -->
+    <div class="network-status">
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            <span id="networkName">POLYGON</span>
+        </div>
+        <div id="walletConnect" class="wallet-pill">
+            <span class="status-dot"></span>
+            <span>CONNECT</span>
+        </div>
+    </div>
+
+    <!-- Live Metrics -->
+    <div class="metrics-bar">
+        <div class="metric">
+            <div class="metric-value" id="tvl">$2.4M</div>
+            <div class="metric-label">TVL</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value" id="entries">4.2K</div>
+            <div class="metric-label">ENTRIES</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value" id="apy">248%</div>
+            <div class="metric-label">APY</div>
+        </div>
+    </div>
+
+    <!-- Main Draw Container -->
+    <div class="draw-container">
+        <div class="jackpot-card">
+            <div class="jackpot-header">
+                <h2>MEGA JACKPOT</h2>
+                <div class="draw-timer" id="drawTimer">12:14:33</div>
+            </div>
+            <div class="prize-amount">
+                <div class="token-amount">
+                    <span id="prizeAmount">1,842,650</span>
+                    <span class="token-symbol">MATIC</span>
+                </div>
+                <div class="usd-value" id="prizeUsd">$2,947,240</div>
+            </div>
+            <div class="jackpot-stats">
+                <div class="stat">
+                    <span>WIN ODDS</span>
+                    <span id="odds">1:12,482</span>
+                </div>
+                <div class="stat">
+                    <span>ROUND</span>
+                    <span id="round">#482</span>
+                </div>
             </div>
         </div>
 
-        <!-- Premium Status Bar -->
-        <div class="status-bar glass-effect">
-            <div class="network-status premium-pill">
-                <div class="pulse-dot"></div>
-                <span class="network-text">CRONOS MAINNET</span>
-            </div>
-            <div class="wallet-status premium-pill" id="walletConnect">
-                <div class="connect-icon"></div>
-                <span>CONNECT</span>
-            </div>
-        </div>
-
-        <!-- Main Game Interface -->
-        <div class="game-interface glass-premium">
-            <!-- Prize Pool Display -->
-            <div class="prize-display">
-                <div class="prize-amount-container">
-                    <div class="floating-labels">
-                        <span class="label-current">CURRENT POOL</span>
-                        <span class="label-countdown" id="drawTimer">12:59:59</span>
-                    </div>
-                    <div class="prize-amount">
-                        <span class="amount-value" id="prizeAmount">2,500,000</span>
-                        <span class="amount-currency">CRO</span>
-                    </div>
-                    <div class="prize-usd">≈ $750,000 USD</div>
-                </div>
-                <div class="prize-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">TOTAL PLAYERS</span>
-                        <span class="stat-value">12.5K</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">WIN CHANCE</span>
-                        <span class="stat-value">1:8.6K</span>
-                    </div>
+        <!-- Number Selection -->
+        <div class="number-selection">
+            <div class="selection-header">
+                <h3>PICK YOUR NUMBERS</h3>
+                <div class="selection-count">
+                    <span id="pickedCount">0</span>/6
                 </div>
             </div>
 
-            <!-- Number Selection Grid -->
-            <div class="selection-interface">
-                <div class="selection-header">
-                    <h2 class="neo-title">SELECT YOUR NUMBERS</h2>
-                    <div class="selection-counter">
-                        <span id="selectedCount">0</span>
-                        <span class="counter-divider">/</span>
-                        <span>6</span>
-                    </div>
-                </div>
+            <div class="number-grid" id="numberGrid"></div>
 
-                <div class="number-grid" id="numberGrid">
-                    <!-- Numbers will be generated here -->
-                </div>
-
-                <!-- Selection Tools -->
-                <div class="selection-tools">
-                    <button class="tool-button quantum" onclick="quantumSelect()">
-                        <div class="button-content">
-                            <div class="button-icon">⚡</div>
-                            <span>QUANTUM</span>
-                        </div>
-                    </button>
-                    <button class="tool-button ai" onclick="aiSelect()">
-                        <div class="button-content">
-                            <div class="button-icon">🤖</div>
-                            <span>AI SELECT</span>
-                        </div>
-                    </button>
-                    <button class="tool-button clear" onclick="clearSelection()">
-                        <div class="button-content">
-                            <div class="button-icon">✨</div>
-                            <span>CLEAR</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Entry Control -->
-            <div class="entry-control">
-                <button id="submitEntry" class="premium-button" disabled>
-                    <div class="button-content">
-                        <span class="button-text">ENTER DRAW</span>
-                        <span class="entry-cost">10 CRO</span>
-                    </div>
-                    <div class="button-backdrop"></div>
+            <div class="selection-tools">
+                <button class="tool-btn quick" onclick="quickSelect()">
+                    <span>🎲</span>
+                    QUICK PICK
+                </button>
+                <button class="tool-btn ai" onclick="aiSelect()">
+                    <span>🤖</span>
+                    AI BOOST
+                </button>
+                <button class="tool-btn clear" onclick="clearSelection()">
+                    <span>🗑️</span>
+                    CLEAR
                 </button>
             </div>
         </div>
 
-        <!-- Active Tickets -->
-        <div class="tickets-container glass-premium">
-            <div class="tickets-header">
-                <h3>YOUR ACTIVE TICKETS</h3>
-                <span class="ticket-count" id="ticketCount">0 Active</span>
-            </div>
-            <div class="tickets-grid" id="ticketsGrid"></div>
+        <!-- Entry Controls -->
+        <div class="entry-controls">
+            <button id="submitEntry" class="entry-btn primary">
+                <div class="btn-content">
+                    <span>ENTER DRAW</span>
+                    <span class="entry-cost">10 MATIC</span>
+                </div>
+            </button>
+            <button id="multiEntry" class="entry-btn secondary">
+                <div class="btn-content">
+                    <span>MULTI ENTRY</span>
+                    <span class="entry-cost">SAVE 20%</span>
+                </div>
+            </button>
         </div>
     </div>
 
+    <!-- Active Entries -->
+    <div class="entries-section">
+        <div class="section-header">
+            <h3>YOUR ENTRIES</h3>
+            <span class="active-count" id="activeCount">0 Active</span>
+        </div>
+        <div class="entries-list" id="entriesList"></div>
+    </div>
+
+    <!-- Previous Draws -->
+    <div class="history-section">
+        <div class="section-header">
+            <h3>PREVIOUS DRAWS</h3>
+            <button class="history-btn">VIEW ALL</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+    </div>
+</div>
+
 <style>
-/* Core Variables */
 :root {
-    /* Color Palette */
-    --primary-dark: #070B14;
-    --primary-light: #F7F9FC;
-    --accent-1: #00F0FF;
-    --accent-2: #FF0099;
-    --accent-3: #6C00FF;
-    --accent-4: #00FFB2;
+    /* Colors */
+    --bg-primary: #08051E;
+    --bg-surface: #12103A;
+    --accent-primary: #FF3DFF;
+    --accent-secondary: #3D8FFF;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.7);
+    --success: #00FFB2;
+    --warning: #FFB800;
+    --error: #FF3D3D;
     
     /* Gradients */
-    --gradient-1: linear-gradient(135deg, #00F0FF, #00FFB2);
-    --gradient-2: linear-gradient(135deg, #FF0099, #6C00FF);
-    --gradient-3: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 255, 178, 0.1));
+    --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    --gradient-surface: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
     
     /* Shadows */
-    --shadow-sm: 0 2px 10px rgba(0, 240, 255, 0.1);
-    --shadow-md: 0 5px 20px rgba(0, 240, 255, 0.15);
-    --shadow-lg: 0 10px 30px rgba(0, 240, 255, 0.2);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
     
     /* Glass Effect */
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.05);
-    --glass-blur: blur(10px);
+    --glass-bg: rgba(255,255,255,0.08);
+    --glass-border: 1px solid rgba(255,255,255,0.1);
+    --glass-radius: 16px;
 }
 
-/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 html {
-    background-color: var(--primary-dark);
+    background-color: var(--bg-primary);
 }
 
 body {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-primary);
+    background: radial-gradient(circle at top, var(--bg-surface), var(--bg-primary));
     min-height: 100vh;
-    color: var(--primary-light);
-    background: radial-gradient(circle at top, #0F1725, #070B14);
-    overflow-x: hidden;
+    padding: 16px;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Particle Canvas */
-#particleCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    opacity: 0.5;
-}
-
-/* Neural Canvas */
-#neuralCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    opacity: 0.3;
-    pointer-events: none;
-}
-
-/* Main Container */
-.app-container {
-    position: relative;
-    z-index: 2;
+.app-wrapper {
     max-width: 480px;
     margin: 0 auto;
-    padding: 20px;
 }
 
-/* 3D Logo */
-.logo-container {
-    perspective: 1000px;
-    height: 100px;
-    margin: 40px 0;
-}
-
-.logo-3d {
-    position: relative;
-    transform-style: preserve-3d;
-    animation: float 6s ease-in-out infinite;
-}
-
-.logo-text {
-    font-size: 48px;
-    font-weight: 800;
-    text-align: center;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    position: relative;
-}
-
-.logo-text::before {
-    content: attr(data-text);
-    position: absolute;
-    left: 2px;
-    text-shadow: -1px 0 var(--accent-2);
-    top: 0;
-    color: var(--accent-1);
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    animation: glitch 1s infinite;
-}
-
-.logo-text::after {
-    content: attr(data-text);
-    position: absolute;
-    left: -2px;
-    text-shadow: 1px 0 var(--accent-1);
-    top: 0;
-    color: var(--accent-2);
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    animation: glitch 0.7s infinite;
-}
-
-/* Premium Glass Effect */
-.glass-premium {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--glass-border);
-    border-radius: 24px;
-    padding: 24px;
-    margin: 20px 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.glass-premium::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent
-    );
-    transition: 0.5s;
-}
-
-.glass-premium:hover::before {
-    left: 100%;
-}
-
-/* Status Bar */
-.status-bar {
+/* Network Status */
+.network-status {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
-.premium-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
+.status-pill, .wallet-pill {
     background: var(--glass-bg);
     border: var(--glass-border);
-    border-radius: 50px;
+    border-radius: 24px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.premium-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+.status-pill:active, .wallet-pill:active {
+    transform: scale(0.97);
 }
 
-.pulse-dot {
-    width: 10px;
-    height: 10px;
-    background: var(--accent-4);
+.status-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    position: relative;
-}
-
-.pulse-dot::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: var(--accent-4);
-    border-radius: 50%;
+    background: var(--success);
     animation: pulse 2s infinite;
 }
 
-/* Prize Display */
-.prize-display {
+/* Metrics Bar */
+.metrics-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.metric {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-radius: var(--glass-radius);
+    padding: 12px;
     text-align: center;
-    margin-bottom: 30px;
 }
 
-.prize-amount-container {
-    margin-bottom: 20px;
+.metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
 }
 
-.floating-labels {
+.metric-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Jackpot Card */
+.jackpot-card {
+    background: var(--gradient-surface);
+    border: var(--glass-border);
+    border-radius: var(--glass-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.jackpot-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.draw-timer {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent-primary);
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .prize-amount {
-    font-size: 48px;
-    font-weight: 700;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 10px 0;
+    text-align: center;
+    margin-bottom: 24px;
 }
 
-.amount-currency {
+.token-amount {
+    font-size: 48px;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+.token-symbol {
     font-size: 24px;
     margin-left: 8px;
 }
 
-.prize-usd {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.6);
+.usd-value {
+    color: var(--text-secondary);
 }
 
-/* Number Grid */
+.jackpot-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat span:first-child {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Number Selection */
+.number-selection {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-radius: var(--glass-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.selection-count {
+    background: rgba(255,255,255,0.1);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
 .number-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
-    margin: 20px 0;
+    margin-bottom: 24px;
 }
 
-.number-cell {
+.number-btn {
     aspect-ratio: 1;
-    background: var(--glass-bg);
-    border: var(--glass-border);
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary);
     border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 18px;
-    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s ease;
 }
 
-.number-cell::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--gradient-1);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+.number-btn:active {
+    transform: scale(0.95);
 }
 
-.number-cell span {
-    position: relative;
-    z-index: 1;
+.number-btn.selected {
+    background: var(--gradient-primary);
 }
 
-.number-cell:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-.number-cell.selected::before {
-    opacity: 1;
-}
-
-.number-cell.selected {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-md);
-}
-
-/* Selection Tools */
 .selection-tools {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    margin-top: 20px;
 }
 
-.tool-button {
-    background: var(--glass-bg);
-    border: var(--glass-border);
+.tool-btn {
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary);
+    padding: 12px;
     border-radius: 12px;
-    padding: 16px;
-    color: var(--primary-light);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tool-button:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.button-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-}
-
-.button-icon {
-    font-size: 24px;
-}
-
-/* Premium Button */
-.premium-button {
-    width: 100%;
-    padding: 20px;
-    border: none;
-    border-radius: 12px;
-    background: var(--gradient-1);
-    color: var(--primary-dark);
-    font-size: 18px;
-    font-weight: 600;
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.premium-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.tool-btn:active {
+    transform: scale(0.97);
 }
 
-.premium-button:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+.tool-btn.quick {
+    background: var(--accent-secondary);
 }
 
-.button-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-2);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+.tool-btn.ai {
+    background: var(--accent-primary);
 }
 
-.premium-button:hover .button-backdrop {
-    opacity: 0.2;
+/* Entry Controls */
+.entry-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.entry-btn {
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.entry-btn:active {
+    transform: scale(0.97);
+}
+
+.entry-btn.primary {
+    background: var(--gradient-primary);
+    color: var(--text-primary);
+}
+
+.entry-btn.secondary {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    color: var(--text-primary);
+}
+
+.btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.entry-cost {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* Entries Section */
+.entries-section {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-radius: var(--glass-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.active-count {
+    color: var(--text-secondary);
+}
+
+.entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.entry-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Animations */
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotateX(0); }
-    50% { transform: translateY(-10px) rotateX(5deg); }
-}
-
-@keyframes glitch {
-    0%, 100% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-}
-
 @keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(3); opacity: 0; }
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
-@media (max-width: 480px) {
-    .prize-amount {
-        font-size: 36px;
-    }
-    
-    .number-cell {
-        font-size: 16px;
-    }
-    
-    .selection-tools {
-        grid-template-columns: repeat(3, 1fr);
-    }
+@keyframes selectPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
+
 </style>
 
 <script>
-// Three.js Particle System
-let particleSystem;
-
-function initParticleSystem() {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({
-        canvas: document.getElementById('particleCanvas'),
-        alpha: true
-    });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.position.z = 5;
-
-    // Create particles
-    const geometry = new THREE.BufferGeometry();
-    const vertices = [];
-    
-    for (let i = 0; i < 5000; i++) {
-        vertices.push(
-            THREE.MathUtils.randFloatSpread(2000), // x
-            THREE.MathUtils.randFloatSpread(2000), // y
-            THREE.MathUtils.randFloatSpread(2000)  // z
-        );
-    }
-    
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    
-    const material = new THREE.PointsMaterial({
-        color: 0x00f0ff,
-        size: 2,
-        transparent: true,
-        opacity: 0.5
-    });
-    
-    particleSystem = new THREE.Points(geometry, material);
-    scene.add(particleSystem);
-    
-    function animate() {
-        requestAnimationFrame(animate);
-        particleSystem.rotation.x += 0.0001;
-        particleSystem.rotation.y += 0.0001;
-        renderer.render(scene, camera);
-    }
-    
-    animate();
-}
-
-// Neural Network Visualization
-function initNeuralVis() {
-    const canvas = document.getElementById('neuralCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    const nodes = [];
-    const connections = [];
-    
-    // Create nodes
-    for (let i = 0; i < 50; i++) {
-        nodes.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5
-        });
-    }
-    
-    // Create connections
-    for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-            if (Math.random() < 0.05) {
-                connections.push([i, j]);
-            }
-        }
-    }
-    
-    function drawNetwork() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Update node positions
-        nodes.forEach(node => {
-            node.x += node.vx;
-            node.y += node.vy;
-            
-            if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-            if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-        });
-        
-        // Draw connections
-        connections.forEach(([i, j]) => {
-            const node1 = nodes[i];
-            const node2 = nodes[j];
-            const distance = Math.hypot(node1.x - node2.x, node1.y - node2.y);
-            
-            if (distance < 200) {
-                ctx.beginPath();
-                ctx.moveTo(node1.x, node1.y);
-                ctx.lineTo(node2.x, node2.y);
-                ctx.strokeStyle = `rgba(0, 240, 255, ${1 - distance / 200})`;
-                ctx.stroke();
-            }
-        });
-        
-        // Draw nodes
-        nodes.forEach(node => {
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
-            ctx.fillStyle = '#00f0ff';
-            ctx.fill();
-        });
-        
-        requestAnimationFrame(drawNetwork);
-    }
-    
-    drawNetwork();
-}
-
-// Game State Management
+// State Management
 const state = {
     selectedNumbers: new Set(),
     maxNumbers: 6,
-    provider: null,
-    signer: null,
-    contract: null
+    currentJackpot: 1842650,
+    entries: [],
+    ticketPrice: 10,
+    timer: null
 };
 
-// Initialize Game
-async function initializeGame() {
-    setupNumberGrid();
-    initParticleSystem();
-    initNeuralVis();
-    await setupWeb3();
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+    initializeNumberGrid();
+    startDrawTimer();
     setupEventListeners();
-}
+    loadUserEntries();
+});
 
-// Setup Number Grid
-function setupNumberGrid() {
+// Number Grid Initialization
+function initializeNumberGrid() {
     const grid = document.getElementById('numberGrid');
-    grid.innerHTML = '';
-    
     for (let i = 1; i <= 49; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'number-cell';
-        cell.innerHTML = `<span>${i}</span>`;
-        cell.addEventListener('click', () => toggleNumber(i, cell));
-        grid.appendChild(cell);
+        const btn = document.createElement('button');
+        btn.className = 'number-btn';
+        btn.textContent = i;
+        btn.addEventListener('click', () => toggleNumber(i, btn));
+        grid.appendChild(btn);
     }
 }
 
-// Number Selection
-function toggleNumber(num, cell) {
-    if (cell.classList.contains('selected')) {
+// Number Selection Logic
+function toggleNumber(num, btn) {
+    if (btn.classList.contains('selected')) {
         state.selectedNumbers.delete(num);
-        cell.classList.remove('selected');
+        btn.classList.remove('selected');
     } else if (state.selectedNumbers.size < state.maxNumbers) {
         state.selectedNumbers.add(num);
-        cell.classList.add('selected');
-        playSelectSound();
+        btn.classList.add('selected');
+        
+        // Add selection animation
+        btn.style.animation = 'none';
+        btn.offsetHeight; // Trigger reflow
+        btn.style.animation = 'selectPop 0.3s ease';
     }
-    updateUI();
+    updateSelectionCount();
 }
 
-// Quantum Selection
-function quantumSelect() {
+// Update Selection Counter
+function updateSelectionCount() {
+    const counter = document.getElementById('pickedCount');
+    counter.textContent = state.selectedNumbers.size;
+}
+
+// Quick Select
+function quickSelect() {
     clearSelection();
-    const buffer = new Uint32Array(state.maxNumbers);
-    crypto.getRandomValues(buffer);
-    
-    buffer.forEach(value => {
-        let num = (value % 49) + 1;
-        while (state.selectedNumbers.has(num)) {
-            num = (num % 49) + 1;
+    while (state.selectedNumbers.size < state.maxNumbers) {
+        const num = Math.floor(Math.random() * 49) + 1;
+        if (!state.selectedNumbers.has(num)) {
+            state.selectedNumbers.add(num);
+            document.querySelectorAll('.number-btn')[num-1].classList.add('selected');
         }
-        state.selectedNumbers.add(num);
-        document.querySelectorAll('.number-cell')[num-1].classList.add('selected');
-    });
-    updateUI();
+    }
+    updateSelectionCount();
 }
 
-// AI Selection
+// AI Select (Premium Feature)
 function aiSelect() {
-    // Advanced selection algorithm would go here
+    // Simulate AI-powered selection with weighted probabilities
+    const weights = new Array(49).fill(0).map(() => Math.random() * 0.5 + 0.5);
     clearSelection();
-    const weights = new Array(49).fill(0).map(() => Math.random());
     
     for (let i = 0; i < state.maxNumbers; i++) {
         let maxWeight = -1;
@@ -725,86 +559,151 @@ function aiSelect() {
         });
         
         state.selectedNumbers.add(selectedNum);
-        document.querySelectorAll('.number-cell')[selectedNum-1].classList.add('selected');
+        document.querySelectorAll('.number-btn')[selectedNum-1].classList.add('selected');
     }
-    updateUI();
+    updateSelectionCount();
 }
 
 // Clear Selection
 function clearSelection() {
     state.selectedNumbers.clear();
-    document.querySelectorAll('.number-cell').forEach(cell => {
-        cell.classList.remove('selected');
+    document.querySelectorAll('.number-btn').forEach(btn => {
+        btn.classList.remove('selected');
     });
-    updateUI();
+    updateSelectionCount();
 }
 
-// Update UI
-function updateUI() {
-    document.getElementById('selectedCount').textContent = state.selectedNumbers.size;
-    document.getElementById('submitEntry').disabled = state.selectedNumbers.size !== state.maxNumbers;
-}
-
-// Web3 Integration
-async function setupWeb3() {
-    if (typeof window.ethereum !== 'undefined') {
-        try {
-            state.provider = new ethers.providers.Web3Provider(window.ethereum);
-            const network = await state.provider.getNetwork();
-            
-            if (network.chainId !== 25) { // Cronos Mainnet
-                showNotification('Please switch to Cronos network', 'warning');
-            }
-        } catch (error) {
-            console.error('Web3 setup error:', error);
-            showNotification('Failed to setup Web3', 'error');
-        }
-    }
-}
-
-// Connect Wallet
-async function connectWallet() {
-    try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        state.signer = state.provider.getSigner();
-        showNotification('Wallet connected successfully!', 'success');
-        updateWalletUI(accounts[0]);
-    } catch (error) {
-        console.error('Wallet connection error:', error);
-        showNotification('Failed to connect wallet', 'error');
-    }
-}
-
-// Notification System
-function showNotification(message, type) {
-    // Implement premium notification system
-    console.log(`${type}: ${message}`);
-}
-
-// Sound Effects
-function playSelectSound() {
-    // Implement premium sound effects
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', initializeGame);
-
-// Window resize handler
-window.addEventListener('resize', () => {
-    if (particleSystem) {
-        const camera = particleSystem.parent.children[0];
-        const renderer = particleSystem.parent.children[1];
+// Draw Timer
+function startDrawTimer() {
+    const timerElement = document.getElementById('drawTimer');
+    let timeLeft = 12 * 3600; // 12 hours in seconds
+    
+    state.timer = setInterval(() => {
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
         
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(state.timer);
+            executeDraw();
+        }
+        timeLeft--;
+    }, 1000);
+}
+
+// Execute Draw
+function executeDraw() {
+    // Simulate blockchain confirmation
+    setTimeout(() => {
+        const winningNumbers = new Array(6).fill(0).map(() => Math.floor(Math.random() * 49) + 1);
+        checkWinners(winningNumbers);
+        resetDraw();
+    }, 2000);
+}
+
+// Check Winners
+function checkWinners(winningNumbers) {
+    state.entries.forEach(entry => {
+        const matches = entry.numbers.filter(num => winningNumbers.includes(num)).length;
+        if (matches >= 3) {
+            notifyWinner(entry, matches);
+        }
+    });
+}
+
+// Submit Entry
+function submitEntry() {
+    if (state.selectedNumbers.size !== state.maxNumbers) {
+        showNotification('Please select 6 numbers', 'warning');
+        return;
     }
     
-    const neuralCanvas = document.getElementById('neuralCanvas');
-    if (neuralCanvas) {
-        neuralCanvas.width = window.innerWidth;
-        neuralCanvas.height = window.innerHeight;
-    }
-});
+    const entry = {
+        id: Date.now(),
+        numbers: Array.from(state.selectedNumbers).sort((a, b) => a - b),
+        timestamp: new Date().toISOString()
+    };
+    
+    state.entries.push(entry);
+    addEntryToUI(entry);
+    clearSelection();
+    showNotification('Entry submitted successfully!', 'success');
+}
+
+// Add Entry to UI
+function addEntryToUI(entry) {
+    const entriesList = document.getElementById('entriesList');
+    const entryElement = document.createElement('div');
+    entryElement.className = 'entry-item';
+    entryElement.innerHTML = `
+        <div class="entry-numbers">
+            ${entry.numbers.map(n => `<span class="number">${n}</span>`).join(' ')}
+        </div>
+        <div class="entry-timestamp">${new Date(entry.timestamp).toLocaleTimeString()}</div>
+    `;
+    entriesList.prepend(entryElement);
+    
+    // Update active count
+    document.getElementById('activeCount').textContent = `${state.entries.length} Active`;
+}
+
+// Notifications
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after delay
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Setup Event Listeners
+function setupEventListeners() {
+    document.getElementById('submitEntry').addEventListener('click', submitEntry);
+    document.getElementById('multiEntry').addEventListener('click', () => {
+        showNotification('Multi-entry feature coming soon!', 'info');
+    });
+    
+    document.getElementById('walletConnect').addEventListener('click', async () => {
+        try {
+            // Simulated wallet connection
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            document.getElementById('walletConnect').querySelector('span:last-child').textContent = '0x1234...5678';
+            showNotification('Wallet connected successfully!', 'success');
+        } catch (error) {
+            showNotification('Failed to connect wallet', 'error');
+        }
+    });
+}
+
+// Load User Entries
+function loadUserEntries() {
+    // Simulate loading existing entries
+    const mockEntries = [
+        {
+            id: Date.now() - 1000,
+            numbers: [7, 13, 24, 31, 42, 48],
+            timestamp: new Date(Date.now() - 1000000).toISOString()
+        },
+        {
+            id: Date.now() - 2000,
+            numbers: [3, 11, 19, 27, 35, 44],
+            timestamp: new Date(Date.now() - 2000000).toISOString()
+        }
+    ];
+    
+    mockEntries.forEach(entry => {
+        state.entries.push(entry);
+        addEntryToUI(entry);
+    });
+}
 </script>
 </html>
