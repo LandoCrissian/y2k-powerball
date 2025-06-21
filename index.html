@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GL1TCHBALL // Y2K ARCADE</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    
-    <!-- Ethers.js -->
     <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
 </head>
 <body>
@@ -54,43 +48,6 @@
             </div>
         </div>
 
-        <!-- VAULT PROFILE -->
-        <div id="vaultProfile" class="vault-profile" style="display: none;">
-            <div class="profile-header">
-                <span class="profile-label">VAULT PROFILE</span>
-                <span class="profile-status">CONNECTED</span>
-            </div>
-            <div class="profile-content">
-                <div class="profile-stat">
-                    <span>USERNAME</span>
-                    <span id="profileUsername">--</span>
-                </div>
-                <div class="profile-stat">
-                    <span>X HANDLE</span>
-                    <span id="profileHandle">--</span>
-                </div>
-                <div class="profile-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="profileGames">0</span>
-                        <span class="stat-label">GAMES</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="profileWins">0</span>
-                        <span class="stat-label">WINS</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="profileEarnings">0</span>
-                        <span class="stat-label">Y2K WON</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VAULT ACCESS CHECK -->
-        <div id="vaultAccessCheck" class="vault-check" style="display: none;">
-            <!-- Will be populated based on Y2K balance -->
-        </div>
-
         <!-- Coming Soon Section -->
         <div class="coming-soon">
             <h2>ENTRY SYSTEM COMING SOON</h2>
@@ -100,6 +57,12 @@
                 <div class="feature">💎 50 CRO Entry</div>
                 <div class="feature">🏆 Dual Token Rewards</div>
             </div>
+        </div>
+
+        <!-- Network Status -->
+        <div id="networkStatus" class="network-status">
+            <div class="status-icon">📡</div>
+            <div class="status-text">Checking Network...</div>
         </div>
     </div>
 </main>
@@ -114,7 +77,6 @@
 }
 
 :root {
-    /* Core Colors */
     --bg-primary: #0a0a0f;
     --bg-surface: #16161e;
     --text-primary: #ffffff;
@@ -123,49 +85,38 @@
     --accent-secondary: #ff00f7;
     --error: #ff4444;
     --success: #00ff9d;
-    
-    /* Gradients */
     --gradient-glitch: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-    --gradient-surface: linear-gradient(180deg, var(--bg-surface), rgba(22,22,30,0.8));
 }
 
-/* Document Level Styles */
-html, body {
+html {
+    background-color: var(--bg-primary);
+}
+
+body {
     height: 100%;
     width: 100%;
     background: var(--bg-primary);
     color: var(--text-primary);
     font-family: 'Orbitron', sans-serif;
     line-height: 1.5;
-    overflow-x: hidden;
 }
 
-/* Main Container */
 .main-container {
     min-height: 100vh;
     width: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 40px;
+    padding: 20px;
 }
 
-/* App Container */
 .app-container {
     max-width: 480px;
     margin: 0 auto;
-    padding: 20px;
     position: relative;
 }
 
-/* GL1TCH HEADER */
 .glitch-header {
     text-align: center;
     margin-bottom: 32px;
     padding-top: 20px;
-}
-
-.connect-wrapper {
-    margin-bottom: 24px;
 }
 
 .connect-btn {
@@ -181,10 +132,6 @@ html, body {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
-}
-
-.connect-btn:hover {
-    background: rgba(255,255,255,0.1);
 }
 
 .connect-dot {
@@ -207,7 +154,6 @@ html, body {
     background: var(--gradient-glitch);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: glitchPulse 4s infinite alternate;
 }
 
 .glitch-subtitle {
@@ -234,10 +180,8 @@ html, body {
     font-family: monospace;
     font-size: 24px;
     color: var(--accent-primary);
-    text-shadow: 0 0 10px var(--accent-primary);
 }
 
-/* TOKEN POTS */
 .token-pots {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -246,7 +190,7 @@ html, body {
 }
 
 .pot {
-    background: var(--gradient-surface);
+    background: var(--bg-surface);
     border-radius: 16px;
     padding: 20px;
     border: 1px solid rgba(255,255,255,0.1);
@@ -274,200 +218,10 @@ html, body {
     font-size: 20px;
     font-weight: 700;
     color: var(--accent-primary);
-    text-shadow: 0 0 10px rgba(0,255,225,0.4);
 }
 
-/* VAULT PROFILE */
-.vault-profile {
-    background: var(--gradient-surface);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.profile-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.profile-status {
-    font-size: 12px;
-    color: var(--success);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.profile-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.profile-stat {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.profile-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 16px;
-}
-
-/* VAULT ACCESS CHECK */
-.vault-check {
-    background: var(--bg-surface);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
-}
-
-/* Qualified Message Styles */
-.qualified-message {
-    background: rgba(0, 255, 225, 0.1);
-    border: 1px solid rgba(0, 255, 225, 0.2);
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-}
-
-.glow-text {
-    color: var(--accent-primary);
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    text-shadow: 0 0 10px var(--accent-primary);
-}
-
-.balance-status {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: var(--success);
-}
-
-.benefits {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.benefit {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-}
-
-/* FOMO Message Styles */
-.fomo-message {
-    background: rgba(255, 0, 247, 0.1);
-    border: 1px solid rgba(255, 0, 247, 0.2);
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-}
-
-.fomo-header {
-    color: var(--accent-secondary);
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px var(--accent-secondary);
-}
-
-.balance-meter {
-    margin-bottom: 24px;
-}
-
-.meter-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
-}
-
-.meter-bar {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.meter-fill {
-    height: 100%;
-    background: var(--gradient-glitch);
-    border-radius: 4px;
-    transition: width 0.5s ease;
-}
-
-.meter-numbers {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 4px;
-}
-
-.fomo-status {
-    margin-bottom: 20px;
-    font-size: 14px;
-}
-
-.needed {
-    color: var(--accent-secondary);
-    font-weight: 700;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.locked-benefits {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.locked-benefits .benefit {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-}
-
-.benefit .icon {
-    font-size: 20px;
-}
-
-.qualify-cta, .buy-cta {
-    display: block;
-    background: var(--gradient-glitch);
-    color: var(--bg-primary);
-    padding: 16px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    animation: glowPulse 2s infinite alternate;
-}
-
-/* Coming Soon Section */
 .coming-soon {
-    background: var(--gradient-surface);
+    background: var(--bg-surface);
     border-radius: 16px;
     padding: 24px;
     text-align: center;
@@ -499,19 +253,29 @@ html, body {
     font-size: 16px;
 }
 
-/* Animations */
-@keyframes glitchPulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.02); }
-    100% { opacity: 1; transform: scale(1); }
+.network-status {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-surface);
+    padding: 12px 24px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-@keyframes glowPulse {
-    0% { box-shadow: 0 0 10px var(--accent-primary); }
-    100% { box-shadow: 0 0 20px var(--accent-secondary); }
+.status-icon {
+    font-size: 20px;
 }
 
-/* Mobile Optimizations */
+.status-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
 @media (max-width: 480px) {
     .app-container {
         padding: 16px;
@@ -520,258 +284,213 @@ html, body {
     .glitch-title {
         font-size: 36px;
     }
-    
-    .token-pots {
-        gap: 12px;
-    }
-    
-    .pot {
-        padding: 16px;
-    }
-    
-    .pot-amount {
-        font-size: 18px;
-    }
 }
 </style>
 
 <script>
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
-    authDomain: "y2k-arcade.firebaseapp.com",
-    projectId: "y2k-arcade",
-    storageBucket: "y2k-arcade.appspot.com",
-    messagingSenderId: "1063043176357",
-    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// Constants
+const CRONOS_CHAIN_ID = '0x19';
+const CRONOS_RPC = 'https://evm.cronos.org';
+const Y2K_TOKEN = '0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d';
+const DOJO_TOKEN = '0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4';
+const POT_WALLET = '0x348c2F06C64b4465f90446Fd806aFf3A01220450';
 
-// Token + Wallet Setup
-const Y2K_TOKEN = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
-const DOJO_TOKEN = "0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4";
-const POT_WALLET = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
-const MIN_Y2K_BALANCE = ethers.utils.parseUnits("4000000", 18);
-const ERC20_ABI = [
-    "function balanceOf(address owner) view returns (uint256)",
-    "function decimals() view returns (uint8)"
-];
-
+// State management
 let state = {
-    walletConnected: false,
-    walletAddress: null,
     provider: null,
-    signer: null
+    signer: null,
+    connected: false
 };
 
-// DOM Ready
-document.addEventListener('DOMContentLoaded', () => {
-    checkEthereumAvailability();
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    initializeApp();
     startDrawTimer();
-    updatePotBalances();
-    setupWalletConnection(); // still gated for connect logic
 });
 
-// 1. Check if Wallet Exists
-function checkEthereumAvailability() {
+async function initializeApp() {
+    updateNetworkStatus('Checking wallet connection...');
+    
     if (typeof window.ethereum === 'undefined') {
-        showNotification("⚠️ No Web3 wallet detected. Open in MetaMask or CDC Wallet browser.", 'error');
+        updateNetworkStatus('⚠️ No Web3 wallet detected');
+        return;
+    }
+
+    setupWalletListeners();
+    setupConnectButton();
+    await checkAndUpdateNetwork();
+    await updatePotBalances();
+}
+
+function setupWalletListeners() {
+    if (window.ethereum) {
+        window.ethereum.on('chainChanged', (chainId) => {
+            window.location.reload();
+        });
+
+        window.ethereum.on('accountsChanged', (accounts) => {
+            if (accounts.length === 0) {
+                state.connected = false;
+                updateConnectButton();
+                updateNetworkStatus('Wallet disconnected');
+            }
+        });
     }
 }
 
-// 2. Wallet Connection
-async function setupWalletConnection() {
+function setupConnectButton() {
     const connectBtn = document.getElementById('connectBtn');
-
-    connectBtn.addEventListener('click', async () => {
-        if (typeof window.ethereum === 'undefined') {
-            return showNotification("Install MetaMask or open in a Web3 browser", 'error');
-        }
-
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            state.walletAddress = accounts[0];
-            state.provider = new ethers.providers.Web3Provider(window.ethereum);
-            state.signer = state.provider.getSigner();
-            state.walletConnected = true;
-
-            connectBtn.classList.add('connected');
-            connectBtn.querySelector('.connect-text').textContent = `${state.walletAddress.slice(0, 6)}...${state.walletAddress.slice(-4)}`;
-            await handleWalletConnection();
-        } catch (err) {
-            console.error('[Wallet Connect Error]', err);
-            showNotification('Failed to connect wallet', 'error');
-        }
-    });
+    connectBtn.addEventListener('click', connectWallet);
 }
 
-// 3. Handle Wallet Profile and Balance
-async function handleWalletConnection() {
+async function connectWallet() {
     try {
-        const profileData = await checkExistingProfile(state.walletAddress);
-        const y2kBalance = await checkY2KBalance(state.walletAddress);
-        const hasEnoughY2K = y2kBalance.gte(MIN_Y2K_BALANCE);
-
-        if (profileData) {
-            showVaultProfile(profileData);
-        } else if (hasEnoughY2K) {
-            showQualifiedCTA();
-        } else {
-            showFOMOMessage(y2kBalance);
+        updateNetworkStatus('Connecting wallet...');
+        
+        // Request account access
+        const accounts = await window.ethereum.request({ 
+            method: 'eth_requestAccounts' 
+        });
+        
+        // Check if we're on Cronos network
+        const chainId = await window.ethereum.request({ 
+            method: 'eth_chainId' 
+        });
+        
+        if (chainId !== CRONOS_CHAIN_ID) {
+            await switchToCronos();
         }
-    } catch (err) {
-        console.error('[Handle Wallet Connection Error]', err);
+        
+        // Setup provider and signer
+        state.provider = new ethers.providers.Web3Provider(window.ethereum);
+        state.signer = state.provider.getSigner();
+        state.connected = true;
+        
+        updateConnectButton(accounts[0]);
+        updateNetworkStatus('Connected to Cronos ✅');
+        await updatePotBalances();
+        
+    } catch (error) {
+        console.error('Connection error:', error);
+        updateNetworkStatus('⚠️ Connection failed');
     }
 }
 
-// 4. Check Firebase Profile
-async function checkExistingProfile(address) {
+async function switchToCronos() {
     try {
-        const doc = await db.collection('users').doc(address.toLowerCase()).get();
-        return doc.exists ? doc.data() : null;
-    } catch (err) {
-        console.error('[Check Profile Error]', err);
-        return null;
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: CRONOS_CHAIN_ID }],
+        });
+    } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: CRONOS_CHAIN_ID,
+                        chainName: 'Cronos Mainnet',
+                        nativeCurrency: {
+                            name: 'CRO',
+                            symbol: 'CRO',
+                            decimals: 18
+                        },
+                        rpcUrls: [CRONOS_RPC],
+                        blockExplorerUrls: ['https://cronoscan.com/']
+                    }]
+                });
+            } catch (addError) {
+                throw new Error('Failed to add Cronos network');
+            }
+        }
+        throw new Error('Failed to switch to Cronos network');
     }
 }
 
-// 5. Check Y2K Token Balance
-async function checkY2KBalance(address) {
-    try {
-        const contract = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, state.provider);
-        return await contract.balanceOf(address);
-    } catch (err) {
-        console.error('[Check Y2K Balance Error]', err);
-        return ethers.BigNumber.from(0);
+function updateConnectButton(address = null) {
+    const connectBtn = document.getElementById('connectBtn');
+    if (state.connected && address) {
+        connectBtn.classList.add('connected');
+        connectBtn.querySelector('.connect-text').textContent = 
+            `${address.slice(0, 6)}...${address.slice(-4)}`;
+    } else {
+        connectBtn.classList.remove('connected');
+        connectBtn.querySelector('.connect-text').textContent = 'CONNECT';
     }
 }
 
-// 6. Update Pot Balances (independent of wallet)
 async function updatePotBalances() {
     try {
-        const provider = new ethers.providers.JsonRpcProvider("https://evm.cronos.org");
-        const y2k = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, provider);
-        const dojo = new ethers.Contract(DOJO_TOKEN, ERC20_ABI, provider);
-
-        const [y2kBal, dojoBal] = await Promise.all([
-            y2k.balanceOf(POT_WALLET),
-            dojo.balanceOf(POT_WALLET)
+        const provider = new ethers.providers.JsonRpcProvider(CRONOS_RPC);
+        const abi = ["function balanceOf(address) view returns (uint256)"];
+        
+        const y2kContract = new ethers.Contract(Y2K_TOKEN, abi, provider);
+        const dojoContract = new ethers.Contract(DOJO_TOKEN, abi, provider);
+        
+        const [y2kBalance, dojoBalance] = await Promise.all([
+            y2kContract.balanceOf(POT_WALLET),
+            dojoContract.balanceOf(POT_WALLET)
         ]);
-
-        document.getElementById('y2kPotAmount').textContent =
-            `${ethers.utils.formatEther(y2kBal).split('.')[0]} Y2K`;
-        document.getElementById('dojoPotAmount').textContent =
-            `${ethers.utils.formatEther(dojoBal).split('.')[0]} DOJO`;
-    } catch (err) {
-        console.error('[Update Pot Balances Error]', err);
+        
+        document.getElementById('y2kPotAmount').textContent = 
+            `${ethers.utils.formatEther(y2kBalance).split('.')[0]} Y2K`;
+        document.getElementById('dojoPotAmount').textContent = 
+            `${ethers.utils.formatEther(dojoBalance).split('.')[0]} DOJO`;
+            
+    } catch (error) {
+        console.error('Failed to update pot balances:', error);
+        document.getElementById('y2kPotAmount').textContent = 'Error loading';
+        document.getElementById('dojoPotAmount').textContent = 'Error loading';
     }
 }
 
-// 7. Countdown Timer
 function startDrawTimer() {
     function updateTimer() {
         const now = new Date();
         const drawTime = new Date();
-        drawTime.setHours(24, 0, 0, 0);
-        if (drawTime <= now) drawTime.setDate(drawTime.getDate() + 1);
+        drawTime.setUTCHours(24, 0, 0, 0);
+        
+        if (drawTime <= now) {
+            drawTime.setDate(drawTime.getDate() + 1);
+        }
+        
         const diff = drawTime - now;
-
-        const hrs = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-        const mins = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-        const secs = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-        document.getElementById('drawTimer').textContent = `${hrs}:${mins}:${secs}`;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('drawTimer').textContent = 
+            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
-
+    
     updateTimer();
     setInterval(updateTimer, 1000);
 }
 
-// 8. Vault Profile & CTA Rendering
-function showVaultProfile(profile) {
-    document.getElementById('vaultAccessCheck').style.display = 'none';
-    const vault = document.getElementById('vaultProfile');
-    vault.style.display = 'block';
-    document.getElementById('profileUsername').textContent = profile.username || '--';
-    document.getElementById('profileHandle').textContent = profile.xHandle || '--';
-    document.getElementById('profileGames').textContent = profile.games || '0';
-    document.getElementById('profileWins').textContent = profile.wins || '0';
-    document.getElementById('profileEarnings').textContent = profile.earnings
-        ? `${profile.earnings.toLocaleString()} Y2K` : '0';
+async function checkAndUpdateNetwork() {
+    if (!window.ethereum) return;
+    
+    try {
+        const chainId = await window.ethereum.request({ 
+            method: 'eth_chainId' 
+        });
+        
+        if (chainId === CRONOS_CHAIN_ID) {
+            updateNetworkStatus('Connected to Cronos ✅');
+        } else {
+            updateNetworkStatus('Please switch to Cronos network');
+        }
+    } catch (error) {
+        updateNetworkStatus('Network check failed');
+    }
 }
 
-function showQualifiedCTA() {
-    const vaultCheck = document.getElementById('vaultAccessCheck');
-    vaultCheck.style.display = 'block';
-    vaultCheck.innerHTML = `
-        <div class="qualified-message">
-            <div class="glow-text">🎯 QUALIFIED FOR VAULT ACCESS</div>
-            <div class="balance-status">✅ 4M+ Y2K VERIFIED</div>
-            <a href="https://y2k-the-vault.netlify.app/" target="_blank" class="qualify-cta">🔓 CREATE YOUR PLAYER PROFILE →</a>
-            <div class="benefits">
-                <div class="benefit">🎮 Unlock Free Weekly Entries</div>
-                <div class="benefit">🏆 Join Private Tournaments</div>
-                <div class="benefit">💎 Earn Exclusive Rewards</div>
-            </div>
-        </div>
-    `;
-    showNotification('You qualify for Vault access! 🎯', 'success');
-}
-
-function showFOMOMessage(balance) {
-    const vaultCheck = document.getElementById('vaultAccessCheck');
-    const current = ethers.utils.formatUnits(balance, 18);
-    const needed = 4000000 - parseFloat(current);
-
-    vaultCheck.style.display = 'block';
-    vaultCheck.innerHTML = `
-        <div class="fomo-message">
-            <div class="fomo-header">🔒 VAULT ACCESS LOCKED</div>
-            <div class="balance-meter">
-                <div class="meter-label">YOUR Y2K BALANCE</div>
-                <div class="meter-bar">
-                    <div class="meter-fill" style="width: ${(parseFloat(current) / 4000000) * 100}%"></div>
-                </div>
-                <div class="meter-numbers">
-                    <span>${Number(current).toLocaleString()} Y2K</span>
-                    <span>4M Y2K</span>
-                </div>
-            </div>
-            <div class="fomo-status">
-                <span class="needed">Need ${needed.toLocaleString()} more Y2K</span>
-                <span>to unlock:</span>
-            </div>
-            <div class="locked-benefits">
-                <div class="benefit"><span class="icon">🎮</span> <span>5 Free Entries Weekly</span></div>
-                <div class="benefit"><span class="icon">👑</span> <span>Elite Player Profile</span></div>
-                <div class="benefit"><span class="icon">💰</span> <span>Bonus Prize Multipliers</span></div>
-                <div class="benefit"><span class="icon">🏆</span> <span>Private Tournaments</span></div>
-            </div>
-            <a href="https://mm.finance/swap" target="_blank" class="buy-cta">GET Y2K NOW →</a>
-        </div>
-    `;
-}
-
-// 9. Simple Notification System
-function showNotification(message, type) {
-    const el = document.createElement('div');
-    el.className = `notification ${type}`;
-    el.textContent = message;
-    el.style = `
-        position: fixed;
-        bottom: 16px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-family: Orbitron, sans-serif;
-        font-size: 14px;
-        z-index: 9999;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
+function updateNetworkStatus(message) {
+    const statusText = document.querySelector('.status-text');
+    if (statusText) {
+        statusText.textContent = message;
+    }
 }
 </script>
 
