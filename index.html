@@ -15,7 +15,6 @@
 </head>
 <body>
 
-<!-- Main Scroll Container -->
 <main class="main-container">
     <div class="app-container">
         <!-- GL1TCH HEADER -->
@@ -36,8 +35,27 @@
             </div>
         </div>
 
+        <!-- TOKEN POTS -->
+        <div class="token-pots">
+            <div class="pot y2k-pot">
+                <div class="pot-header">
+                    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="pot-icon">
+                    <span class="pot-label">Y2K POT</span>
+                </div>
+                <div class="pot-amount" id="y2kPotAmount">Loading...</div>
+            </div>
+            
+            <div class="pot dojo-pot">
+                <div class="pot-header">
+                    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="pot-icon">
+                    <span class="pot-label">DOJO POT</span>
+                </div>
+                <div class="pot-amount" id="dojoPotAmount">Loading...</div>
+            </div>
+        </div>
+
         <!-- VAULT PROFILE -->
-        <div id="vaultProfile" class="vault-profile">
+        <div id="vaultProfile" class="vault-profile" style="display: none;">
             <div class="profile-header">
                 <span class="profile-label">VAULT PROFILE</span>
                 <span class="profile-status">CONNECTED</span>
@@ -69,27 +87,8 @@
         </div>
 
         <!-- VAULT ACCESS CHECK -->
-        <div id="vaultAccessCheck" class="vault-check">
+        <div id="vaultAccessCheck" class="vault-check" style="display: none;">
             <!-- Will be populated based on Y2K balance -->
-        </div>
-
-        <!-- TOKEN POTS -->
-        <div class="token-pots">
-            <div class="pot y2k-pot">
-                <div class="pot-header">
-                    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="pot-icon">
-                    <span class="pot-label">Y2K POT</span>
-                </div>
-                <div class="pot-amount" id="y2kPotAmount">Loading...</div>
-            </div>
-            
-            <div class="pot dojo-pot">
-                <div class="pot-header">
-                    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="pot-icon">
-                    <span class="pot-label">DOJO POT</span>
-                </div>
-                <div class="pot-amount" id="dojoPotAmount">Loading...</div>
-            </div>
         </div>
 
         <!-- Coming Soon Section -->
@@ -147,7 +146,7 @@ html, body {
     width: 100%;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 40px; /* Extra padding at bottom */
+    padding-bottom: 40px;
 }
 
 /* App Container */
@@ -182,6 +181,10 @@ html, body {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
+}
+
+.connect-btn:hover {
+    background: rgba(255,255,255,0.1);
 }
 
 .connect-dot {
@@ -234,6 +237,46 @@ html, body {
     text-shadow: 0 0 10px var(--accent-primary);
 }
 
+/* TOKEN POTS */
+.token-pots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.pot {
+    background: var(--gradient-surface);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.pot-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.pot-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.pot-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.pot-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px rgba(0,255,225,0.4);
+}
+
 /* VAULT PROFILE */
 .vault-profile {
     background: var(--gradient-surface);
@@ -241,7 +284,6 @@ html, body {
     padding: 20px;
     margin-bottom: 24px;
     border: 1px solid rgba(255,255,255,0.1);
-    display: none; /* Initially hidden */
 }
 
 .profile-header {
@@ -290,11 +332,127 @@ html, body {
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 24px;
-    text-align: center;
-    display: none; /* Initially hidden */
 }
 
-.qualify-cta {
+/* Qualified Message Styles */
+.qualified-message {
+    background: rgba(0, 255, 225, 0.1);
+    border: 1px solid rgba(0, 255, 225, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.glow-text {
+    color: var(--accent-primary);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-shadow: 0 0 10px var(--accent-primary);
+}
+
+.balance-status {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--success);
+}
+
+.benefits {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.benefit {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* FOMO Message Styles */
+.fomo-message {
+    background: rgba(255, 0, 247, 0.1);
+    border: 1px solid rgba(255, 0, 247, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.fomo-header {
+    color: var(--accent-secondary);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px var(--accent-secondary);
+}
+
+.balance-meter {
+    margin-bottom: 24px;
+}
+
+.meter-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.meter-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.meter-fill {
+    height: 100%;
+    background: var(--gradient-glitch);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.meter-numbers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.fomo-status {
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.needed {
+    color: var(--accent-secondary);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.locked-benefits {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.locked-benefits .benefit {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.benefit .icon {
+    font-size: 20px;
+}
+
+.qualify-cta, .buy-cta {
     display: block;
     background: var(--gradient-glitch);
     color: var(--bg-primary);
@@ -302,57 +460,9 @@ html, body {
     border-radius: 12px;
     text-decoration: none;
     font-weight: 700;
-    margin-top: 16px;
-    text-shadow: 0 0 10px rgba(255,255,255,0.4);
-}
-
-.locked-warning {
-    background: rgba(255,0,0,0.1);
-    border: 1px solid rgba(255,0,0,0.2);
-    color: #ff6b6b;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 600;
-}
-
-/* TOKEN POTS */
-.token-pots {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.pot {
-    background: var(--gradient-surface);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.pot-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.pot-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-
-.pot-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.pot-amount {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--accent-primary);
-    text-shadow: 0 0 10px rgba(0,255,225,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: glowPulse 2s infinite alternate;
 }
 
 /* Coming Soon Section */
@@ -396,6 +506,11 @@ html, body {
     100% { opacity: 1; transform: scale(1); }
 }
 
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 10px var(--accent-primary); }
+    100% { box-shadow: 0 0 20px var(--accent-secondary); }
+}
+
 /* Mobile Optimizations */
 @media (max-width: 480px) {
     .app-container {
@@ -417,26 +532,6 @@ html, body {
     .pot-amount {
         font-size: 18px;
     }
-}
-
-/* Notification Styles */
-.notification {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 24px;
-    border-radius: 12px;
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    font-size: 14px;
-    z-index: 1000;
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from { transform: translate(-50%, 100%); opacity: 0; }
-    to { transform: translate(-50%, 0); opacity: 1; }
 }
 </style>
 
@@ -483,6 +578,144 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePotBalances();
 });
 
+// Profile & Balance Check Flow
+async function handleWalletConnection() {
+    const profileData = await checkExistingProfile(state.walletAddress);
+    const y2kBalance = await checkY2KBalance(state.walletAddress);
+    const hasEnoughY2K = y2kBalance.gte(MIN_Y2K_BALANCE);
+
+    if (profileData) {
+        // User has existing profile - show it
+        showVaultProfile(profileData);
+    } else if (hasEnoughY2K) {
+        // Qualified but no profile - show CTA
+        showQualifiedCTA();
+    } else {
+        // Not qualified - show FOMO message
+        showFOMOMessage(y2kBalance);
+    }
+}
+
+async function checkExistingProfile(address) {
+    try {
+        const userDoc = await db.collection('users')
+            .doc(address.toLowerCase())
+            .get();
+            
+        return userDoc.exists ? userDoc.data() : null;
+    } catch (error) {
+        console.error('Profile check failed:', error);
+        return null;
+    }
+}
+
+async function checkY2KBalance(address) {
+    try {
+        const y2kContract = new ethers.Contract(
+            Y2K_TOKEN,
+            ["function balanceOf(address) view returns (uint256)"],
+            state.provider
+        );
+        return await y2kContract.balanceOf(address);
+    } catch (error) {
+        console.error('Balance check failed:', error);
+        return ethers.BigNumber.from(0);
+    }
+}
+
+function showVaultProfile(profile) {
+    const vaultProfile = document.getElementById('vaultProfile');
+    const vaultCheck = document.getElementById('vaultAccessCheck');
+    
+    // Hide access check
+    vaultCheck.style.display = 'none';
+    
+    // Show and populate profile
+    vaultProfile.style.display = 'block';
+    document.getElementById('profileUsername').textContent = profile.username || '--';
+    document.getElementById('profileHandle').textContent = profile.xHandle || '--';
+    document.getElementById('profileGames').textContent = profile.games || '0';
+    document.getElementById('profileWins').textContent = profile.wins || '0';
+    document.getElementById('profileEarnings').textContent = 
+        profile.earnings ? `${profile.earnings.toLocaleString()} Y2K` : '0';
+}
+
+function showQualifiedCTA() {
+    const vaultCheck = document.getElementById('vaultAccessCheck');
+    vaultCheck.style.display = 'block';
+    vaultCheck.innerHTML = `
+        <div class="qualified-message">
+            <div class="glow-text">🎯 QUALIFIED FOR VAULT ACCESS</div>
+            <div class="balance-status">
+                <span>✅ 4M+ Y2K VERIFIED</span>
+            </div>
+            <a href="https://y2k-the-vault.netlify.app/" target="_blank" class="qualify-cta">
+                🔓 CREATE YOUR PLAYER PROFILE →
+            </a>
+            <div class="benefits">
+                <div class="benefit">🎮 Unlock Free Weekly Entries</div>
+                <div class="benefit">🏆 Join Private Tournaments</div>
+                <div class="benefit">💎 Earn Exclusive Rewards</div>
+            </div>
+        </div>
+    `;
+
+    // Show success notification
+    showNotification('You qualify for Vault access! 🎯', 'success');
+}
+
+function showFOMOMessage(balance) {
+    const vaultCheck = document.getElementById('vaultAccessCheck');
+    const currentBalance = ethers.utils.formatUnits(balance, 18);
+    const needed = 4000000 - parseFloat(currentBalance);
+    
+    vaultCheck.style.display = 'block';
+    vaultCheck.innerHTML = `
+        <div class="fomo-message">
+            <div class="fomo-header">🔒 VAULT ACCESS LOCKED</div>
+            
+            <div class="balance-meter">
+                <div class="meter-label">YOUR Y2K BALANCE</div>
+                <div class="meter-bar">
+                    <div class="meter-fill" style="width: ${(parseFloat(currentBalance) / 4000000) * 100}%"></div>
+                </div>
+                <div class="meter-numbers">
+                    <span>${Number(currentBalance).toLocaleString()} Y2K</span>
+                    <span>4M Y2K</span>
+                </div>
+            </div>
+            
+            <div class="fomo-status">
+                <span class="needed">Need ${needed.toLocaleString()} more Y2K</span>
+                <span>to unlock:</span>
+            </div>
+            
+            <div class="locked-benefits">
+                <div class="benefit">
+                    <span class="icon">🎮</span>
+                    <span>5 Free Entries Weekly</span>
+                </div>
+                <div class="benefit">
+                    <span class="icon">👑</span>
+                    <span>Elite Player Profile</span>
+                </div>
+                <div class="benefit">
+                    <span class="icon">💰</span>
+                    <span>Bonus Prize Multipliers</span>
+                </div>
+                <div class="benefit">
+                    <span class="icon">🏆</span>
+                    <span>Private Tournaments</span>
+                </div>
+            </div>
+            
+            <a href="https://mm.finance/swap" target="_blank" class="buy-cta">
+                GET Y2K NOW →
+            </a>
+        </div>
+    `;
+}
+
 // Wallet Connection
 async function setupWalletConnection() {
     const connectBtn = document.getElementById('connectBtn');
@@ -507,9 +740,8 @@ async function setupWalletConnection() {
                     connectBtn.querySelector('.connect-text').textContent = 
                         `${state.walletAddress.slice(0,6)}...${state.walletAddress.slice(-4)}`;
                     
-                    // Check profile and balance
-                    await checkVaultProfile();
-                    await checkY2KBalance();
+                    // Handle profile and balance checks
+                    await handleWalletConnection();
                     
                 } catch (error) {
                     console.error('Connection failed:', error);
@@ -521,71 +753,6 @@ async function setupWalletConnection() {
         connectBtn.addEventListener('click', () => {
             showNotification('Please install MetaMask', 'error');
         });
-    }
-}
-
-// Check Vault Profile
-async function checkVaultProfile() {
-    try {
-        const userDoc = await db.collection('users')
-            .doc(state.walletAddress.toLowerCase())
-            .get();
-            
-        if (userDoc.exists) {
-            state.vaultProfile = userDoc.data();
-            showVaultProfile();
-        } else {
-            await checkY2KBalance();
-        }
-    } catch (error) {
-        console.error('Profile check failed:', error);
-    }
-}
-
-// Show Vault Profile
-function showVaultProfile() {
-    const profile = state.vaultProfile;
-    const profileElement = document.getElementById('vaultProfile');
-    profileElement.style.display = 'block';
-    
-    document.getElementById('profileUsername').textContent = profile.username || '--';
-    document.getElementById('profileHandle').textContent = profile.xHandle || '--';
-    document.getElementById('profileGames').textContent = profile.games || '0';
-    document.getElementById('profileWins').textContent = profile.wins || '0';
-    document.getElementById('profileEarnings').textContent = 
-        profile.earnings ? `${profile.earnings.toLocaleString()} Y2K` : '0';
-}
-
-// Check Y2K Balance
-async function checkY2KBalance() {
-    try {
-        const y2kContract = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, state.provider);
-        state.y2kBalance = await y2kContract.balanceOf(state.walletAddress);
-        checkVaultAccess();
-    } catch (error) {
-        console.error('Balance check failed:', error);
-    }
-}
-
-// Check Vault Access
-function checkVaultAccess() {
-    const vaultCheck = document.getElementById('vaultAccessCheck');
-    vaultCheck.style.display = 'block';
-    
-    if (state.y2kBalance.gte(MIN_Y2K_BALANCE)) {
-        vaultCheck.innerHTML = `
-            <a href="https://y2k-the-vault.netlify.app/" target="_blank" class="qualify-cta">
-                🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
-            </a>
-        `;
-    } else {
-        vaultCheck.innerHTML = `
-            <div class="locked-warning">
-                🔒 VAULT ACCESS LOCKED<br>
-                Hold 4,000,000+ Y2K to unlock free entries<br>
-                and your player identity
-            </div>
-        `;
     }
 }
 
