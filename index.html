@@ -4,565 +4,535 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GL1TCHBALL // Y2K ARCADE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet" />
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
-      authDomain: "y2k-arcade.firebaseapp.com",
-      projectId: "y2k-arcade",
-      storageBucket: "y2k-arcade.appspot.com",
-      messagingSenderId: "1063043176357",
-      appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-surface: #16161e;
-      --text-primary: #ffffff;
-      --text-secondary: rgba(255,255,255,0.7);
-      --accent-primary: #00ffe1;
-      --accent-secondary: #ff00f7;
+      --bg: #0a0a0f;
+      --surface: #16161e;
+      --accent: #00ffe1;
+      --accent2: #ff00f7;
       --error: #ff4444;
       --success: #00ff9d;
-      --gradient-glitch: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+      --white: #fff;
+      --text-faded: rgba(255,255,255,0.7);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
     }
 
-    html {
-      background-color: var(--bg-primary);
-      height: -webkit-fill-available;
-    }
-
-    body {
+    html, body {
+      background: var(--bg);
+      font-family: 'Orbitron', sans-serif;
+      color: var(--white);
       min-height: 100vh;
-      min-height: -webkit-fill-available;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-family: 'Orbitron', system-ui, -apple-system, sans-serif;
-      line-height: 1.5;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
     }
 
-    .main-container {
-      min-height: 100vh;
-      padding: 20px;
-      padding-bottom: env(safe-area-inset-bottom, 20px);
-    }
-
-    .app-container {
+    .container {
       max-width: 480px;
-      margin: 0 auto;
-      position: relative;
-      width: 100%;
+      margin: auto;
+      padding: 16px;
+      padding-bottom: 100px;
     }
 
-    .glitch-header {
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      margin-bottom: 32px;
-      padding-top: 20px;
+      margin-bottom: 24px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(45deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-faded);
+      letter-spacing: 4px;
+      margin-top: 4px;
+    }
+
+    .connect-block {
+      margin-top: 16px;
     }
 
     .connect-btn {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
+      color: var(--white);
+      padding: 12px 20px;
       border-radius: 24px;
-      padding: 12px 24px;
-      color: var(--text-primary);
-      font-size: 16px;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
+      gap: 10px;
       min-height: 48px;
-      min-width: 200px;
-      justify-content: center;
-    }
-
-    .connect-btn:active {
-      transform: scale(0.98);
-      background: rgba(255,255,255,0.1);
     }
 
     .connect-dot {
       width: 10px;
       height: 10px;
-      background: var(--error);
       border-radius: 50%;
-      display: inline-block;
+      background: var(--error);
+      transition: background 0.3s ease;
     }
 
     .connect-btn.connected .connect-dot {
       background: var(--success);
     }
 
-    .glitch-title {
-      font-size: clamp(32px, 8vw, 42px);
-      font-weight: 900;
-      letter-spacing: 2px;
-      margin: 24px 0 8px;
-      background: var(--gradient-glitch);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .status-bar {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-faded);
+      text-align: center;
     }
 
-    .glitch-subtitle {
-      font-size: 14px;
-      color: var(--text-secondary);
-      letter-spacing: 4px;
-      margin-bottom: 24px;
-    }
-
-    .next-draw {
-      background: var(--bg-surface);
-      border-radius: 12px;
+    .profile-section {
+      background: var(--surface);
       padding: 16px;
-      display: inline-block;
-      min-width: 200px;
+      border-radius: 12px;
+      margin-top: 24px;
+      display: none;
     }
 
-    .draw-label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
+    .profile-section.active {
+      display: block;
     }
 
-    .draw-timer {
-      font-size: 24px;
-      color: var(--accent-primary);
-      font-family: monospace;
-    }
-
-    .token-pots {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .pot {
-      background: var(--bg-surface);
-      border-radius: 16px;
-      padding: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .pot-header {
+    .profile-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 16px;
     }
 
-    .pot-icon {
-      width: 40px;
-      height: 40px;
+    .profile-img {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      object-fit: cover;
+      border: 2px solid var(--accent);
     }
 
-    .pot-label {
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nickname {
       font-size: 16px;
-      color: var(--text-secondary);
+      font-weight: bold;
+      color: var(--accent);
     }
 
-    .pot-amount {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--accent-primary);
+    .handle {
+      font-size: 12px;
+      color: var(--text-faded);
     }
 
-    .coming-soon {
-      background: var(--bg-surface);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
+    .profile-warning {
+      font-size: 13px;
+      color: var(--accent2);
+      margin-top: 8px;
+    }
+
+    .cta-link {
+      color: var(--accent);
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .section {
+      background: var(--surface);
+      padding: 16px;
+      border-radius: 12px;
       margin-top: 24px;
     }
 
-    .coming-soon h2 {
-      color: var(--accent-primary);
-      margin-bottom: 8px;
-      font-size: 20px;
-    }
-
-    .coming-soon p {
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-
-    .features {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .feature {
-      background: rgba(255,255,255,0.05);
-      padding: 16px;
-      border-radius: 8px;
+    .section-title {
       font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
-    .network-status {
-      position: fixed;
-      bottom: env(safe-area-inset-bottom, 20px);
-      left: 20px;
-      right: 20px;
-      background: var(--bg-surface);
-      padding: 16px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
-      z-index: 1000;
-      max-width: 480px;
-      margin: 0 auto;
-      transition: all 0.3s ease;
+    .collapsible {
+      cursor: pointer;
     }
 
-    .status-text {
-      font-size: 14px;
-      color: var(--text-secondary);
+    .collapsible + .content {
+      display: none;
     }
 
-    @media (min-width: 481px) {
-      .token-pots {
-        grid-template-columns: 1fr 1fr;
-      }
+    .collapsible.open + .content {
+      display: block;
+      margin-top: 12px;
     }
+
+    .profile-card {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 16px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.profile-card.active {
+  display: flex;
+}
+
+.profile-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.profile-pfp {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-primary);
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 18px;
+  color: var(--accent-primary);
+  font-weight: bold;
+}
+
+.profile-handle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.profile-warning {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 4px;
+}
+
+/* Number Picker */
+.number-picker-section {
+  background: var(--bg-surface);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.picker-title {
+  font-size: 18px;
+  color: var(--accent-primary);
+  margin-bottom: 16px;
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.number-grid div {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.number-grid div.selected {
+  background: var(--accent-primary);
+  color: #000;
+  font-weight: bold;
+}
+
+.enter-btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--gradient-glitch);
+  color: #000;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Leaderboard */
+.leaderboard-section {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  margin-bottom: 30px;
+}
+
+.leaderboard-header {
+  padding: 16px;
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--accent-primary);
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.leaderboard-body {
+  padding: 16px;
+  display: block;
+}
+
+.leaderboard-section.open .leaderboard-body {
+  display: none;
+}
+
+.leaderboard-list div {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
   </style>
 </head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="title">GL1TCHBALL</h1>
+      <div class="subtitle">VAULT PROTOCOL</div>
 
-    <body ontouchstart="">
-  <main class="main-container">
-    <div class="app-container">
-
-      <!-- 🧠 CONNECT WALLET + HEADER -->
-      <div class="glitch-header">
-        <div class="connect-wrapper">
-          <button id="connectBtn" class="connect-btn" role="button">
-            <span class="connect-dot"></span>
-            <span class="connect-text">CONNECT WALLET</span>
-          </button>
-        </div>
-        <h1 class="glitch-title">GL1TCHBALL</h1>
-        <div class="glitch-subtitle">VAULT PROTOCOL</div>
-        <div class="next-draw">
-          <div class="draw-label">NEXT DRAW</div>
-          <div id="drawTimer" class="draw-timer">00:00:00</div>
-        </div>
+      <div class="connect-block">
+        <button id="connectBtn" class="connect-btn">
+          <span class="connect-dot"></span>
+          <span class="connect-text">CONNECT WALLET</span>
+        </button>
       </div>
 
-      <!-- 🪙 TOKEN POTS -->
-      <div class="token-pots">
-        <div class="pot y2k-pot">
-          <div class="pot-header">
-            <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="pot-icon" loading="lazy">
-            <span class="pot-label">Y2K POT</span>
-          </div>
-          <div class="pot-amount" id="y2kPotAmount">Loading...</div>
-        </div>
+      <div id="statusBar" class="status-bar">Waiting for wallet...</div>
+    </header>
 
-        <div class="pot dojo-pot">
-          <div class="pot-header">
-            <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="pot-icon" loading="lazy">
-            <span class="pot-label">DOJO POT</span>
-          </div>
-          <div class="pot-amount" id="dojoPotAmount">Loading...</div>
+    <!-- Profile Section -->
+    <div id="profileSection" class="profile-section">
+      <div class="profile-header">
+        <img id="pfpImg" class="profile-img" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
+        <div class="profile-info">
+          <div id="nickname" class="nickname">anon</div>
+          <div id="handle" class="handle">@none</div>
         </div>
       </div>
-
-      <!-- ⏳ COMING SOON -->
-      <div class="coming-soon">
-        <h2>ENTRY SYSTEM COMING SOON</h2>
-        <p>Pick your numbers and enter the next draw</p>
-        <div class="features">
-          <div class="feature">🎮 6 Numbers</div>
-          <div class="feature">💎 50 CRO Entry</div>
-          <div class="feature">🏆 Dual Token Rewards</div>
-        </div>
+      <div id="profileWarning" class="profile-warning" style="display:none;">
+        You don’t hold 4M+ Y2K. Customize your badge in the <span class="cta-link" onclick="window.open('https://y2k-the-vault.netlify.app/', '_blank')">Quantum Vault</span>.
       </div>
-
-      <!-- 👤 VAULT PROFILE & CTA ZONE -->
-      <div id="vaultProfileContainer" style="margin-top: 24px;"></div>
-      <div id="vaultCTAContainer" style="margin-top: 24px;"></div>
-      <div id="vaultFOMOContainer" style="margin-top: 24px;"></div>
-
-      <!-- 📡 NETWORK STATUS -->
-      <div id="networkStatus" class="network-status">
-        <div class="status-icon">📡</div>
-        <div class="status-text">Ready to Connect</div>
-      </div>
-
     </div>
-  </main>
 
-        <script>
-// ===== Constants =====
-const CRONOS_CHAIN_ID = '0x19';
-const CRONOS_RPC = 'https://evm.cronos.org';
-const Y2K_TOKEN = '0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d';
-const DOJO_TOKEN = '0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4';
-const POT_WALLET = '0x348c2F06C64b4465f90446Fd806aFf3A01220450';
-const VAULT_URL = 'https://y2k-the-vault.netlify.app/';
-const REQUIRED_Y2K = 4_000_000;
+    <!-- Sample Expandable Section -->
+    <div class="section">
+      <div class="section-title collapsible" onclick="toggleCollapse(this)">Token Pots ▼</div>
+      <div class="content">
+        <p>Y2K: <span id="y2kPot">Loading...</span></p>
+        <p>DOJO: <span id="dojoPot">Loading...</span></p>
+      </div>
+    </div>
+  </div>
 
-// ===== Token ABI =====
-const TOKEN_ABI = [{
-  "constant": true,
-  "inputs": [{ "name": "_owner", "type": "address" }],
-  "name": "balanceOf",
-  "outputs": [{ "name": "balance", "type": "uint256" }],
-  "type": "function"
-}];
+  <!-- PLAYER PROFILE CARD -->
+<div id="profileSection" class="profile-card" style="display:none;">
+  <div class="profile-inner">
+    <img id="pfpImg" src="" alt="PFP" class="profile-pfp" />
+    <div class="profile-info">
+      <div id="nickname" class="profile-name">anon</div>
+      <div id="handle" class="profile-handle">@none</div>
+      <div id="profileWarning" class="profile-warning" style="display:none;"></div>
+    </div>
+  </div>
+</div>
 
-// ===== State =====
-let state = {
-  connected: false,
-  address: null,
-  chainId: null
-};
+<!-- NUMBER PICKER -->
+<div class="number-picker-section">
+  <div class="picker-title">Pick 6 Numbers</div>
+  <div class="number-grid" id="numberGrid"></div>
+  <button id="enterDrawBtn" class="enter-btn">ENTER DRAW</button>
+</div>
 
-// ===== Init =====
-document.addEventListener('DOMContentLoaded', () => {
-  setupListeners();
-  startDrawTimer();
-  checkWalletAvailability();
-});
+<!-- LEADERBOARD -->
+<div class="leaderboard-section">
+  <div class="leaderboard-header" onclick="toggleCollapse(this)">🏆 Top Players <span class="caret">▼</span></div>
+  <div class="leaderboard-body">
+    <div id="leaderboardList" class="leaderboard-list">Loading...</div>
+  </div>
+</div>
 
-function setupListeners() {
-  document.getElementById('connectBtn').addEventListener('click', handleConnect);
-}
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc
+  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-function checkWalletAvailability() {
-  if (window.ethereum) {
-    updateStatus('Ready to Connect');
-    listenToWalletEvents();
-  } else {
-    updateStatus('Please Install Web3 Wallet');
-  }
-}
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+    authDomain: "y2k-arcade.firebaseapp.com",
+    projectId: "y2k-arcade",
+    storageBucket: "y2k-arcade.appspot.com",
+    messagingSenderId: "1063043176357",
+    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+  };
 
-function listenToWalletEvents() {
-  ethereum.on('accountsChanged', () => window.location.reload());
-  ethereum.on('chainChanged', () => window.location.reload());
-}
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// ===== Wallet Connect Flow =====
-async function handleConnect() {
-  if (!window.ethereum) return updateStatus('Please Install Web3 Wallet');
-  try {
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-    const chainId = await ethereum.request({ method: 'eth_chainId' });
-    if (chainId !== CRONOS_CHAIN_ID) await switchToCronos();
+  const connectBtn = document.getElementById("connectBtn");
+  const statusBar = document.getElementById("statusBar");
 
-    state.address = accounts[0];
-    state.connected = true;
-    updateConnectUI();
-    updateStatus('Connected ✅');
+  let currentWallet = "";
 
-    await updatePotBalances();
-    await checkVaultProfile(state.address);
+  connectBtn.addEventListener("click", connectWallet);
 
-  } catch (err) {
-    console.error(err);
-    updateStatus('Connection Failed');
-  }
-}
-
-async function switchToCronos() {
-  try {
-    await ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: CRONOS_CHAIN_ID }]
-    });
-  } catch (error) {
-    if (error.code === 4902) {
-      await ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [{
-          chainId: CRONOS_CHAIN_ID,
-          chainName: 'Cronos Mainnet',
-          nativeCurrency: { name: 'CRO', symbol: 'CRO', decimals: 18 },
-          rpcUrls: [CRONOS_RPC],
-          blockExplorerUrls: ['https://cronoscan.com/']
-        }]
-      });
+  async function connectWallet() {
+    if (!window.ethereum) {
+      alert("Please install MetaMask.");
+      return;
     }
-  }
-}
 
-function updateConnectUI() {
-  const btn = document.getElementById('connectBtn');
-  btn.classList.add('connected');
-  btn.querySelector('.connect-text').textContent = `${state.address.slice(0, 4)}...${state.address.slice(-4)}`;
-  btn.querySelector('.connect-dot').style.background = 'var(--success)';
-}
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    currentWallet = (await signer.getAddress()).toLowerCase();
 
-function updateStatus(msg) {
-  document.querySelector('.status-text').textContent = msg;
-}
+    const short = `${currentWallet.slice(0, 6)}...${currentWallet.slice(-4)}`;
+    statusBar.textContent = `Connected: ${short}`;
+    connectBtn.classList.add("connected");
+    connectBtn.querySelector(".connect-text").textContent = "CONNECTED";
 
-// ===== Timer =====
-function startDrawTimer() {
-  function tick() {
-    const now = new Date();
-    const draw = new Date();
-    draw.setUTCHours(24, 0, 0, 0);
-    if (draw <= now) draw.setDate(draw.getDate() + 1);
-    const diff = draw - now;
-    const h = String(Math.floor(diff / 3.6e6)).padStart(2, '0');
-    const m = String(Math.floor((diff % 3.6e6) / 6e4)).padStart(2, '0');
-    const s = String(Math.floor((diff % 6e4) / 1000)).padStart(2, '0');
-    document.getElementById('drawTimer').textContent = `${h}:${m}:${s}`;
-  }
-  tick();
-  setInterval(tick, 1000);
-}
+    const y2kBalance = await getY2KBalance(currentWallet, provider);
 
-// ===== Pot Balances =====
-async function updatePotBalances() {
-  try {
-    const encoded = (addr) => `0x70a08231000000000000000000000000${POT_WALLET.slice(2).padStart(64, '0')}`;
-    const decode = (hex) => parseInt(hex, 16) / 1e18;
-
-    const [y2k, dojo] = await Promise.all([
-      fetch(CRONOS_RPC, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', method: 'eth_call',
-          params: [{ to: Y2K_TOKEN, data: encoded(Y2K_TOKEN) }, 'latest'],
-          id: 1
-        })
-      }).then(res => res.json()),
-
-      fetch(CRONOS_RPC, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', method: 'eth_call',
-          params: [{ to: DOJO_TOKEN, data: encoded(DOJO_TOKEN) }, 'latest'],
-          id: 2
-        })
-      }).then(res => res.json())
-    ]);
-
-    const y2kBal = Math.floor(decode(y2k.result)).toLocaleString();
-    const dojoBal = Math.floor(decode(dojo.result)).toLocaleString();
-    document.getElementById('y2kPotAmount').textContent = `${y2kBal} Y2K`;
-    document.getElementById('dojoPotAmount').textContent = `${dojoBal} DOJO`;
-  } catch (err) {
-    console.error('Pot error:', err);
-    document.getElementById('y2kPotAmount').textContent = 'Error';
-    document.getElementById('dojoPotAmount').textContent = 'Error';
-  }
-}
-
-// ===== Vault Profile & CTA Logic =====
-async function checkVaultProfile(wallet) {
-  try {
-    const doc = await db.collection('users').doc(wallet).get();
-    if (doc.exists) {
-      const data = doc.data();
-      renderProfile(data);
+    if (y2kBalance >= 4000000) {
+      loadVaultProfile(currentWallet);
+      loadLeaderboard();
+      initNumberPicker();
     } else {
-      const holdsEnough = await checkY2KBalance(wallet);
-      if (holdsEnough) renderCreateProfileCTA();
-      else renderFOMO();
+      showGenericProfile();
     }
-  } catch (err) {
-    console.error('Vault check error:', err);
   }
+
+  async function getY2KBalance(wallet, provider) {
+    try {
+      const contract = new ethers.Contract(
+        "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
+        ["function balanceOf(address) view returns (uint256)"],
+        provider
+      );
+      const raw = await contract.balanceOf(wallet);
+      return parseFloat(ethers.utils.formatUnits(raw, 18));
+    } catch (err) {
+      console.error("Failed to fetch Y2K balance", err);
+      return 0;
+    }
+  }
+
+  async function loadVaultProfile(wallet) {
+    try {
+      const snap = await getDoc(doc(db, "users", wallet));
+      if (!snap.exists()) {
+        showGenericProfile(true); // eligible but not setup
+        return;
+      }
+
+      const user = snap.data();
+      document.getElementById("profileSection").classList.add("active");
+      document.getElementById("pfpImg").src = user.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+      document.getElementById("nickname").textContent = user.username || "anon";
+      document.getElementById("handle").textContent = user.xHandle ? `@${user.xHandle}` : "@none";
+      document.getElementById("profileWarning").style.display = "none";
+    } catch (err) {
+      console.error("Error loading Vault profile", err);
+      showGenericProfile(true);
+    }
+  }
+
+  function showGenericProfile(isEligible = false) {
+    document.getElementById("profileSection").classList.add("active");
+    document.getElementById("pfpImg").src = "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+    document.getElementById("nickname").textContent = "anon";
+    document.getElementById("handle").textContent = "@none";
+
+    const warn = document.getElementById("profileWarning");
+    warn.textContent = isEligible
+      ? "Customize your profile in the Quantum Vault."
+      : "You don’t hold 4M+ Y2K. Unlock profile customization in the Vault.";
+    warn.style.display = "block";
+  }
+
+  // Collapsible sections
+  window.toggleCollapse = (el) => {
+    el.classList.toggle("open");
+  }
+
+    function initNumberPicker() {
+  const grid = document.getElementById("numberGrid");
+  grid.innerHTML = "";
+  const selected = new Set();
+
+  for (let i = 1; i <= 24; i++) {
+    const cell = document.createElement("div");
+    cell.textContent = i;
+    cell.addEventListener("click", () => {
+      if (selected.has(i)) {
+        selected.delete(i);
+        cell.classList.remove("selected");
+      } else if (selected.size < 6) {
+        selected.add(i);
+        cell.classList.add("selected");
+      }
+    });
+    grid.appendChild(cell);
+  }
+
+  document.getElementById("enterDrawBtn").addEventListener("click", () => {
+    if (selected.size !== 6) {
+      alert("Pick exactly 6 numbers!");
+      return;
+    }
+    alert("Numbers submitted: " + [...selected].sort((a,b) => a-b).join(", "));
+    // Add your backend draw entry logic here
+  });
 }
 
-function renderProfile(data) {
-  const { username, xHandle, badgeColor, games = 0, wins = 0, earnings = 0 } = data;
-  document.getElementById('vaultProfileContainer').innerHTML = `
-    <div style="background: var(--bg-surface); padding: 16px; border-radius: 12px;">
-      <div style="font-weight: 600; color: ${badgeColor}; margin-bottom: 8px;">👤 ${username}</div>
-      <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">🧠 ${xHandle}</div>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px;">
-        <div>🎮 Games: <strong>${games}</strong></div>
-        <div>🏆 Wins: <strong>${wins}</strong></div>
-        <div>💰 Y2K: <strong>${earnings}</strong></div>
-      </div>
-    </div>
-  `;
-}
-
-function renderCreateProfileCTA() {
-  document.getElementById('vaultCTAContainer').innerHTML = `
-    <div style="background: var(--bg-surface); padding: 20px; border-radius: 12px; text-align: center;">
-      <div style="margin-bottom: 12px;">🎟️ You qualify for a Vault profile!</div>
-      <a href="${VAULT_URL}" target="_blank" style="background: var(--accent-primary); color: black; padding: 10px 20px; border-radius: 8px; display: inline-block; font-weight: bold;">
-        Create Your Player Profile
-      </a>
-    </div>
-  `;
-}
-
-function renderFOMO() {
-  document.getElementById('vaultFOMOContainer').innerHTML = `
-    <div style="background: var(--bg-surface); padding: 20px; border-radius: 12px; text-align: center;">
-      <div style="margin-bottom: 12px; font-size: 14px; color: var(--text-secondary);">🛑 You don’t hold enough Y2K to enter draws.</div>
-      <div style="font-weight: bold; font-size: 16px; color: var(--accent-secondary);">Hold 4,000,000+ Y2K to unlock full access!</div>
-    </div>
-  `;
-}
-
-async function checkY2KBalance(wallet) {
+async function loadLeaderboard() {
   try {
-    const call = await fetch(CRONOS_RPC, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'eth_call',
-        params: [{
-          to: Y2K_TOKEN,
-          data: `0x70a08231000000000000000000000000${wallet.slice(2).padStart(64, '0')}`
-        }, 'latest'],
-        id: 9
-      })
-    }).then(res => res.json());
+    const snap = await getDocs(query(collection(db, "users"), orderBy("earnings", "desc"), limit(10)));
+    const board = document.getElementById("leaderboardList");
+    board.innerHTML = "";
 
-    const balance = parseInt(call.result, 16) / 1e18;
-    return balance >= REQUIRED_Y2K;
+    snap.forEach((doc, i) => {
+      const u = doc.data();
+      const name = u.username || "anon";
+      const score = u.earnings || 0;
+      board.innerHTML += `<div>#${i+1} — @${name} | ${score} Y2K</div>`;
+    });
   } catch (err) {
-    console.error('Y2K balance check failed:', err);
-    return false;
+    document.getElementById("leaderboardList").textContent = "Error loading leaderboard.";
   }
 }
+    
 </script>
-
-        <!-- CTA Containers -->
-<div id="vaultProfileContainer" class="profile-section" style="margin-top: 24px;"></div>
-<div id="vaultCTAContainer" class="cta-section" style="margin-top: 24px;"></div>
-<div id="vaultFOMOContainer" class="fomo-section" style="margin-top: 24px;"></div>
-
-</div> <!-- .app-container -->
-</main> <!-- .main-container -->
-</body>
+  </body>
 </html>
