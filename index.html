@@ -19,6 +19,7 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     html, body {
       background: var(--bg);
       font-family: 'Orbitron', sans-serif;
@@ -43,6 +44,12 @@
       background: linear-gradient(45deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent2); }
+      to { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent2); }
     }
 
     .subtitle {
@@ -50,6 +57,18 @@
       color: var(--faded);
       letter-spacing: 4px;
       margin-top: 6px;
+    }
+
+    .welcome-message {
+      margin: 20px auto;
+      padding: 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 400px;
+      border: 1px solid var(--accent);
+      color: var(--faded);
     }
 
     .connect-btn {
@@ -66,6 +85,11 @@
       gap: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
+    }
+
+    .connect-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--accent);
     }
 
     .connect-dot {
@@ -86,61 +110,48 @@
       margin-top: 10px;
     }
 
-    .profile-card {
-      display: none;
-      background: var(--surface);
-      padding: 16px;
-      border-radius: 16px;
-      margin-top: 24px;
-    }
-
-    .profile-card.active {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .profile-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      object-fit: cover;
-    }
-
-    .profile-info {
-      flex: 1;
-    }
-
-    .nickname {
-      font-size: 16px;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    .handle {
-      font-size: 12px;
-      color: var(--faded);
-    }
-
-    .profile-warning {
-      font-size: 12px;
-      color: var(--accent2);
-      margin-top: 4px;
-    }
-
-    .cta-link {
-      text-decoration: underline;
-      cursor: pointer;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
     .section {
       background: var(--surface);
       border-radius: 14px;
       margin-top: 24px;
       padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .section-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .overlay-message {
+      color: var(--white);
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .connect-prompt {
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
     }
 
     .section-header {
@@ -155,20 +166,116 @@
 
     .section-content {
       margin-top: 12px;
-      display: none;
+      opacity: 0.7;
     }
 
-    .section.open .section-content {
-      display: block;
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      background-color: rgba(0,0,0,0.9);
+      color: var(--white);
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 6px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+    }
+
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .number-btn {
+      padding: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .number-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .number-btn.selected {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .submit-btn {
+      margin-top: 16px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: var(--accent);
+      color: var(--bg);
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .pot-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .pot-label {
+      color: var(--faded);
+    }
+
+    .pot-value {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 13px;
+    }
+
+    .leaderboard-rank {
+      color: var(--accent);
+      font-weight: bold;
     }
 
     @media screen and (max-width: 480px) {
-      .profile-card {
-        flex-direction: column;
-        text-align: center;
+      .container {
+        padding: 15px;
       }
-      .profile-img {
-        margin-bottom: 10px;
+      
+      .title {
+        font-size: 28px;
+      }
+
+      .number-grid {
+        grid-template-columns: repeat(4, 1fr);
       }
     }
   </style>
@@ -178,6 +285,11 @@
     <header>
       <div class="title">GL1TCHBALL</div>
       <div class="subtitle">VAULT PROTOCOL</div>
+      
+      <div class="welcome-message">
+        Welcome to GL1TCHBALL! Connect your wallet to participate in the game, win rewards, and climb the leaderboard. View live stats and current game status below.
+      </div>
+      
       <button id="connectBtn" class="connect-btn">
         <span class="connect-dot"></span>
         <span class="connect-text">CONNECT WALLET</span>
@@ -185,225 +297,246 @@
       <div id="statusBar" class="status-bar">Waiting for wallet...</div>
     </header>
 
-    <div id="profileCard" class="profile-card">
-      <img id="pfpImg" class="profile-img" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
-      <div class="profile-info">
-        <div id="nickname" class="nickname">anon</div>
-        <div id="handle" class="handle">@none</div>
-        <div id="profileWarning" class="profile-warning" style="display:none;">
-          You don’t hold 4M+ Y2K. Customize your badge in the <span class="cta-link" onclick="window.open('https://y2k-the-vault.netlify.app/', '_blank')">Quantum Vault</span>.
+    <div id="potsSection" class="section">
+      <div class="section-header">
+        Current Prize Pool
+        <div class="tooltip">ℹ️
+          <span class="tooltip-text">Total rewards available to win</span>
+        </div>
+      </div>
+      <div class="section-content">
+        <div class="pot-info">
+          <span class="pot-label">Y2K Pool:</span>
+          <span id="y2kPot" class="pot-value">Loading...</span>
+        </div>
+        <div class="pot-info">
+          <span class="pot-label">DOJO Pool:</span>
+          <span id="dojoPot" class="pot-value">Loading...</span>
         </div>
       </div>
     </div>
 
-    <div id="potsSection" class="section">
-      <div class="section-header" onclick="toggleSection(this.parentElement)">
-        Token Pots <span>▼</span>
+    <div id="numberPicker" class="section">
+      <div class="section-overlay active">
+        <div class="overlay-message">
+          Connect your wallet to pick numbers<br>
+          <span class="connect-prompt" onclick="document.getElementById('connectBtn').click()">Click here to connect</span>
+        </div>
+      </div>
+      <div class="section-header">
+        Pick Your Numbers
+        <div class="tooltip">ℹ️
+          <span class="tooltip-text">Choose 6 numbers to enter the draw</span>
+        </div>
       </div>
       <div class="section-content">
-        <p>Y2K: <span id="y2kPot">Loading...</span></p>
-        <p>DOJO: <span id="dojoPot">Loading...</span></p>
+        <div class="number-grid" id="pickerGrid"></div>
+        <button class="submit-btn" id="submitDraw">SUBMIT NUMBERS</button>
       </div>
     </div>
 
-    <!-- Placeholder sections (to be populated in Part 2) -->
-    <div id="numberPicker"></div>
-    <div id="leaderboard"></div>
+    <div id="leaderboard" class="section">
+      <div class="section-header">
+        🏆 Top Players
+        <div class="tooltip">ℹ️
+          <span class="tooltip-text">Current winners and their earnings</span>
+        </div>
+      </div>
+      <div class="section-content" id="leaderboardList">
+        Loading top players...
+      </div>
+    </div>
   </div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import {
-    getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit
-  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
-    authDomain: "y2k-arcade.firebaseapp.com",
-    projectId: "y2k-arcade",
-    storageBucket: "y2k-arcade.appspot.com",
-    messagingSenderId: "1063043176357",
-    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+      authDomain: "y2k-arcade.firebaseapp.com",
+      projectId: "y2k-arcade",
+      storageBucket: "y2k-arcade.appspot.com",
+      messagingSenderId: "1063043176357",
+      appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  const connectBtn = document.getElementById("connectBtn");
-  const statusBar = document.getElementById("statusBar");
-  const profileCard = document.getElementById("profileCard");
-  const pfpImg = document.getElementById("pfpImg");
-  const nickname = document.getElementById("nickname");
-  const handle = document.getElementById("handle");
-  const warning = document.getElementById("profileWarning");
+    let currentWallet = "";
+    let isConnected = false;
 
-  let currentWallet = "";
-
-  connectBtn.addEventListener("click", connectWallet);
-
-  async function connectWallet() {
-    if (!window.ethereum) {
-      alert("Please install MetaMask.");
-      return;
-    }
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    currentWallet = (await signer.getAddress()).toLowerCase();
-
-    const short = `${currentWallet.slice(0, 6)}...${currentWallet.slice(-4)}`;
-    statusBar.textContent = `Connected: ${short}`;
-    connectBtn.classList.add("connected");
-    connectBtn.querySelector(".connect-text").textContent = "CONNECTED";
-
-    const y2k = await getY2KBalance(currentWallet, provider);
-
-    if (y2k >= 4_000_000) {
-      loadVaultProfile(currentWallet);
-    } else {
-      showGenericProfile(false);
-    }
-
+    // Initialize immediately
     loadPots();
     initNumberPicker();
     loadLeaderboard();
-  }
 
-  async function getY2KBalance(wallet, provider) {
-    try {
-      const contract = new ethers.Contract(
-        "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
-        ["function balanceOf(address) view returns (uint256)"],
-        provider
-      );
-      const raw = await contract.balanceOf(wallet);
-      return parseFloat(ethers.utils.formatUnits(raw, 18));
-    } catch (err) {
-      console.error("Y2K Balance Error", err);
-      return 0;
-    }
-  }
+    const connectBtn = document.getElementById("connectBtn");
+    connectBtn.addEventListener("click", connectWallet);
 
-  async function loadVaultProfile(wallet) {
-    try {
-      const snap = await getDoc(doc(db, "users", wallet));
-      if (!snap.exists()) {
-        showGenericProfile(true);
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("Please install MetaMask to play GL1TCHBALL!");
         return;
       }
 
-      const user = snap.data();
-      profileCard.classList.add("active");
-      pfpImg.src = user.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
-      nickname.textContent = user.username || "anon";
-      handle.textContent = user.xHandle ? `@${user.xHandle}` : "@none";
-      warning.style.display = "none";
-    } catch (err) {
-      console.error("Vault Profile Error", err);
-      showGenericProfile(true);
-    }
-  }
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        currentWallet = (await signer.getAddress()).toLowerCase();
 
-  function showGenericProfile(isEligible) {
-    profileCard.classList.add("active");
-    pfpImg.src = "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
-    nickname.textContent = "anon";
-    handle.textContent = "@none";
+        const short = `${currentWallet.slice(0, 6)}...${currentWallet.slice(-4)}`;
+        document.getElementById("statusBar").textContent = `Connected: ${short}`;
+        connectBtn.classList.add("connected");
+        connectBtn.querySelector(".connect-text").textContent = "CONNECTED";
 
-    warning.textContent = isEligible
-      ? "Customize your profile in the Quantum Vault."
-      : "You don’t hold 4M+ Y2K. Unlock profile customization in the Vault.";
-    warning.style.display = "block";
-  }
+        // Remove overlays
+        document.querySelectorAll('.section-overlay').forEach(overlay => {
+          overlay.classList.remove('active');
+        });
 
-  function toggleSection(section) {
-    section.classList.toggle("open");
-  }
+        isConnected = true;
 
-  window.toggleSection = toggleSection;
-
-  function initNumberPicker() {
-    const grid = document.createElement("div");
-    grid.className = "section";
-    grid.innerHTML = `
-      <div class="section-header" onclick="toggleSection(this.parentElement)">Pick 6 Numbers <span>▼</span></div>
-      <div class="section-content" id="pickerContent">
-        <div style="margin-top:12px; display:grid; grid-template-columns:repeat(6,1fr); gap:8px;" id="pickerGrid"></div>
-        <button id="submitDraw" style="margin-top:16px; padding:10px; border:none; background:var(--accent); border-radius:8px; font-weight:bold; cursor:pointer;">ENTER</button>
-      </div>
-    `;
-    document.getElementById("numberPicker").appendChild(grid);
-
-    const pickerGrid = document.getElementById("pickerGrid");
-    const selected = new Set();
-
-    for (let i = 1; i <= 24; i++) {
-      const btn = document.createElement("div");
-      btn.textContent = i;
-      btn.style.cssText = "padding:10px;border-radius:50%;background:rgba(255,255,255,0.1);text-align:center;cursor:pointer;";
-      btn.onclick = () => {
-        if (selected.has(i)) {
-          selected.delete(i);
-          btn.style.background = "rgba(255,255,255,0.1)";
-        } else if (selected.size < 6) {
-          selected.add(i);
-          btn.style.background = "var(--accent)";
+        const y2k = await getY2KBalance(currentWallet, provider);
+        if (y2k >= 4_000_000) {
+          document.getElementById("numberPicker").classList.add("eligible");
         }
+
+        // Refresh data
+        loadPots();
+        loadLeaderboard();
+      } catch (err) {
+        console.error("Connection Error", err);
+        alert("Failed to connect wallet. Please try again.");
+      }
+    }
+
+    async function getY2KBalance(wallet, provider) {
+      try {
+        const contract = new ethers.Contract(
+          "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
+          ["function balanceOf(address) view returns (uint256)"],
+          provider
+        );
+        const raw = await contract.balanceOf(wallet);
+        return parseFloat(ethers.utils.formatUnits(raw, 18));
+      } catch (err) {
+        console.error("Y2K Balance Error", err);
+        return 0;
+      }
+    }
+
+    function initNumberPicker() {
+      const grid = document.getElementById("pickerGrid");
+      const selected = new Set();
+
+      for (let i = 1; i <= 24; i++) {
+        const btn = document.createElement("div");
+        btn.className = "number-btn";
+        btn.textContent = i;
+        btn.onclick = () => {
+          if (!isConnected) {
+            alert("Please connect your wallet first!");
+            return;
+          }
+          
+          if (selected.has(i)) {
+            selected.delete(i);
+            btn.classList.remove("selected");
+          } else if (selected.size < 6) {
+            selected.add(i);
+            btn.classList.add("selected");
+          }
+        };
+        grid.appendChild(btn);
+      }
+
+      document.getElementById("submitDraw").onclick = () => {
+        if (!isConnected) {
+          alert("Please connect your wallet first!");
+          return;
+        }
+        
+        if (selected.size !== 6) {
+          alert("Please select exactly 6 numbers!");
+          return;
+        }
+        
+        const numbers = [...selected].sort((a, b) => a - b);
+        alert(`Submitting numbers: ${numbers.join(", ")}`);
       };
-      pickerGrid.appendChild(btn);
     }
 
-    document.getElementById("submitDraw").onclick = () => {
-      if (selected.size !== 6) return alert("Pick exactly 6 numbers.");
-      alert("Submitted: " + [...selected].sort((a, b) => a - b).join(", "));
-    };
-  }
+    async function loadPots() {
+      try {
+        const provider = new ethers.providers.JsonRpcProvider("https://evm.cronos.org");
+        const potWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
 
-  async function loadPots() {
-    try {
-      const provider = new ethers.providers.JsonRpcProvider("https://evm.cronos.org");
-      const potWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+        const y2k = new ethers.Contract(
+          "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
+          ["function balanceOf(address) view returns (uint256)"],
+          provider
+        );
+        
+        const dojo = new ethers.Contract(
+          "0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4",
+          ["function balanceOf(address) view returns (uint256)"],
+          provider
+        );
 
-      const y2k = new ethers.Contract("0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d", ["function balanceOf(address) view returns (uint256)"], provider);
-      const dojo = new ethers.Contract("0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4", ["function balanceOf(address) view returns (uint256)"], provider);
+        const [y2kBal, dojoBal] = await Promise.all([
+          y2k.balanceOf(potWallet),
+          dojo.balanceOf(potWallet)
+        ]);
 
-      const [y2kBal, dojoBal] = await Promise.all([
-        y2k.balanceOf(potWallet),
-        dojo.balanceOf(potWallet)
-      ]);
-
-      document.getElementById("y2kPot").textContent = `${parseInt(ethers.utils.formatUnits(y2kBal, 18)).toLocaleString()} Y2K`;
-      document.getElementById("dojoPot").textContent = `${parseInt(ethers.utils.formatUnits(dojoBal, 18)).toLocaleString()} DOJO`;
-    } catch (err) {
-      console.error("Pot Load Error", err);
+        document.getElementById("y2kPot").textContent = 
+          `${parseInt(ethers.utils.formatUnits(y2kBal, 18)).toLocaleString()} Y2K`;
+        document.getElementById("dojoPot").textContent = 
+          `${parseInt(ethers.utils.formatUnits(dojoBal, 18)).toLocaleString()} DOJO`;
+      } catch (err) {
+        console.error("Pot Load Error", err);
+        document.getElementById("y2kPot").textContent = "Error loading...";
+        document.getElementById("dojoPot").textContent = "Error loading...";
+      }
     }
-  }
 
-  async function loadLeaderboard() {
-    try {
-      const snap = await getDocs(query(collection(db, "users"), orderBy("earnings", "desc"), limit(10)));
-      const container = document.createElement("div");
-      container.className = "section open";
-      container.innerHTML = `
-        <div class="section-header" onclick="toggleSection(this.parentElement)">🏆 Top Players <span>▼</span></div>
-        <div class="section-content" id="leaderboardList"></div>
-      `;
-      document.getElementById("leaderboard").appendChild(container);
+    async function loadLeaderboard() {
+      try {
+        const snap = await getDocs(
+          query(collection(db, "users"), orderBy("earnings", "desc"), limit(10))
+        );
+        
+        const list = document.getElementById("leaderboardList");
+        list.innerHTML = "";
 
-      const list = document.getElementById("leaderboardList");
-      list.innerHTML = "";
+        if (snap.empty) {
+          list.innerHTML = "<div class='leaderboard-item'>No players yet</div>";
+          return;
+        }
 
-      snap.forEach((doc, i) => {
-        const user = doc.data();
-        const name = user.username || "anon";
-        const score = user.earnings || 0;
-        list.innerHTML += `<div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">#${i + 1} — @${name} | ${score} Y2K</div>`;
-      });
-    } catch (err) {
-      console.error("Leaderboard Error", err);
+        snap.forEach((doc, i) => {
+          const user = doc.data();
+          const name = user.username || "anon";
+          const score = user.earnings || 0;
+          
+          const item = document.createElement("div");
+          item.className = "leaderboard-item";
+          item.innerHTML = `
+            <span><span class="leaderboard-rank">#${i + 1}</span> @${name}</span>
+            <span>${score.toLocaleString()} Y2K</span>
+          `;
+          list.appendChild(item);
+        });
+      } catch (err) {
+        console.error("Leaderboard Error", err);
+        document.getElementById("leaderboardList").innerHTML = 
+          "<div class='leaderboard-item'>Error loading leaderboard</div>";
+      }
     }
-  }
-</script>
+  </script>
 </body>
 </html>
