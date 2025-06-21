@@ -23,6 +23,7 @@
 </div>
 
 <div class="app-wrapper">
+    
     <!-- Network Indicator -->
     <div class="network-status">
         <div class="status-pill">
@@ -124,6 +125,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- Jackpot Token Pot Display -->
+<div class="token-pot">
+  <div class="token-line">
+    <span class="token-label">🪙 Y2K Pot</span>
+    <span id="y2kPot" class="token-balance">-</span>
+  </div>
+  <div class="token-line">
+    <span class="token-label">🐉 DOJO Pot</span>
+    <span id="dojoPot" class="token-balance">-</span>
+  </div>
+</div>
 
         <!-- Number Selection -->
         <div class="number-selection">
@@ -679,6 +692,39 @@ body {
   50% { transform: scale(1.05); opacity: 0.85; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+    .token-pot {
+  margin-top: 16px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.token-line {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-primary);
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.1);
+}
+
+.token-line:last-child {
+  border-bottom: none;
+}
+
+.token-label {
+  font-weight: 600;
+  color: #00ffe1;
+}
+
+.token-balance {
+  font-weight: bold;
+}
 </style>
 
 <script>
@@ -990,5 +1036,44 @@ function startDrawTimer() {
 
 // Initialize Glitchball Timer on Load
 document.addEventListener('DOMContentLoaded', startDrawTimer);
+
+    import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@6.7.0/+esm';
+
+const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
+const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+
+// Token Contracts
+const Y2K_TOKEN = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
+const DOJO_TOKEN = "0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4";
+const ERC20_ABI = [
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)"
+];
+
+// Fetch balances and inject into DOM
+async function fetchJackpotBalances() {
+  try {
+    const y2k = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, provider);
+    const dojo = new ethers.Contract(DOJO_TOKEN, ERC20_ABI, provider);
+
+    const [y2kBalanceRaw, dojoBalanceRaw, y2kDecimals, dojoDecimals] = await Promise.all([
+      y2k.balanceOf(jackpotWallet),
+      dojo.balanceOf(jackpotWallet),
+      y2k.decimals(),
+      dojo.decimals()
+    ]);
+
+    const y2kBalance = ethers.formatUnits(y2kBalanceRaw, y2kDecimals);
+    const dojoBalance = ethers.formatUnits(dojoBalanceRaw, dojoDecimals);
+
+    document.getElementById("y2kPot").textContent = `${parseFloat(y2kBalance).toLocaleString(undefined, { maximumFractionDigits: 2 })} Y2K`;
+    document.getElementById("dojoPot").textContent = `${parseFloat(dojoBalance).toLocaleString(undefined, { maximumFractionDigits: 2 })} DOJO`;
+
+  } catch (err) {
+    console.error("Jackpot token fetch failed:", err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchJackpotBalances);
 </script>
 </html>
