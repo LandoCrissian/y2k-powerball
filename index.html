@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GL1TCHBALL // Y2K ARCADE</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet">
-    <!-- Using newer ethers version with better mobile support -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js" 
-            integrity="sha512-0HCoY17Y0N+AeOgYHvFGpcemhgqwnJlpeZ9Hk7RjwZa9HJin2oL+StrQtEq5blwG9ZgB+UgPGKpjNjxu2Tl7A==" 
-            crossorigin="anonymous" 
-            referrerpolicy="no-referrer"></script>
 </head>
 <body ontouchstart="">
     <main class="main-container">
@@ -19,7 +14,7 @@
                 <div class="connect-wrapper">
                     <button id="connectBtn" class="connect-btn" role="button">
                         <span class="connect-dot"></span>
-                        <span class="connect-text">CONNECT</span>
+                        <span class="connect-text">CONNECT WALLET</span>
                     </button>
                 </div>
                 
@@ -62,19 +57,15 @@
                 </div>
             </div>
 
-            <!-- Wallet Message -->
-            <div id="walletMessage" class="wallet-message"></div>
-
             <!-- Network Status -->
             <div id="networkStatus" class="network-status">
                 <div class="status-icon">📡</div>
-                <div class="status-text">Checking Network...</div>
+                <div class="status-text">Ready to Connect</div>
             </div>
         </div>
     </main>
 
 <style>
-/* Mobile-First Base Styles */
 :root {
     --bg-primary: #0a0a0f;
     --bg-surface: #16161e;
@@ -85,7 +76,6 @@
     --error: #ff4444;
     --success: #00ff9d;
     --gradient-glitch: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-    --safe-area-inset-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 * {
@@ -111,14 +101,12 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .main-container {
     min-height: 100vh;
     padding: 20px;
-    padding-bottom: calc(20px + var(--safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 .app-container {
@@ -128,7 +116,12 @@ body {
     width: 100%;
 }
 
-/* Enhanced Mobile Touch Targets */
+.glitch-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-top: 20px;
+}
+
 .connect-btn {
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
@@ -142,9 +135,9 @@ body {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
-    min-height: 44px;
-    user-select: none;
-    -webkit-user-select: none;
+    min-height: 48px;
+    min-width: 200px;
+    justify-content: center;
 }
 
 .connect-btn:active {
@@ -164,16 +157,14 @@ body {
     background: var(--success);
 }
 
-/* Mobile-Optimized Typography */
 .glitch-title {
     font-size: clamp(32px, 8vw, 42px);
     font-weight: 900;
     letter-spacing: 2px;
-    margin-bottom: 8px;
+    margin: 24px 0 8px;
     background: var(--gradient-glitch);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .glitch-subtitle {
@@ -183,7 +174,26 @@ body {
     margin-bottom: 24px;
 }
 
-/* Mobile-Optimized Layout */
+.next-draw {
+    background: var(--bg-surface);
+    border-radius: 12px;
+    padding: 16px;
+    display: inline-block;
+    min-width: 200px;
+}
+
+.draw-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.draw-timer {
+    font-size: 24px;
+    color: var(--accent-primary);
+    font-family: monospace;
+}
+
 .token-pots {
     display: grid;
     grid-template-columns: 1fr;
@@ -196,7 +206,6 @@ body {
     border-radius: 16px;
     padding: 20px;
     border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .pot-header {
@@ -213,37 +222,53 @@ body {
     object-fit: cover;
 }
 
+.pot-label {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
 .pot-amount {
     font-size: 24px;
     font-weight: 700;
     color: var(--accent-primary);
 }
 
-/* Enhanced Mobile Feedback */
-.wallet-message {
-    position: fixed;
-    bottom: calc(70px + var(--safe-area-inset-bottom));
-    left: 20px;
-    right: 20px;
-    background: rgba(0,0,0,0.9);
-    color: var(--text-primary);
-    padding: 16px;
-    border-radius: 12px;
+.coming-soon {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 24px;
     text-align: center;
-    z-index: 1000;
-    display: none;
-    animation: slideUp 0.3s ease;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    margin-top: 24px;
 }
 
-.wallet-message.show {
-    display: block;
+.coming-soon h2 {
+    color: var(--accent-primary);
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.coming-soon p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feature {
+    background: rgba(255,255,255,0.05);
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
 }
 
 .network-status {
     position: fixed;
-    bottom: var(--safe-area-inset-bottom);
+    bottom: env(safe-area-inset-bottom, 20px);
     left: 20px;
     right: 20px;
     background: var(--bg-surface);
@@ -254,176 +279,140 @@ body {
     justify-content: center;
     gap: 12px;
     border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     z-index: 1000;
-    margin: 0 auto;
     max-width: 480px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
 }
 
-/* Animations */
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.status-text {
+    font-size: 14px;
+    color: var(--text-secondary);
 }
 
-/* Active States for Touch Devices */
-.feature {
-    background: rgba(255,255,255,0.05);
-    padding: 16px;
-    border-radius: 8px;
-    font-size: 16px;
-    margin-bottom: 8px;
-    transition: background-color 0.3s ease;
-}
-
-.feature:active {
-    background: rgba(255,255,255,0.1);
-}
-
-/* Tablet Adjustments */
 @media (min-width: 481px) {
     .token-pots {
         grid-template-columns: 1fr 1fr;
     }
 }
-
-/* iOS Safe Area Support */
-@supports (padding: max(0px)) {
-    .main-container {
-        padding-bottom: max(20px, env(safe-area-inset-bottom));
-    }
-    
-    .network-status {
-        bottom: max(20px, env(safe-area-inset-bottom));
-    }
-}
 </style>
 
 <script>
-// Initialize provider and contracts after ethers is loaded
-let provider;
-let signer;
+// Constants
 const CRONOS_CHAIN_ID = '0x19';
-const CRONOS_CHAIN_ID_DECIMAL = '25';
 const CRONOS_RPC = 'https://evm.cronos.org';
 const Y2K_TOKEN = '0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d';
 const DOJO_TOKEN = '0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4';
 const POT_WALLET = '0x348c2F06C64b4465f90446Fd806aFf3A01220450';
 
-// Wait for both DOM and ethers to be ready
-document.addEventListener('DOMContentLoaded', async () => {
-    await waitForEthers();
-    initializeApp();
+// Token ABI for balanceOf
+const TOKEN_ABI = [{
+    "constant": true,
+    "inputs": [{"name": "_owner","type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"name": "balance","type": "uint256"}],
+    "type": "function"
+}];
+
+// State
+let state = {
+    connected: false,
+    address: null,
+    chainId: null
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
     startDrawTimer();
+    checkWalletAvailability();
 });
 
-// Function to wait for ethers to be available
-async function waitForEthers() {
-    return new Promise((resolve) => {
-        const checkEthers = () => {
-            if (window.ethers) {
-                resolve();
-            } else {
-                setTimeout(checkEthers, 100);
-            }
-        };
-        checkEthers();
+function setupEventListeners() {
+    const connectBtn = document.getElementById('connectBtn');
+    connectBtn.addEventListener('click', handleConnect);
+}
+
+function checkWalletAvailability() {
+    if (typeof window.ethereum !== 'undefined') {
+        updateStatus('Ready to Connect');
+        listenToWalletEvents();
+    } else {
+        updateStatus('Please Install Web3 Wallet');
+    }
+}
+
+function listenToWalletEvents() {
+    if (!window.ethereum) return;
+
+    window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+            state.connected = false;
+            state.address = null;
+            updateConnectButton();
+            updateStatus('Wallet Disconnected');
+        } else {
+            state.address = accounts[0];
+            updateConnectButton();
+        }
+    });
+
+    window.ethereum.on('chainChanged', (chainId) => {
+        state.chainId = chainId;
+        if (chainId !== CRONOS_CHAIN_ID) {
+            updateStatus('Please Switch to Cronos Network');
+        }
+        updateConnectButton();
     });
 }
 
-async function initializeApp() {
-    showWalletMessage('Checking wallet availability...');
-    
-    // Check for wallet providers
-    if (typeof window.ethereum !== 'undefined') {
-        provider = new ethers.BrowserProvider(window.ethereum);
-        setupWalletListeners();
-        setupConnectButton();
-        await checkAndUpdateNetwork();
-        await updatePotBalances();
-    } else {
-        showWalletMessage('Please install a Web3 wallet to connect');
+async function handleConnect() {
+    if (!window.ethereum) {
+        updateStatus('Please Install Web3 Wallet');
+        return;
     }
-}
 
-function showWalletMessage(message) {
-    const messageEl = document.getElementById('walletMessage');
-    messageEl.textContent = message;
-    messageEl.classList.add('show');
-    setTimeout(() => {
-        messageEl.classList.remove('show');
-    }, 3000);
-}
-
-function setupWalletListeners() {
-    if (window.ethereum) {
-        window.ethereum.on('chainChanged', () => {
-            window.location.reload();
-        });
-
-        window.ethereum.on('accountsChanged', (accounts) => {
-            if (accounts.length === 0) {
-                updateConnectButton();
-                showWalletMessage('Wallet disconnected');
-            }
-        });
-    }
-}
-
-function setupConnectButton() {
-    const connectBtn = document.getElementById('connectBtn');
-    connectBtn.addEventListener('click', connectWallet);
-    // Add touch feedback
-    connectBtn.addEventListener('touchstart', () => {}, {passive: true});
-}
-
-async function connectWallet() {
     try {
-        showWalletMessage('Connecting wallet...');
-        
-        if (!window.ethereum) {
-            throw new Error('No Web3 wallet found');
-        }
+        updateStatus('Connecting...');
 
+        // Request accounts
         const accounts = await window.ethereum.request({
             method: 'eth_requestAccounts'
         });
 
-        provider = new ethers.BrowserProvider(window.ethereum);
-        signer = await provider.getSigner();
+        state.address = accounts[0];
+        state.connected = true;
 
+        // Check network
         const chainId = await window.ethereum.request({
             method: 'eth_chainId'
         });
 
-        if (chainId !== CRONOS_CHAIN_ID && chainId !== CRONOS_CHAIN_ID_DECIMAL) {
+        if (chainId !== CRONOS_CHAIN_ID) {
             await switchToCronos();
         }
 
-        updateConnectButton(accounts[0]);
-        showWalletMessage('Connected successfully ✅');
+        updateConnectButton();
+        updateStatus('Connected ✅');
         await updatePotBalances();
 
     } catch (error) {
         console.error('Connection error:', error);
-        showWalletMessage(`Connection failed: ${error.message}`);
+        updateStatus(error.message || 'Connection Failed');
+        state.connected = false;
+        updateConnectButton();
     }
 }
 
 async function switchToCronos() {
     try {
+        updateStatus('Switching to Cronos...');
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: CRONOS_CHAIN_ID }],
+            params: [{ chainId: CRONOS_CHAIN_ID }]
         });
-    } catch (switchError) {
-        if (switchError.code === 4902) {
+    } catch (error) {
+        if (error.code === 4902) {
             try {
                 await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
@@ -440,48 +429,91 @@ async function switchToCronos() {
                     }]
                 });
             } catch (addError) {
-                showWalletMessage('Failed to add Cronos network');
-                throw addError;
+                throw new Error('Failed to add Cronos network');
             }
         }
-        throw switchError;
+        throw new Error('Failed to switch to Cronos');
     }
 }
 
-function updateConnectButton(address = null) {
+function updateConnectButton() {
     const connectBtn = document.getElementById('connectBtn');
-    if (address) {
+    if (state.connected && state.address) {
         connectBtn.classList.add('connected');
         connectBtn.querySelector('.connect-text').textContent = 
-            `${address.slice(0, 4)}...${address.slice(-4)}`;
+            `${state.address.slice(0, 4)}...${state.address.slice(-4)}`;
     } else {
         connectBtn.classList.remove('connected');
-        connectBtn.querySelector('.connect-text').textContent = 'CONNECT';
+        connectBtn.querySelector('.connect-text').textContent = 'CONNECT WALLET';
+    }
+}
+
+function updateStatus(message) {
+    const statusText = document.querySelector('.status-text');
+    if (statusText) {
+        statusText.textContent = message;
     }
 }
 
 async function updatePotBalances() {
     try {
-        const jsonProvider = new ethers.JsonRpcProvider(CRONOS_RPC);
-        const abi = ["function balanceOf(address) view returns (uint256)"];
+        updateStatus('Loading pot balances...');
         
-        const y2kContract = new ethers.Contract(Y2K_TOKEN, abi, jsonProvider);
-        const dojoContract = new ethers.Contract(DOJO_TOKEN, abi, jsonProvider);
+        // Function to encode balanceOf call
+        function encodeBalanceOf(tokenAddress, walletAddress) {
+            // Remove '0x' prefix and pad address to 32 bytes
+            const paddedAddress = walletAddress.slice(2).padStart(64, '0');
+            // balanceOf function signature + encoded parameter
+            return `0x70a08231000000000000000000000000${paddedAddress}`;
+        }
+
+        // Function to convert hex balance to decimal
+        function hexToDecimal(hexBalance) {
+            return parseInt(hexBalance, 16) / 1e18;
+        }
+
+        // Get Y2K balance
+        const y2kCall = await fetch(CRONOS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_call',
+                params: [{
+                    to: Y2K_TOKEN,
+                  encodeBalanceOf(Y2K_TOKEN, POT_WALLET)
+                }, 'latest'],
+                id: 1
+            })
+        }).then(res => res.json());
+
+        // Get DOJO balance
+        const dojoCall = await fetch(CRONOS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_call',
+                params: [{
+                    to: DOJO_TOKEN,
+                    data: encodeBalanceOf(DOJO_TOKEN, POT_WALLET)
+                }, 'latest'],
+                id: 2
+            })
+        }).then(res => res.json());
+
+        const y2kBalance = Math.floor(hexToDecimal(y2kCall.result));
+        const dojoBalance = Math.floor(hexToDecimal(dojoCall.result));
+
+        document.getElementById('y2kPotAmount').textContent = `${y2kBalance.toLocaleString()} Y2K`;
+        document.getElementById('dojoPotAmount').textContent = `${dojoBalance.toLocaleString()} DOJO`;
         
-        const [y2kBalance, dojoBalance] = await Promise.all([
-            y2kContract.balanceOf(POT_WALLET),
-            dojoContract.balanceOf(POT_WALLET)
-        ]);
-        
-        document.getElementById('y2kPotAmount').textContent = 
-            `${ethers.formatEther(y2kBalance).split('.')[0]} Y2K`;
-        document.getElementById('dojoPotAmount').textContent = 
-            `${ethers.formatEther(dojoBalance).split('.')[0]} DOJO`;
-            
+        updateStatus(state.connected ? 'Connected ✅' : 'Ready to Connect');
     } catch (error) {
-        console.error('Failed to update pot balances:', error);
+        console.error('Balance update error:', error);
         document.getElementById('y2kPotAmount').textContent = 'Error loading';
         document.getElementById('dojoPotAmount').textContent = 'Error loading';
+        updateStatus('Failed to load balances');
     }
 }
 
@@ -500,21 +532,13 @@ function startDrawTimer() {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        const timerEl = document.getElementById('drawTimer');
-        if (timerEl) {
-            timerEl.textContent = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
+        document.getElementById('drawTimer').textContent = 
+            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
     
     updateTimer();
     setInterval(updateTimer, 1000);
 }
-
-// Initialize
-window.addEventListener('load', () => {
-    document.body.addEventListener('touchstart', () => {}, {passive: true});
-});
 </script>
 
 </body>
