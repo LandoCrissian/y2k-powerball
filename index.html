@@ -119,16 +119,10 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-html {
-    background: var(--bg-primary);
-}
-
-body {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--text-primary);
-    line-height: 1.5;
-    min-height: 100vh;
-    overflow-x: hidden;
+html, body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
 }
 
 .app-container {
@@ -491,16 +485,23 @@ async function checkVaultProfile() {
     }
 }
 
-// Show Vault Profile
 function showVaultProfile() {
     const profile = state.vaultProfile;
-    document.getElementById('vaultProfile').style.display = 'block';
+    const profileDiv = document.getElementById('vaultProfile');
+    profileDiv.style.display = 'block';
     document.getElementById('profileUsername').textContent = profile.username || '--';
     document.getElementById('profileHandle').textContent = profile.xHandle || '--';
     document.getElementById('profileGames').textContent = profile.games || '0';
     document.getElementById('profileWins').textContent = profile.wins || '0';
     document.getElementById('profileEarnings').textContent = 
         profile.earnings ? `${profile.earnings.toLocaleString()} Y2K` : '0';
+
+    // Force scroll render on mobile
+    setTimeout(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+        document.body.style.overflowY = 'auto';
+        document.body.style.height = 'auto';
+    }, 100);
 }
 
 // Check Y2K Balance
@@ -514,11 +515,10 @@ async function checkY2KBalance() {
     }
 }
 
-// Check Vault Access
 function checkVaultAccess() {
     const vaultCheck = document.getElementById('vaultAccessCheck');
     vaultCheck.style.display = 'block';
-    
+
     if (state.y2kBalance.gte(MIN_Y2K_BALANCE)) {
         vaultCheck.innerHTML = `
             <a href="https://y2k-the-vault.netlify.app/" target="_blank" class="qualify-cta">
@@ -534,6 +534,13 @@ function checkVaultAccess() {
             </div>
         `;
     }
+
+    // Force scroll render on mobile
+    setTimeout(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+        document.body.style.overflowY = 'auto';
+        document.body.style.height = 'auto';
+    }, 100);
 }
 
 // Update Pot Balances
