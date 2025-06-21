@@ -376,6 +376,24 @@ body {
     50% { box-shadow: 0 0 20px var(--accent-secondary); }
     100% { box-shadow: 0 0 10px var(--accent-primary); }
 }
+
+    html, body {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 100px; /* to make space for game actions */
+}
+
+body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
 </style>
 
 <script>
