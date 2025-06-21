@@ -12,18 +12,13 @@
       --surface: #16161e;
       --accent: #00ffe1;
       --accent2: #ff00f7;
+      --white: #fff;
+      --faded: rgba(255,255,255,0.7);
       --error: #ff4444;
       --success: #00ff9d;
-      --white: #fff;
-      --text-faded: rgba(255,255,255,0.7);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       background: var(--bg);
       font-family: 'Orbitron', sans-serif;
@@ -32,16 +27,12 @@
     }
 
     .container {
-      max-width: 480px;
+      max-width: 500px;
       margin: auto;
-      padding: 16px;
-      padding-bottom: 100px;
+      padding: 20px;
     }
 
     header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       text-align: center;
       margin-bottom: 24px;
     }
@@ -52,21 +43,17 @@
       background: linear-gradient(45deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      letter-spacing: 2px;
     }
 
     .subtitle {
       font-size: 12px;
-      color: var(--text-faded);
+      color: var(--faded);
       letter-spacing: 4px;
-      margin-top: 4px;
-    }
-
-    .connect-block {
-      margin-top: 16px;
+      margin-top: 6px;
     }
 
     .connect-btn {
+      margin-top: 16px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
       color: var(--white);
@@ -74,11 +61,11 @@
       border-radius: 24px;
       font-size: 14px;
       font-weight: 600;
-      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      min-height: 48px;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
     .connect-dot {
@@ -94,297 +81,140 @@
     }
 
     .status-bar {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--text-faded);
-      text-align: center;
+      font-size: 12px;
+      color: var(--faded);
+      margin-top: 10px;
     }
 
-    .profile-section {
+    .profile-card {
+      display: none;
       background: var(--surface);
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 16px;
       margin-top: 24px;
-      display: none;
     }
 
-    .profile-section.active {
-      display: block;
-    }
-
-    .profile-header {
+    .profile-card.active {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .profile-img {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       border: 2px solid var(--accent);
+      object-fit: cover;
     }
 
     .profile-info {
-      display: flex;
-      flex-direction: column;
+      flex: 1;
     }
 
     .nickname {
       font-size: 16px;
-      font-weight: bold;
       color: var(--accent);
+      font-weight: bold;
     }
 
     .handle {
       font-size: 12px;
-      color: var(--text-faded);
+      color: var(--faded);
     }
 
     .profile-warning {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--accent2);
-      margin-top: 8px;
+      margin-top: 4px;
     }
 
     .cta-link {
-      color: var(--accent);
-      font-weight: bold;
       text-decoration: underline;
       cursor: pointer;
+      color: var(--accent);
+      font-weight: bold;
     }
 
     .section {
       background: var(--surface);
-      padding: 16px;
-      border-radius: 12px;
+      border-radius: 14px;
       margin-top: 24px;
+      padding: 16px;
     }
 
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .collapsible {
+    .section-header {
+      font-size: 14px;
+      font-weight: bold;
       cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--accent);
     }
 
-    .collapsible + .content {
+    .section-content {
+      margin-top: 12px;
       display: none;
     }
 
-    .collapsible.open + .content {
+    .section.open .section-content {
       display: block;
-      margin-top: 12px;
     }
 
-    .profile-card {
-  background: var(--bg-surface);
-  border-radius: 16px;
-  padding: 16px;
-  display: none;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.profile-card.active {
-  display: flex;
-}
-
-.profile-inner {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-}
-
-.profile-pfp {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: 2px solid var(--accent-primary);
-  object-fit: cover;
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 18px;
-  color: var(--accent-primary);
-  font-weight: bold;
-}
-
-.profile-handle {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.profile-warning {
-  font-size: 12px;
-  color: var(--error);
-  margin-top: 4px;
-}
-
-/* Number Picker */
-.number-picker-section {
-  background: var(--bg-surface);
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.picker-title {
-  font-size: 18px;
-  color: var(--accent-primary);
-  margin-bottom: 16px;
-}
-
-.number-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.number-grid div {
-  background: rgba(255,255,255,0.05);
-  color: var(--text-primary);
-  padding: 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.2s ease;
-}
-
-.number-grid div.selected {
-  background: var(--accent-primary);
-  color: #000;
-  font-weight: bold;
-}
-
-.enter-btn {
-  padding: 12px 20px;
-  border-radius: 12px;
-  background: var(--gradient-glitch);
-  color: #000;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-/* Leaderboard */
-.leaderboard-section {
-  background: var(--bg-surface);
-  border-radius: 16px;
-  margin-bottom: 30px;
-}
-
-.leaderboard-header {
-  padding: 16px;
-  font-weight: bold;
-  font-size: 16px;
-  color: var(--accent-primary);
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.leaderboard-body {
-  padding: 16px;
-  display: block;
-}
-
-.leaderboard-section.open .leaderboard-body {
-  display: none;
-}
-
-.leaderboard-list div {
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  font-size: 14px;
-  color: var(--text-secondary);
-}
+    @media screen and (max-width: 480px) {
+      .profile-card {
+        flex-direction: column;
+        text-align: center;
+      }
+      .profile-img {
+        margin-bottom: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1 class="title">GL1TCHBALL</h1>
+      <div class="title">GL1TCHBALL</div>
       <div class="subtitle">VAULT PROTOCOL</div>
-
-      <div class="connect-block">
-        <button id="connectBtn" class="connect-btn">
-          <span class="connect-dot"></span>
-          <span class="connect-text">CONNECT WALLET</span>
-        </button>
-      </div>
-
+      <button id="connectBtn" class="connect-btn">
+        <span class="connect-dot"></span>
+        <span class="connect-text">CONNECT WALLET</span>
+      </button>
       <div id="statusBar" class="status-bar">Waiting for wallet...</div>
     </header>
 
-    <!-- Profile Section -->
-    <div id="profileSection" class="profile-section">
-      <div class="profile-header">
-        <img id="pfpImg" class="profile-img" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
-        <div class="profile-info">
-          <div id="nickname" class="nickname">anon</div>
-          <div id="handle" class="handle">@none</div>
+    <div id="profileCard" class="profile-card">
+      <img id="pfpImg" class="profile-img" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
+      <div class="profile-info">
+        <div id="nickname" class="nickname">anon</div>
+        <div id="handle" class="handle">@none</div>
+        <div id="profileWarning" class="profile-warning" style="display:none;">
+          You don’t hold 4M+ Y2K. Customize your badge in the <span class="cta-link" onclick="window.open('https://y2k-the-vault.netlify.app/', '_blank')">Quantum Vault</span>.
         </div>
-      </div>
-      <div id="profileWarning" class="profile-warning" style="display:none;">
-        You don’t hold 4M+ Y2K. Customize your badge in the <span class="cta-link" onclick="window.open('https://y2k-the-vault.netlify.app/', '_blank')">Quantum Vault</span>.
       </div>
     </div>
 
-    <!-- Sample Expandable Section -->
-    <div class="section">
-      <div class="section-title collapsible" onclick="toggleCollapse(this)">Token Pots ▼</div>
-      <div class="content">
+    <div id="potsSection" class="section">
+      <div class="section-header" onclick="toggleSection(this.parentElement)">
+        Token Pots <span>▼</span>
+      </div>
+      <div class="section-content">
         <p>Y2K: <span id="y2kPot">Loading...</span></p>
         <p>DOJO: <span id="dojoPot">Loading...</span></p>
       </div>
     </div>
-  </div>
 
-  <!-- PLAYER PROFILE CARD -->
-<div id="profileSection" class="profile-card" style="display:none;">
-  <div class="profile-inner">
-    <img id="pfpImg" src="" alt="PFP" class="profile-pfp" />
-    <div class="profile-info">
-      <div id="nickname" class="profile-name">anon</div>
-      <div id="handle" class="profile-handle">@none</div>
-      <div id="profileWarning" class="profile-warning" style="display:none;"></div>
-    </div>
+    <!-- Placeholder sections (to be populated in Part 2) -->
+    <div id="numberPicker"></div>
+    <div id="leaderboard"></div>
   </div>
-</div>
-
-<!-- NUMBER PICKER -->
-<div class="number-picker-section">
-  <div class="picker-title">Pick 6 Numbers</div>
-  <div class="number-grid" id="numberGrid"></div>
-  <button id="enterDrawBtn" class="enter-btn">ENTER DRAW</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="leaderboard-section">
-  <div class="leaderboard-header" onclick="toggleCollapse(this)">🏆 Top Players <span class="caret">▼</span></div>
-  <div class="leaderboard-body">
-    <div id="leaderboardList" class="leaderboard-list">Loading...</div>
-  </div>
-</div>
 
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import {
-    getFirestore, doc, getDoc
+    getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit
   } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -401,6 +231,11 @@
 
   const connectBtn = document.getElementById("connectBtn");
   const statusBar = document.getElementById("statusBar");
+  const profileCard = document.getElementById("profileCard");
+  const pfpImg = document.getElementById("pfpImg");
+  const nickname = document.getElementById("nickname");
+  const handle = document.getElementById("handle");
+  const warning = document.getElementById("profileWarning");
 
   let currentWallet = "";
 
@@ -422,15 +257,17 @@
     connectBtn.classList.add("connected");
     connectBtn.querySelector(".connect-text").textContent = "CONNECTED";
 
-    const y2kBalance = await getY2KBalance(currentWallet, provider);
+    const y2k = await getY2KBalance(currentWallet, provider);
 
-    if (y2kBalance >= 4000000) {
+    if (y2k >= 4_000_000) {
       loadVaultProfile(currentWallet);
-      loadLeaderboard();
-      initNumberPicker();
     } else {
-      showGenericProfile();
+      showGenericProfile(false);
     }
+
+    loadPots();
+    initNumberPicker();
+    loadLeaderboard();
   }
 
   async function getY2KBalance(wallet, provider) {
@@ -443,7 +280,7 @@
       const raw = await contract.balanceOf(wallet);
       return parseFloat(ethers.utils.formatUnits(raw, 18));
     } catch (err) {
-      console.error("Failed to fetch Y2K balance", err);
+      console.error("Y2K Balance Error", err);
       return 0;
     }
   }
@@ -452,87 +289,121 @@
     try {
       const snap = await getDoc(doc(db, "users", wallet));
       if (!snap.exists()) {
-        showGenericProfile(true); // eligible but not setup
+        showGenericProfile(true);
         return;
       }
 
       const user = snap.data();
-      document.getElementById("profileSection").classList.add("active");
-      document.getElementById("pfpImg").src = user.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
-      document.getElementById("nickname").textContent = user.username || "anon";
-      document.getElementById("handle").textContent = user.xHandle ? `@${user.xHandle}` : "@none";
-      document.getElementById("profileWarning").style.display = "none";
+      profileCard.classList.add("active");
+      pfpImg.src = user.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+      nickname.textContent = user.username || "anon";
+      handle.textContent = user.xHandle ? `@${user.xHandle}` : "@none";
+      warning.style.display = "none";
     } catch (err) {
-      console.error("Error loading Vault profile", err);
+      console.error("Vault Profile Error", err);
       showGenericProfile(true);
     }
   }
 
-  function showGenericProfile(isEligible = false) {
-    document.getElementById("profileSection").classList.add("active");
-    document.getElementById("pfpImg").src = "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
-    document.getElementById("nickname").textContent = "anon";
-    document.getElementById("handle").textContent = "@none";
+  function showGenericProfile(isEligible) {
+    profileCard.classList.add("active");
+    pfpImg.src = "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+    nickname.textContent = "anon";
+    handle.textContent = "@none";
 
-    const warn = document.getElementById("profileWarning");
-    warn.textContent = isEligible
+    warning.textContent = isEligible
       ? "Customize your profile in the Quantum Vault."
       : "You don’t hold 4M+ Y2K. Unlock profile customization in the Vault.";
-    warn.style.display = "block";
+    warning.style.display = "block";
   }
 
-  // Collapsible sections
-  window.toggleCollapse = (el) => {
-    el.classList.toggle("open");
+  function toggleSection(section) {
+    section.classList.toggle("open");
   }
 
-    function initNumberPicker() {
-  const grid = document.getElementById("numberGrid");
-  grid.innerHTML = "";
-  const selected = new Set();
+  window.toggleSection = toggleSection;
 
-  for (let i = 1; i <= 24; i++) {
-    const cell = document.createElement("div");
-    cell.textContent = i;
-    cell.addEventListener("click", () => {
-      if (selected.has(i)) {
-        selected.delete(i);
-        cell.classList.remove("selected");
-      } else if (selected.size < 6) {
-        selected.add(i);
-        cell.classList.add("selected");
-      }
-    });
-    grid.appendChild(cell);
-  }
+  function initNumberPicker() {
+    const grid = document.createElement("div");
+    grid.className = "section";
+    grid.innerHTML = `
+      <div class="section-header" onclick="toggleSection(this.parentElement)">Pick 6 Numbers <span>▼</span></div>
+      <div class="section-content" id="pickerContent">
+        <div style="margin-top:12px; display:grid; grid-template-columns:repeat(6,1fr); gap:8px;" id="pickerGrid"></div>
+        <button id="submitDraw" style="margin-top:16px; padding:10px; border:none; background:var(--accent); border-radius:8px; font-weight:bold; cursor:pointer;">ENTER</button>
+      </div>
+    `;
+    document.getElementById("numberPicker").appendChild(grid);
 
-  document.getElementById("enterDrawBtn").addEventListener("click", () => {
-    if (selected.size !== 6) {
-      alert("Pick exactly 6 numbers!");
-      return;
+    const pickerGrid = document.getElementById("pickerGrid");
+    const selected = new Set();
+
+    for (let i = 1; i <= 24; i++) {
+      const btn = document.createElement("div");
+      btn.textContent = i;
+      btn.style.cssText = "padding:10px;border-radius:50%;background:rgba(255,255,255,0.1);text-align:center;cursor:pointer;";
+      btn.onclick = () => {
+        if (selected.has(i)) {
+          selected.delete(i);
+          btn.style.background = "rgba(255,255,255,0.1)";
+        } else if (selected.size < 6) {
+          selected.add(i);
+          btn.style.background = "var(--accent)";
+        }
+      };
+      pickerGrid.appendChild(btn);
     }
-    alert("Numbers submitted: " + [...selected].sort((a,b) => a-b).join(", "));
-    // Add your backend draw entry logic here
-  });
-}
 
-async function loadLeaderboard() {
-  try {
-    const snap = await getDocs(query(collection(db, "users"), orderBy("earnings", "desc"), limit(10)));
-    const board = document.getElementById("leaderboardList");
-    board.innerHTML = "";
-
-    snap.forEach((doc, i) => {
-      const u = doc.data();
-      const name = u.username || "anon";
-      const score = u.earnings || 0;
-      board.innerHTML += `<div>#${i+1} — @${name} | ${score} Y2K</div>`;
-    });
-  } catch (err) {
-    document.getElementById("leaderboardList").textContent = "Error loading leaderboard.";
+    document.getElementById("submitDraw").onclick = () => {
+      if (selected.size !== 6) return alert("Pick exactly 6 numbers.");
+      alert("Submitted: " + [...selected].sort((a, b) => a - b).join(", "));
+    };
   }
-}
-    
+
+  async function loadPots() {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider("https://evm.cronos.org");
+      const potWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+
+      const y2k = new ethers.Contract("0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d", ["function balanceOf(address) view returns (uint256)"], provider);
+      const dojo = new ethers.Contract("0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4", ["function balanceOf(address) view returns (uint256)"], provider);
+
+      const [y2kBal, dojoBal] = await Promise.all([
+        y2k.balanceOf(potWallet),
+        dojo.balanceOf(potWallet)
+      ]);
+
+      document.getElementById("y2kPot").textContent = `${parseInt(ethers.utils.formatUnits(y2kBal, 18)).toLocaleString()} Y2K`;
+      document.getElementById("dojoPot").textContent = `${parseInt(ethers.utils.formatUnits(dojoBal, 18)).toLocaleString()} DOJO`;
+    } catch (err) {
+      console.error("Pot Load Error", err);
+    }
+  }
+
+  async function loadLeaderboard() {
+    try {
+      const snap = await getDocs(query(collection(db, "users"), orderBy("earnings", "desc"), limit(10)));
+      const container = document.createElement("div");
+      container.className = "section open";
+      container.innerHTML = `
+        <div class="section-header" onclick="toggleSection(this.parentElement)">🏆 Top Players <span>▼</span></div>
+        <div class="section-content" id="leaderboardList"></div>
+      `;
+      document.getElementById("leaderboard").appendChild(container);
+
+      const list = document.getElementById("leaderboardList");
+      list.innerHTML = "";
+
+      snap.forEach((doc, i) => {
+        const user = doc.data();
+        const name = user.username || "anon";
+        const score = user.earnings || 0;
+        list.innerHTML += `<div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">#${i + 1} — @${name} | ${score} Y2K</div>`;
+      });
+    } catch (err) {
+      console.error("Leaderboard Error", err);
+    }
+  }
 </script>
-  </body>
+</body>
 </html>
