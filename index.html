@@ -1,180 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GL1TCHBALL // Y2K ARCADE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet" />
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
-  <style>
-    :root {
-      --bg-primary: #0a0a0f;
-      --bg-surface: #16161e;
-      --text-primary: #ffffff;
-      --text-secondary: rgba(255,255,255,0.7);
-      --accent-primary: #00ffe1;
-      --accent-secondary: #ff00f7;
-      --gradient-glitch: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-    }
-
-    html, body {
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      font-family: 'Orbitron', sans-serif;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .app-container {
-      background-color: var(--bg-primary);
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 20px;
-      min-height: 100vh;
-    }
-
-    .glitch-title {
-      font-size: 42px;
-      font-weight: 900;
-      text-align: center;
-      background: var(--gradient-glitch);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
-    }
-
-    .draw-timer {
-      font-family: monospace;
-      font-size: 24px;
-      text-align: center;
-      color: var(--accent-primary);
-      margin-bottom: 24px;
-    }
-
-    .token-pots {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    .pot {
-      background: var(--bg-surface);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .pot-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      margin-bottom: 8px;
-    }
-
-    .pot-label {
-      font-size: 14px;
-      color: var(--text-secondary);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .pot-amount {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--accent-primary);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GL1TCHBALL // Y2K ARCADE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Ethers.js -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
 </head>
-<body style="background-color:#0a0a0f;">
-  <div class="app-container">
-    <h1 class="glitch-title">GL1TCHBALL</h1>
-    <div class="draw-timer" id="drawTimer">00:00:00</div>
+<body>
 
-    <div class="token-pots">
-      <div class="pot">
-        <img class="pot-icon" src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" />
-        <span class="pot-label">Y2K POT</span>
-        <div class="pot-amount" id="y2kPotAmount">Loading...</div>
-      </div>
+<!-- Main Scroll Container -->
+<main class="main-container">
+    <div class="app-container">
+        <!-- GL1TCH HEADER -->
+        <div class="glitch-header">
+            <div class="connect-wrapper">
+                <button id="connectBtn" class="connect-btn">
+                    <span class="connect-dot"></span>
+                    <span class="connect-text">CONNECT</span>
+                </button>
+            </div>
+            
+            <h1 class="glitch-title">GL1TCHBALL</h1>
+            <div class="glitch-subtitle">VAULT PROTOCOL</div>
+            
+            <div class="next-draw">
+                <div class="draw-label">NEXT DRAW</div>
+                <div id="drawTimer" class="draw-timer">00:00:00</div>
+            </div>
+        </div>
 
-      <div class="pot">
-        <img class="pot-icon" src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" />
-        <span class="pot-label">DOJO POT</span>
-        <div class="pot-amount" id="dojoPotAmount">Loading...</div>
-      </div>
+        <!-- VAULT PROFILE -->
+        <div id="vaultProfile" class="vault-profile">
+            <div class="profile-header">
+                <span class="profile-label">VAULT PROFILE</span>
+                <span class="profile-status">CONNECTED</span>
+            </div>
+            <div class="profile-content">
+                <div class="profile-stat">
+                    <span>USERNAME</span>
+                    <span id="profileUsername">--</span>
+                </div>
+                <div class="profile-stat">
+                    <span>X HANDLE</span>
+                    <span id="profileHandle">--</span>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="profileGames">0</span>
+                        <span class="stat-label">GAMES</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="profileWins">0</span>
+                        <span class="stat-label">WINS</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="profileEarnings">0</span>
+                        <span class="stat-label">Y2K WON</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VAULT ACCESS CHECK -->
+        <div id="vaultAccessCheck" class="vault-check">
+            <!-- Will be populated based on Y2K balance -->
+        </div>
+
+        <!-- TOKEN POTS -->
+        <div class="token-pots">
+            <div class="pot y2k-pot">
+                <div class="pot-header">
+                    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="pot-icon">
+                    <span class="pot-label">Y2K POT</span>
+                </div>
+                <div class="pot-amount" id="y2kPotAmount">Loading...</div>
+            </div>
+            
+            <div class="pot dojo-pot">
+                <div class="pot-header">
+                    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="pot-icon">
+                    <span class="pot-label">DOJO POT</span>
+                </div>
+                <div class="pot-amount" id="dojoPotAmount">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Coming Soon Section -->
+        <div class="coming-soon">
+            <h2>ENTRY SYSTEM COMING SOON</h2>
+            <p>Pick your numbers and enter the next draw</p>
+            <div class="features">
+                <div class="feature">🎮 6 Numbers</div>
+                <div class="feature">💎 50 CRO Entry</div>
+                <div class="feature">🏆 Dual Token Rewards</div>
+            </div>
+        </div>
     </div>
-  </div>
+</main>
 
-  <script>
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
-      authDomain: "y2k-arcade.firebaseapp.com",
-      projectId: "y2k-arcade",
-      storageBucket: "y2k-arcade.appspot.com",
-      messagingSenderId: "1063043176357",
-      appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<style>
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    // Contracts
-    const Y2K_TOKEN = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
-    const DOJO_TOKEN = "0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4";
-    const POT_WALLET = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+:root {
+    /* Core Colors */
+    --bg-primary: #0a0a0f;
+    --bg-surface: #16161e;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255,255,255,0.7);
+    --accent-primary: #00ffe1;
+    --accent-secondary: #ff00f7;
+    --error: #ff4444;
+    --success: #00ff9d;
+    
+    /* Gradients */
+    --gradient-glitch: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    --gradient-surface: linear-gradient(180deg, var(--bg-surface), rgba(22,22,30,0.8));
+}
 
-    const ERC20_ABI = [
-      "function balanceOf(address owner) view returns (uint256)"
-    ];
+/* Document Level Styles */
+html, body {
+    height: 100%;
+    width: 100%;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
 
-    // Load Balances
-    async function updatePotBalances() {
-      try {
+/* Main Container */
+.main-container {
+    min-height: 100vh;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 40px; /* Extra padding at bottom */
+}
+
+/* App Container */
+.app-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+/* GL1TCH HEADER */
+.glitch-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-top: 20px;
+}
+
+.connect-wrapper {
+    margin-bottom: 24px;
+}
+
+.connect-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 8px 16px;
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.connect-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.connect-btn.connected .connect-dot {
+    background: var(--success);
+}
+
+.glitch-title {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    background: var(--gradient-glitch);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: glitchPulse 4s infinite alternate;
+}
+
+.glitch-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+}
+
+.next-draw {
+    background: var(--bg-surface);
+    border-radius: 12px;
+    padding: 16px;
+    display: inline-block;
+}
+
+.draw-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.draw-timer {
+    font-family: monospace;
+    font-size: 24px;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary);
+}
+
+/* VAULT PROFILE */
+.vault-profile {
+    background: var(--gradient-surface);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: none; /* Initially hidden */
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.profile-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.profile-status {
+    font-size: 12px;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+/* VAULT ACCESS CHECK */
+.vault-check {
+    background: var(--bg-surface);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    text-align: center;
+    display: none; /* Initially hidden */
+}
+
+.qualify-cta {
+    display: block;
+    background: var(--gradient-glitch);
+    color: var(--bg-primary);
+    padding: 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 16px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+.locked-warning {
+    background: rgba(255,0,0,0.1);
+    border: 1px solid rgba(255,0,0,0.2);
+    color: #ff6b6b;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* TOKEN POTS */
+.token-pots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.pot {
+    background: var(--gradient-surface);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.pot-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.pot-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.pot-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.pot-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px rgba(0,255,225,0.4);
+}
+
+/* Coming Soon Section */
+.coming-soon {
+    background: var(--gradient-surface);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 24px;
+}
+
+.coming-soon h2 {
+    color: var(--accent-primary);
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.coming-soon p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feature {
+    background: rgba(255,255,255,0.05);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+/* Animations */
+@keyframes glitchPulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+    .app-container {
+        padding: 16px;
+    }
+    
+    .glitch-title {
+        font-size: 36px;
+    }
+    
+    .token-pots {
+        gap: 12px;
+    }
+    
+    .pot {
+        padding: 16px;
+    }
+    
+    .pot-amount {
+        font-size: 18px;
+    }
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    z-index: 1000;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translate(-50%, 100%); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+</style>
+
+<script>
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCJwqDFZtf1PkZwAalOaf2_7eWtej5HIfA",
+    authDomain: "y2k-arcade.firebaseapp.com",
+    projectId: "y2k-arcade",
+    storageBucket: "y2k-arcade.appspot.com",
+    messagingSenderId: "1063043176357",
+    appId: "1:1063043176357:web:20bc22e9cbf269ff40fa4c"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Contract Addresses & ABIs
+const Y2K_TOKEN = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
+const DOJO_TOKEN = "0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4";
+const POT_WALLET = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
+const MIN_Y2K_BALANCE = ethers.utils.parseUnits("4000000", 18);
+
+const ERC20_ABI = [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)"
+];
+
+// State Management
+let state = {
+    walletConnected: false,
+    walletAddress: null,
+    provider: null,
+    signer: null,
+    vaultProfile: null,
+    y2kBalance: null
+};
+
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+    setupWalletConnection();
+    startDrawTimer();
+    updatePotBalances();
+});
+
+// Wallet Connection
+async function setupWalletConnection() {
+    const connectBtn = document.getElementById('connectBtn');
+    
+    // Check if MetaMask is installed
+    if (typeof window.ethereum !== 'undefined') {
+        connectBtn.addEventListener('click', async () => {
+            if (!state.walletConnected) {
+                try {
+                    // Request account access
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+                    
+                    state.walletAddress = accounts[0];
+                    state.provider = new ethers.providers.Web3Provider(window.ethereum);
+                    state.signer = state.provider.getSigner();
+                    state.walletConnected = true;
+                    
+                    // Update UI
+                    connectBtn.classList.add('connected');
+                    connectBtn.querySelector('.connect-text').textContent = 
+                        `${state.walletAddress.slice(0,6)}...${state.walletAddress.slice(-4)}`;
+                    
+                    // Check profile and balance
+                    await checkVaultProfile();
+                    await checkY2KBalance();
+                    
+                } catch (error) {
+                    console.error('Connection failed:', error);
+                    showNotification('Failed to connect wallet', 'error');
+                }
+            }
+        });
+    } else {
+        connectBtn.addEventListener('click', () => {
+            showNotification('Please install MetaMask', 'error');
+        });
+    }
+}
+
+// Check Vault Profile
+async function checkVaultProfile() {
+    try {
+        const userDoc = await db.collection('users')
+            .doc(state.walletAddress.toLowerCase())
+            .get();
+            
+        if (userDoc.exists) {
+            state.vaultProfile = userDoc.data();
+            showVaultProfile();
+        } else {
+            await checkY2KBalance();
+        }
+    } catch (error) {
+        console.error('Profile check failed:', error);
+    }
+}
+
+// Show Vault Profile
+function showVaultProfile() {
+    const profile = state.vaultProfile;
+    const profileElement = document.getElementById('vaultProfile');
+    profileElement.style.display = 'block';
+    
+    document.getElementById('profileUsername').textContent = profile.username || '--';
+    document.getElementById('profileHandle').textContent = profile.xHandle || '--';
+    document.getElementById('profileGames').textContent = profile.games || '0';
+    document.getElementById('profileWins').textContent = profile.wins || '0';
+    document.getElementById('profileEarnings').textContent = 
+        profile.earnings ? `${profile.earnings.toLocaleString()} Y2K` : '0';
+}
+
+// Check Y2K Balance
+async function checkY2KBalance() {
+    try {
+        const y2kContract = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, state.provider);
+        state.y2kBalance = await y2kContract.balanceOf(state.walletAddress);
+        checkVaultAccess();
+    } catch (error) {
+        console.error('Balance check failed:', error);
+    }
+}
+
+// Check Vault Access
+function checkVaultAccess() {
+    const vaultCheck = document.getElementById('vaultAccessCheck');
+    vaultCheck.style.display = 'block';
+    
+    if (state.y2kBalance.gte(MIN_Y2K_BALANCE)) {
+        vaultCheck.innerHTML = `
+            <a href="https://y2k-the-vault.netlify.app/" target="_blank" class="qualify-cta">
+                🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
+            </a>
+        `;
+    } else {
+        vaultCheck.innerHTML = `
+            <div class="locked-warning">
+                🔒 VAULT ACCESS LOCKED<br>
+                Hold 4,000,000+ Y2K to unlock free entries<br>
+                and your player identity
+            </div>
+        `;
+    }
+}
+
+// Update Pot Balances
+async function updatePotBalances() {
+    try {
         const provider = new ethers.providers.JsonRpcProvider("https://evm.cronos.org");
-        const y2k = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, provider);
-        const dojo = new ethers.Contract(DOJO_TOKEN, ERC20_ABI, provider);
-
-        const [y2kBal, dojoBal] = await Promise.all([
-          y2k.balanceOf(POT_WALLET),
-          dojo.balanceOf(POT_WALLET)
+        const y2kContract = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, provider);
+        const dojoContract = new ethers.Contract(DOJO_TOKEN, ERC20_ABI, provider);
+        
+        const [y2kBalance, dojoBalance] = await Promise.all([
+            y2kContract.balanceOf(POT_WALLET),
+            dojoContract.balanceOf(POT_WALLET)
         ]);
-
-        document.getElementById("y2kPotAmount").textContent = `${ethers.utils.formatEther(y2kBal).split('.')[0]} Y2K`;
-        document.getElementById("dojoPotAmount").textContent = `${ethers.utils.formatEther(dojoBal).split('.')[0]} DOJO`;
-      } catch (err) {
-        console.error("Pot load error:", err);
-      }
+        
+        document.getElementById('y2kPotAmount').textContent = 
+            `${ethers.utils.formatEther(y2kBalance).split('.')[0]} Y2K`;
+        document.getElementById('dojoPotAmount').textContent = 
+            `${ethers.utils.formatEther(dojoBalance).split('.')[0]} DOJO`;
+            
+    } catch (error) {
+        console.error('Failed to update pot balances:', error);
     }
+}
 
-    // Draw Timer
-    function startDrawTimer() {
-      function update() {
+// Start Draw Timer
+function startDrawTimer() {
+    function updateTimer() {
         const now = new Date();
-        const next = new Date();
-        next.setHours(24, 0, 0, 0);
-        if (next <= now) next.setDate(next.getDate() + 1);
-        const diff = next - now;
-        const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
-        const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-        const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-        document.getElementById("drawTimer").textContent = `${h}:${m}:${s}`;
-      }
-      update();
-      setInterval(update, 1000);
+        const nextDraw = new Date();
+        nextDraw.setHours(24, 0, 0, 0);
+        if (nextDraw <= now) nextDraw.setDate(nextDraw.getDate() + 1);
+        
+        const timeLeft = nextDraw - now;
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        document.getElementById('drawTimer').textContent = 
+            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
+    
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
 
-    // Init
-    window.addEventListener("DOMContentLoaded", () => {
-      updatePotBalances();
-      startDrawTimer();
-    });
-  </script>
+// Utility: Show Notification
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.remove(), 3000);
+}
+</script>
+
 </body>
 </html>
