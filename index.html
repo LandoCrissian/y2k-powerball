@@ -3,93 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quantum Powerball X | Cronos</title>
+    <title>Y2K Powerball</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Main app container -->
     <div class="app-container">
-        <!-- Header with protocol stats -->
-        <div class="protocol-stats">
-            <div class="stat-card">
-                <h3>Protocol TVL</h3>
-                <div class="value" id="tvlValue">$0</div>
+        <!-- Header -->
+        <div class="header">
+            <div class="token-images">
+                <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="token-logo">
+                <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="token-logo">
             </div>
-            <div class="stat-card">
-                <h3>Total Players</h3>
-                <div class="value" id="playersCount">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Current Round</h3>
-                <div class="value" id="roundNumber">#1</div>
+            <h1>Y2K POWERBALL</h1>
+            <div class="next-draw">
+                <span>Next Draw</span>
+                <div id="drawTimer" class="timer">00:00:00</div>
             </div>
         </div>
 
-        <!-- Jackpot display -->
-        <div class="jackpot-container">
-            <div class="jackpot-header">
-                <h2>MEGA JACKPOT</h2>
-                <div class="timer" id="drawTimer">00:00:00</div>
+        <!-- Prize Pools -->
+        <div class="prize-pools">
+            <div class="pool y2k-pool">
+                <div class="pool-header">Y2K POOL</div>
+                <div class="pool-amount" id="y2kPool">0 Y2K</div>
             </div>
-            <div class="rewards-pool">
-                <div class="token-pool y2k">
-                    <img src="https://raw.githubusercontent.com/y2k-finance/assets/main/logos/y2k.png" alt="Y2K">
-                    <div class="pool-info">
-                        <span class="label">Y2K Pool</span>
-                        <span class="amount" id="y2kPool">0 Y2K</span>
-                    </div>
-                </div>
-                <div class="token-pool dojo">
-                    <img src="https://raw.githubusercontent.com/y2k-finance/assets/main/logos/dojo.png" alt="DOJO">
-                    <div class="pool-info">
-                        <span class="label">DOJO Pool</span>
-                        <span class="amount" id="dojoPool">0 DOJO</span>
-                    </div>
-                </div>
+            <div class="pool dojo-pool">
+                <div class="pool-header">DOJO POOL</div>
+                <div class="pool-amount" id="dojoPool">0 DOJO</div>
             </div>
         </div>
 
-        <!-- Ticket purchase -->
-        <div class="ticket-purchase">
-            <h3>Purchase Tickets</h3>
-            <div class="price-display">
-                <span>Price per ticket:</span>
-                <span class="price">5 CRO</span>
+        <!-- Number Selection -->
+        <div class="number-selection">
+            <h2>SELECT YOUR NUMBERS</h2>
+            <div class="selection-info">Pick 6 numbers from 1-49</div>
+            
+            <div class="number-grid" id="numberGrid"></div>
+            
+            <div class="selection-tools">
+                <button id="quickPickBtn" class="tool-btn">
+                    🎲 QUICK PICK
+                </button>
+                <button id="clearBtn" class="tool-btn">
+                    🗑️ CLEAR
+                </button>
             </div>
+
+            <div class="selected-numbers" id="selectedNumbers">
+                <div class="number-slot">--</div>
+                <div class="number-slot">--</div>
+                <div class="number-slot">--</div>
+                <div class="number-slot">--</div>
+                <div class="number-slot">--</div>
+                <div class="number-slot">--</div>
+            </div>
+        </div>
+
+        <!-- Purchase Section -->
+        <div class="purchase-section">
+            <div class="price-info">
+                <span>Ticket Price</span>
+                <span class="price">50 CRO</span>
+            </div>
+            
             <div class="distribution-info">
                 <div class="distribution-row">
-                    <span>🎮 45% Rewards Pool</span>
-                    <span>2.25 CRO</span>
+                    <span>🎮 Rewards Pool (45%)</span>
+                    <span>22.5 CRO</span>
                 </div>
                 <div class="distribution-row">
-                    <span>🔄 45% Token Buyback</span>
-                    <span>2.25 CRO</span>
+                    <span>🔄 Token Buyback (45%)</span>
+                    <span>22.5 CRO</span>
                 </div>
                 <div class="distribution-row">
-                    <span>💧 5% Liquidity</span>
-                    <span>0.25 CRO</span>
+                    <span>💧 Liquidity (5%)</span>
+                    <span>2.5 CRO</span>
                 </div>
                 <div class="distribution-row">
-                    <span>🔥 5% Burn</span>
-                    <span>0.25 CRO</span>
+                    <span>🔥 Burn (5%)</span>
+                    <span>2.5 CRO</span>
                 </div>
             </div>
-            <div class="quantity-selector">
-                <button class="qty-btn" onclick="updateQuantity(-1)">-</button>
-                <input type="number" id="ticketQuantity" value="1" min="1" max="100">
-                <button class="qty-btn" onclick="updateQuantity(1)">+</button>
-            </div>
-            <button class="purchase-btn" id="purchaseBtn">
-                Purchase Tickets
-                <span class="total-price">5 CRO</span>
+
+            <button id="purchaseBtn" class="purchase-btn" disabled>
+                PURCHASE TICKET
             </button>
         </div>
 
-        <!-- Recent transactions -->
-        <div class="transactions">
-            <h3>Recent Activity</h3>
-            <div class="transaction-list" id="transactionList">
-                <!-- Transactions will be populated here -->
+        <!-- Your Tickets -->
+        <div class="tickets-section">
+            <h2>YOUR TICKETS</h2>
+            <div id="ticketsList" class="tickets-list">
+                <!-- Tickets will be populated here -->
             </div>
         </div>
     </div>
@@ -132,111 +139,169 @@ body {
     margin: 0 auto;
 }
 
-/* Protocol Stats */
-.protocol-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+/* Header */
+.header {
+    text-align: center;
     margin-bottom: 24px;
 }
 
-.stat-card {
+.token-images {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.token-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    background: linear-gradient(to right, var(--accent), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+}
+
+.next-draw {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    color: var(--accent);
+}
+
+/* Prize Pools */
+.prize-pools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.pool {
     background: var(--surface);
     padding: 16px;
     border-radius: 12px;
     text-align: center;
 }
 
-.stat-card h3 {
-    font-size: 12px;
+.pool-header {
+    font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 8px;
 }
 
-.stat-card .value {
+.pool-amount {
     font-size: 18px;
     font-weight: 700;
     color: var(--accent);
 }
 
-/* Jackpot Container */
-.jackpot-container {
-    background: linear-gradient(135deg, var(--surface), rgba(124, 58, 237, 0.1));
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.jackpot-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.jackpot-header h2 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 24px;
-    background: linear-gradient(to right, var(--accent), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.timer {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 20px;
-    color: var(--accent);
-}
-
-.rewards-pool {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.token-pool {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px;
-    border-radius: 12px;
-}
-
-.token-pool img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-
-.pool-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.pool-info .label {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.pool-info .amount {
-    font-size: 16px;
-    font-weight: 700;
-}
-
-/* Ticket Purchase */
-.ticket-purchase {
+/* Number Selection */
+.number-selection {
     background: var(--surface);
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
 }
 
-.ticket-purchase h3 {
+.number-selection h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.selection-info {
+    color: var(--text-secondary);
+    font-size: 14px;
     margin-bottom: 16px;
 }
 
-.price-display {
+.number-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.number-btn {
+    aspect-ratio: 1;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.number-btn.selected {
+    background: var(--primary);
+    color: white;
+}
+
+.number-btn:active {
+    transform: scale(0.95);
+}
+
+.selection-tools {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.tool-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tool-btn:active {
+    transform: scale(0.95);
+}
+
+.selected-numbers {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.number-slot {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Purchase Section */
+.purchase-section {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.price-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -246,7 +311,7 @@ body {
 }
 
 .price {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--accent);
 }
@@ -255,7 +320,7 @@ body {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .distribution-row {
@@ -269,40 +334,6 @@ body {
     margin-bottom: 0;
 }
 
-.quantity-selector {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.qty-btn {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 8px;
-    background: var(--primary);
-    color: var(--text);
-    font-size: 20px;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.qty-btn:active {
-    transform: scale(0.95);
-}
-
-#ticketQuantity {
-    flex: 1;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 8px;
-    color: var(--text);
-    text-align: center;
-    font-size: 16px;
-}
-
 .purchase-btn {
     width: 100%;
     padding: 16px;
@@ -313,237 +344,301 @@ body {
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    transition: all 0.2s ease;
 }
 
-.purchase-btn:active {
+.purchase-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.purchase-btn:not(:disabled):active {
     transform: scale(0.98);
 }
 
-/* Transactions */
-.transactions {
+/* Tickets Section */
+.tickets-section {
     background: var(--surface);
     border-radius: 16px;
     padding: 24px;
 }
 
-.transactions h3 {
+.tickets-section h2 {
+    font-size: 18px;
     margin-bottom: 16px;
 }
 
-.transaction-list {
+.tickets-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.transaction-item {
+.ticket-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
 }
 
-.transaction-info {
+.ticket-numbers {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    gap: 8px;
 }
 
-.transaction-type {
+.ticket-number {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
-    font-weight: 700;
 }
 
-.transaction-time {
+.ticket-date {
     font-size: 12px;
     color: var(--text-secondary);
 }
 
-.transaction-amount {
-    font-family: 'JetBrains Mono', monospace;
+/* Notifications */
+.notification {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
     font-size: 14px;
-    color: var(--accent);
+    animation: slideUp 0.3s ease;
+    z-index: 1000;
 }
 
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
+@keyframes slideUp {
+    from { transform: translate(-50%, 100%); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
 }
 </style>
 
 <script>
-// Constants
-const TICKET_PRICE = 5; // in CRO
-const REWARDS_PERCENT = 0.45;
-const BUYBACK_PERCENT = 0.45;
-const LP_PERCENT = 0.05;
-const BURN_PERCENT = 0.05;
+// Firebase Configuration
+const firebaseConfig = {
+    // Add your Firebase config here
+};
 
-// State management
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Constants
+const TICKET_PRICE = 50; // CRO
+const MAX_NUMBERS = 6;
+const NUMBER_RANGE = 49;
+
+// State
 let state = {
-    ticketQuantity: 1,
-    y2kPool: 0,
-    dojoPool: 0,
-    tvl: 0,
-    players: 0,
-    round: 1
+    selectedNumbers: new Set(),
+    userTickets: [],
+    pools: {
+        y2k: 0,
+        dojo: 0
+    }
 };
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
-    startTimer();
+    initializeNumberGrid();
+    startDrawTimer();
     setupEventListeners();
-    loadInitialData();
+    loadUserTickets();
+    loadPoolData();
 });
 
-// Initialize app
-function initializeApp() {
-    updateTicketPrice();
-    updateDistributionInfo();
+// Initialize number grid
+function initializeNumberGrid() {
+    const grid = document.getElementById('numberGrid');
+    for (let i = 1; i <= NUMBER_RANGE; i++) {
+        const button = document.createElement('button');
+        button.className = 'number-btn';
+        button.textContent = i;
+        button.addEventListener('click', () => toggleNumber(i));
+        grid.appendChild(button);
+    }
 }
 
-// Start countdown timer
-function startTimer() {
-    const timerElement = document.getElementById('drawTimer');
+// Toggle number selection
+function toggleNumber(number) {
+    const button = document.querySelector(`.number-btn:nth-child(${number})`);
     
+    if (state.selectedNumbers.has(number)) {
+        state.selectedNumbers.delete(number);
+        button.classList.remove('selected');
+    } else if (state.selectedNumbers.size < MAX_NUMBERS) {
+        state.selectedNumbers.add(number);
+        button.classList.add('selected');
+    }
+    
+    updateSelectedNumbersDisplay();
+    updatePurchaseButton();
+}
+
+// Update selected numbers display
+function updateSelectedNumbersDisplay() {
+    const slots = document.querySelectorAll('.number-slot');
+    const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
+    
+    slots.forEach((slot, index) => {
+        slot.textContent = numbers[index] || '--';
+    });
+}
+
+// Quick pick numbers
+function quickPick() {
+    clearSelection();
+    while (state.selectedNumbers.size < MAX_NUMBERS) {
+        const number = Math.floor(Math.random() * NUMBER_RANGE) + 1;
+        if (!state.selectedNumbers.has(number)) {
+            state.selectedNumbers.add(number);
+            document.querySelector(`.number-btn:nth-child(${number})`).classList.add('selected');
+        }
+    }
+    updateSelectedNumbersDisplay();
+    updatePurchaseButton();
+}
+
+// Clear selection
+function clearSelection() {
+    state.selectedNumbers.clear();
+    document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
+    updateSelectedNumbersDisplay();
+    updatePurchaseButton();
+}
+
+// Update purchase button state
+function updatePurchaseButton() {
+    const purchaseBtn = document.getElementById('purchaseBtn');
+    purchaseBtn.disabled = state.selectedNumbers.size !== MAX_NUMBERS;
+}
+
+// Purchase ticket
+async function purchaseTicket() {
+    try {
+        const numbers = Array.from(state.selectedNumbers).sort((a, b) => a - b);
+        const ticket = {
+            numbers,
+            purchaseDate: new Date().toISOString(),
+            drawDate: getNextDrawDate(),
+            userId: 'user123' // Replace with actual user ID
+        };
+
+        await db.collection('tickets').add(ticket);
+        
+        // Update pools
+        const rewardsAmount = TICKET_PRICE * 0.45;
+        const poolUpdate = rewardsAmount / 2;
+        
+        await db.collection('pools').doc('current').update({
+            y2k: firebase.firestore.FieldValue.increment(poolUpdate),
+            dojo: firebase.firestore.FieldValue.increment(poolUpdate)
+        });
+
+        clearSelection();
+        loadUserTickets();
+        loadPoolData();
+        showNotification('Ticket purchased successfully!', 'success');
+    } catch (error) {
+        console.error('Purchase error:', error);
+        showNotification('Failed to purchase ticket', 'error');
+    }
+}
+
+// Load user tickets
+async function loadUserTickets() {
+    try {
+        const snapshot = await db.collection('tickets')
+            .where('userId', '==', 'user123') // Replace with actual user ID
+            .orderBy('purchaseDate', 'desc')
+            .limit(10)
+            .get();
+
+        const ticketsList = document.getElementById('ticketsList');
+        ticketsList.innerHTML = '';
+
+        snapshot.forEach(doc => {
+            const ticket = doc.data();
+            const ticketElement = document.createElement('div');
+            ticketElement.className = 'ticket-item';
+            ticketElement.innerHTML = `
+                <div class="ticket-numbers">
+                    ${ticket.numbers.map(n => `
+                        <div class="ticket-number">${String(n).padStart(2, '0')}</div>
+                    `).join('')}
+                </div>
+                <div class="ticket-date">${new Date(ticket.purchaseDate).toLocaleDateString()}</div>
+            `;
+            ticketsList.appendChild(ticketElement);
+        });
+    } catch (error) {
+        console.error('Error loading tickets:', error);
+    }
+}
+
+// Load pool data
+async function loadPoolData() {
+    try {
+        const doc = await db.collection('pools').doc('current').get();
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('y2kPool').textContent = `${numberWithCommas(data.y2k)} Y2K`;
+            document.getElementById('dojoPool').textContent = `${numberWithCommas(data.dojo)} DOJO`;
+            state.pools = data;
+        }
+    } catch (error) {
+        console.error('Error loading pool data:', error);
+    }
+}
+
+// Start draw timer
+function startDrawTimer() {
     function updateTimer() {
         const now = new Date();
-        const nextDraw = new Date();
-        nextDraw.setHours(24, 0, 0, 0);
-        
+        const nextDraw = getNextDrawDate();
         const timeLeft = nextDraw - now;
+        
         const hours = Math.floor(timeLeft / (1000 * 60 * 60));
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
         
-        timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('drawTimer').textContent = 
+            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
     
     updateTimer();
     setInterval(updateTimer, 1000);
 }
 
-// Update ticket quantity
-function updateQuantity(change) {
-    const input = document.getElementById('ticketQuantity');
-    const newValue = Math.max(1, Math.min(100, parseInt(input.value) + change));
-    input.value = newValue;
-    state.ticketQuantity = newValue;
-    updateTicketPrice();
-    updateDistributionInfo();
-}
-
-// Update ticket price display
-function updateTicketPrice() {
-    const totalPrice = state.ticketQuantity * TICKET_PRICE;
-    document.querySelector('.purchase-btn .total-price').textContent = `${totalPrice} CRO`;
-}
-
-// Update distribution info
-function updateDistributionInfo() {
-    const totalPrice = state.ticketQuantity * TICKET_PRICE;
-    const rewards = totalPrice * REWARDS_PERCENT;
-    const buyback = totalPrice * BUYBACK_PERCENT;
-    const lp = totalPrice * LP_PERCENT;
-    const burn = totalPrice * BURN_PERCENT;
-    
-    document.querySelector('.distribution-row:nth-child(1) span:last-child').textContent = `${rewards.toFixed(2)} CRO`;
-    document.querySelector('.distribution-row:nth-child(2) span:last-child').textContent = `${buyback.toFixed(2)} CRO`;
-    document.querySelector('.distribution-row:nth-child(3) span:last-child').textContent = `${lp.toFixed(2)} CRO`;
-    document.querySelector('.distribution-row:nth-child(4) span:last-child').textContent = `${burn.toFixed(2)} CRO`;
-}
-
-// Load initial protocol data
-async function loadInitialData() {
-    try {
-        // Simulate API call
-        const data = {
-            y2kPool: 1250000,
-            dojoPool: 750000,
-            tvl: 2500000,
-            players: 1250,
-            round: 1
-        };
-        
-        updateProtocolData(data);
-    } catch (error) {
-        console.error('Failed to load initial data:', error);
+// Get next draw date
+function getNextDrawDate() {
+    const now = new Date();
+    const nextDraw = new Date();
+    nextDraw.setHours(24, 0, 0, 0);
+    if (nextDraw <= now) {
+        nextDraw.setDate(nextDraw.getDate() + 1);
     }
-}
-
-// Update protocol data
-function updateProtocolData(data) {
-    state = { ...state, ...data };
-    
-    document.getElementById('y2kPool').textContent = `${numberWithCommas(data.y2kPool)} Y2K`;
-    document.getElementById('dojoPool').textContent = `${numberWithCommas(data.dojoPool)} DOJO`;
-    document.getElementById('tvlValue').textContent = `$${numberWithCommas(data.tvl)}`;
-    document.getElementById('playersCount').textContent = numberWithCommas(data.players);
-    document.getElementById('roundNumber').textContent = `#${data.round}`;
-}
-
-// Add transaction to list
-function addTransaction(transaction) {
-    const list = document.getElementById('transactionList');
-    const item = document.createElement('div');
-    item.className = 'transaction-item';
-    
-    item.innerHTML = `
-        <div class="transaction-info">
-            <div class="transaction-type">${transaction.type}</div>
-            <div class="transaction-time">${transaction.time}</div>
-        </div>
-        <div class="transaction-amount">${transaction.amount}</div>
-    `;
-    
-    list.insertBefore(item, list.firstChild);
+    return nextDraw;
 }
 
 // Setup event listeners
 function setupEventListeners() {
-    document.getElementById('ticketQuantity').addEventListener('change', (e) => {
-        state.ticketQuantity = Math.max(1, Math.min(100, parseInt(e.target.value) || 1));
-        e.target.value = state.ticketQuantity;
-        updateTicketPrice();
-        updateDistributionInfo();
-    });
-    
-    document.getElementById('purchaseBtn').addEventListener('click', async () => {
-        try {
-            // Simulate purchase transaction
-            const transaction = {
-                type: 'Ticket Purchase',
-                time: new Date().toLocaleTimeString(),
-                amount: `${state.ticketQuantity * TICKET_PRICE} CRO`
-            };
-            
-            addTransaction(transaction);
-            
-            // Update protocol data
-            const newData = {
-                y2kPool: state.y2kPool + (state.ticketQuantity * TICKET_PRICE * REWARDS_PERCENT * 0.5),
-                dojoPool: state.dojoPool + (state.ticketQuantity * TICKET_PRICE * REWARDS_PERCENT * 0.5),
-                tvl: state.tvl + (state.ticketQuantity * TICKET_PRICE),
-                players: state.players + 1,
-                round: state.round
-            };
-            
-            updateProtocolData(newData);
-            
-            // Show success message
-            showNotification('Tickets purchased successfully!', 'success');
-        } catch (error) {
-            showNotification('Failed to purchase tickets', 'error');
-        }
-    });
+    document.getElementById('quickPickBtn').addEventListener('click', quickPick);
+    document.getElementById('clearBtn').addEventListener('click', clearSelection);
+    document.getElementById('purchaseBtn').addEventListener('click', purchaseTicket);
 }
 
 // Utility functions
