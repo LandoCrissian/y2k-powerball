@@ -5,15 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GL1TCHBALL // Y2K ARCADE</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="text/javascript"></script>
+    <!-- Using newer ethers version with better mobile support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js" 
+            integrity="sha512-0HCoY17Y0N+AeOgYHvFGpcemhgqwnJlpeZ9Hk7RjwZa9HJin2oL+StrQtEq5blwG9ZgB+UgPGKpjNjxu2Tl7A==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"></script>
 </head>
-<body>
+<body ontouchstart="">
     <main class="main-container">
         <div class="app-container">
             <!-- GL1TCH HEADER -->
             <div class="glitch-header">
                 <div class="connect-wrapper">
-                    <button id="connectBtn" class="connect-btn">
+                    <button id="connectBtn" class="connect-btn" role="button">
                         <span class="connect-dot"></span>
                         <span class="connect-text">CONNECT</span>
                     </button>
@@ -32,7 +36,7 @@
             <div class="token-pots">
                 <div class="pot y2k-pot">
                     <div class="pot-header">
-                        <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="pot-icon">
+                        <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" alt="Y2K" class="pot-icon" loading="lazy">
                         <span class="pot-label">Y2K POT</span>
                     </div>
                     <div class="pot-amount" id="y2kPotAmount">Loading...</div>
@@ -40,7 +44,7 @@
                 
                 <div class="pot dojo-pot">
                     <div class="pot-header">
-                        <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="pot-icon">
+                        <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" alt="DOJO" class="pot-icon" loading="lazy">
                         <span class="pot-label">DOJO POT</span>
                     </div>
                     <div class="pot-amount" id="dojoPotAmount">Loading...</div>
@@ -58,7 +62,7 @@
                 </div>
             </div>
 
-            <!-- Wallet Status Message -->
+            <!-- Wallet Message -->
             <div id="walletMessage" class="wallet-message"></div>
 
             <!-- Network Status -->
@@ -70,14 +74,7 @@
     </main>
 
 <style>
-/* Reset & Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
+/* Mobile-First Base Styles */
 :root {
     --bg-primary: #0a0a0f;
     --bg-surface: #16161e;
@@ -88,29 +85,40 @@
     --error: #ff4444;
     --success: #00ff9d;
     --gradient-glitch: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 html {
     background-color: var(--bg-primary);
+    height: -webkit-fill-available;
 }
 
 body {
-    height: 100%;
-    width: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
     background: var(--bg-primary);
     color: var(--text-primary);
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Orbitron', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .main-container {
     min-height: 100vh;
-    width: 100%;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: calc(20px + var(--safe-area-inset-bottom));
 }
 
 .app-container {
@@ -120,34 +128,33 @@ body {
     width: 100%;
 }
 
-.glitch-header {
-    text-align: center;
-    margin-bottom: 32px;
-    padding-top: 20px;
-}
-
-.connect-wrapper {
-    margin-bottom: 20px;
-}
-
+/* Enhanced Mobile Touch Targets */
 .connect-btn {
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 24px;
-    padding: 8px 16px;
+    padding: 12px 24px;
     color: var(--text-primary);
     font-family: 'Orbitron', sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
+    min-height: 44px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.connect-btn:active {
+    transform: scale(0.98);
+    background: rgba(255,255,255,0.1);
 }
 
 .connect-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     background: var(--error);
     border-radius: 50%;
     display: inline-block;
@@ -157,8 +164,9 @@ body {
     background: var(--success);
 }
 
+/* Mobile-Optimized Typography */
 .glitch-title {
-    font-size: 42px;
+    font-size: clamp(32px, 8vw, 42px);
     font-weight: 900;
     letter-spacing: 2px;
     margin-bottom: 8px;
@@ -175,30 +183,10 @@ body {
     margin-bottom: 24px;
 }
 
-.next-draw {
-    background: var(--bg-surface);
-    border-radius: 12px;
-    padding: 16px;
-    display: inline-block;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.draw-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-}
-
-.draw-timer {
-    font-family: monospace;
-    font-size: 24px;
-    color: var(--accent-primary);
-    text-shadow: 0 0 10px rgba(0,255,225,0.5);
-}
-
+/* Mobile-Optimized Layout */
 .token-pots {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
     margin-bottom: 24px;
 }
@@ -209,11 +197,6 @@ body {
     padding: 20px;
     border: 1px solid rgba(255,255,255,0.1);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.pot:hover {
-    transform: translateY(-2px);
 }
 
 .pot-header {
@@ -224,70 +207,34 @@ body {
 }
 
 .pot-icon {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.pot-label {
-    font-size: 14px;
-    color: var(--text-secondary);
+    object-fit: cover;
 }
 
 .pot-amount {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--accent-primary);
-    text-shadow: 0 0 10px rgba(0,255,225,0.3);
 }
 
-.coming-soon {
-    background: var(--bg-surface);
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-    margin-top: 24px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.coming-soon h2 {
-    color: var(--accent-primary);
-    margin-bottom: 8px;
-    font-size: 20px;
-}
-
-.coming-soon p {
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    font-size: 14px;
-}
-
-.features {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.feature {
-    background: rgba(255,255,255,0.05);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.feature:hover {
-    background: rgba(255,255,255,0.08);
-}
-
+/* Enhanced Mobile Feedback */
 .wallet-message {
+    position: fixed;
+    bottom: calc(70px + var(--safe-area-inset-bottom));
+    left: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.9);
+    color: var(--text-primary);
+    padding: 16px;
+    border-radius: 12px;
     text-align: center;
-    padding: 12px;
-    margin: 20px 0;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
+    z-index: 1000;
     display: none;
+    animation: slideUp 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .wallet-message.show {
@@ -296,46 +243,72 @@ body {
 
 .network-status {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: var(--safe-area-inset-bottom);
+    left: 20px;
+    right: 20px;
     background: var(--bg-surface);
-    padding: 12px 24px;
+    padding: 16px;
     border-radius: 12px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     border: 1px solid rgba(255,255,255,0.1);
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     z-index: 1000;
+    margin: 0 auto;
+    max-width: 480px;
 }
 
-.status-icon {
-    font-size: 20px;
-}
-
-.status-text {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-@media (max-width: 480px) {
-    .app-container {
-        padding: 16px;
+/* Animations */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
     }
-    
-    .glitch-title {
-        font-size: 36px;
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
-    
+}
+
+/* Active States for Touch Devices */
+.feature {
+    background: rgba(255,255,255,0.05);
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.feature:active {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Tablet Adjustments */
+@media (min-width: 481px) {
     .token-pots {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* iOS Safe Area Support */
+@supports (padding: max(0px)) {
+    .main-container {
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    
+    .network-status {
+        bottom: max(20px, env(safe-area-inset-bottom));
     }
 }
 </style>
 
 <script>
-// Constants
+// Initialize provider and contracts after ethers is loaded
+let provider;
+let signer;
 const CRONOS_CHAIN_ID = '0x19';
 const CRONOS_CHAIN_ID_DECIMAL = '25';
 const CRONOS_RPC = 'https://evm.cronos.org';
@@ -343,68 +316,61 @@ const Y2K_TOKEN = '0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d';
 const DOJO_TOKEN = '0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4';
 const POT_WALLET = '0x348c2F06C64b4465f90446Fd806aFf3A01220450';
 
-// State management
-let state = {
-    provider: null,
-    signer: null,
-    connected: false,
-    walletType: null
-};
-
-// Initialize on page load
+// Wait for both DOM and ethers to be ready
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('App initializing...');
-    await initializeApp();
+    await waitForEthers();
+    initializeApp();
     startDrawTimer();
 });
 
-async function initializeApp() {
-    console.log('Checking wallet availability...');
-    updateNetworkStatus('Checking wallet connection...');
-    
-    // Check for different wallet providers
-    if (typeof window.onchain !== 'undefined') {
-        console.log('OnChain wallet detected');
-        state.walletType = 'onchain';
-        updateNetworkStatus('OnChain wallet detected');
-    } else if (typeof window.ethereum !== 'undefined') {
-        console.log('Web3 wallet detected');
-        state.walletType = 'ethereum';
-        updateNetworkStatus('Web3 wallet detected');
-    } else {
-        console.log('No wallet detected');
-        updateNetworkStatus('⚠️ No compatible wallet detected');
-        showWalletMessage('Please install OnChain wallet or another Web3 wallet to continue');
-        return;
-    }
+// Function to wait for ethers to be available
+async function waitForEthers() {
+    return new Promise((resolve) => {
+        const checkEthers = () => {
+            if (window.ethers) {
+                resolve();
+            } else {
+                setTimeout(checkEthers, 100);
+            }
+        };
+        checkEthers();
+    });
+}
 
-    setupWalletListeners();
-    setupConnectButton();
-    await checkAndUpdateNetwork();
-    await updatePotBalances();
+async function initializeApp() {
+    showWalletMessage('Checking wallet availability...');
+    
+    // Check for wallet providers
+    if (typeof window.ethereum !== 'undefined') {
+        provider = new ethers.BrowserProvider(window.ethereum);
+        setupWalletListeners();
+        setupConnectButton();
+        await checkAndUpdateNetwork();
+        await updatePotBalances();
+    } else {
+        showWalletMessage('Please install a Web3 wallet to connect');
+    }
 }
 
 function showWalletMessage(message) {
     const messageEl = document.getElementById('walletMessage');
     messageEl.textContent = message;
     messageEl.classList.add('show');
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+    }, 3000);
 }
 
 function setupWalletListeners() {
-    const provider = state.walletType === 'onchain' ? window.onchain : window.ethereum;
-    
-    if (provider) {
-        provider.on('chainChanged', (chainId) => {
-            console.log('Chain changed:', chainId);
+    if (window.ethereum) {
+        window.ethereum.on('chainChanged', () => {
             window.location.reload();
         });
 
-        provider.on('accountsChanged', (accounts) => {
-            console.log('Accounts changed:', accounts);
+        window.ethereum.on('accountsChanged', (accounts) => {
             if (accounts.length === 0) {
-                state.connected = false;
                 updateConnectButton();
-                updateNetworkStatus('Wallet disconnected');
+                showWalletMessage('Wallet disconnected');
             }
         });
     }
@@ -412,77 +378,54 @@ function setupWalletListeners() {
 
 function setupConnectButton() {
     const connectBtn = document.getElementById('connectBtn');
-    if (connectBtn) {
-        connectBtn.addEventListener('click', connectWallet);
-    }
+    connectBtn.addEventListener('click', connectWallet);
+    // Add touch feedback
+    connectBtn.addEventListener('touchstart', () => {}, {passive: true});
 }
 
 async function connectWallet() {
     try {
-        console.log('Attempting wallet connection...');
-        updateNetworkStatus('Connecting wallet...');
+        showWalletMessage('Connecting wallet...');
         
-        let provider;
-        let accounts;
-
-        if (state.walletType === 'onchain') {
-            provider = window.onchain;
-            try {
-                accounts = await provider.request({ 
-                    method: 'onc_requestAccounts' 
-                });
-            } catch (e) {
-                console.log('Falling back to eth_requestAccounts');
-                accounts = await provider.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-            }
-        } else {
-            provider = window.ethereum;
-            accounts = await provider.request({ 
-                method: 'eth_requestAccounts' 
-            });
+        if (!window.ethereum) {
+            throw new Error('No Web3 wallet found');
         }
 
-        console.log('Connected accounts:', accounts);
-
-        const chainId = await provider.request({ 
-            method: 'eth_chainId' 
+        const accounts = await window.ethereum.request({
+            method: 'eth_requestAccounts'
         });
-        console.log('Current chainId:', chainId);
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+
+        const chainId = await window.ethereum.request({
+            method: 'eth_chainId'
+        });
 
         if (chainId !== CRONOS_CHAIN_ID && chainId !== CRONOS_CHAIN_ID_DECIMAL) {
             await switchToCronos();
         }
 
-        state.provider = new ethers.providers.Web3Provider(provider);
-        state.signer = state.provider.getSigner();
-        state.connected = true;
-
         updateConnectButton(accounts[0]);
-        updateNetworkStatus('Connected to Cronos ✅');
+        showWalletMessage('Connected successfully ✅');
         await updatePotBalances();
 
     } catch (error) {
         console.error('Connection error:', error);
-        updateNetworkStatus(`⚠️ Connection failed: ${error.message}`);
-        showWalletMessage(error.message);
+        showWalletMessage(`Connection failed: ${error.message}`);
     }
 }
 
 async function switchToCronos() {
-    const provider = state.walletType === 'onchain' ? window.onchain : window.ethereum;
-    
     try {
-        await provider.request({
+        await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: CRONOS_CHAIN_ID }],
         });
     } catch (switchError) {
-        console.log('Switch error:', switchError);
         if (switchError.code === 4902) {
             try {
-                await provider.request({
+                await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
                     params: [{
                         chainId: CRONOS_CHAIN_ID,
@@ -497,36 +440,33 @@ async function switchToCronos() {
                     }]
                 });
             } catch (addError) {
-                console.error('Add network error:', addError);
-                throw new Error(`Failed to add Cronos network: ${addError.message}`);
+                showWalletMessage('Failed to add Cronos network');
+                throw addError;
             }
         }
-        throw new Error(`Failed to switch to Cronos network: ${switchError.message}`);
+        throw switchError;
     }
 }
 
 function updateConnectButton(address = null) {
     const connectBtn = document.getElementById('connectBtn');
-    if (connectBtn) {
-        if (state.connected && address) {
-            connectBtn.classList.add('connected');
-            connectBtn.querySelector('.connect-text').textContent = 
-                `${address.slice(0, 6)}...${address.slice(-4)}`;
-        } else {
-            connectBtn.classList.remove('connected');
-            connectBtn.querySelector('.connect-text').textContent = 'CONNECT';
-        }
+    if (address) {
+        connectBtn.classList.add('connected');
+        connectBtn.querySelector('.connect-text').textContent = 
+            `${address.slice(0, 4)}...${address.slice(-4)}`;
+    } else {
+        connectBtn.classList.remove('connected');
+        connectBtn.querySelector('.connect-text').textContent = 'CONNECT';
     }
 }
 
 async function updatePotBalances() {
     try {
-        console.log('Updating pot balances...');
-        const provider = new ethers.providers.JsonRpcProvider(CRONOS_RPC);
+        const jsonProvider = new ethers.JsonRpcProvider(CRONOS_RPC);
         const abi = ["function balanceOf(address) view returns (uint256)"];
         
-        const y2kContract = new ethers.Contract(Y2K_TOKEN, abi, provider);
-        const dojoContract = new ethers.Contract(DOJO_TOKEN, abi, provider);
+        const y2kContract = new ethers.Contract(Y2K_TOKEN, abi, jsonProvider);
+        const dojoContract = new ethers.Contract(DOJO_TOKEN, abi, jsonProvider);
         
         const [y2kBalance, dojoBalance] = await Promise.all([
             y2kContract.balanceOf(POT_WALLET),
@@ -534,9 +474,9 @@ async function updatePotBalances() {
         ]);
         
         document.getElementById('y2kPotAmount').textContent = 
-            `${ethers.utils.formatEther(y2kBalance).split('.')[0]} Y2K`;
+            `${ethers.formatEther(y2kBalance).split('.')[0]} Y2K`;
         document.getElementById('dojoPotAmount').textContent = 
-            `${ethers.utils.formatEther(dojoBalance).split('.')[0]} DOJO`;
+            `${ethers.formatEther(dojoBalance).split('.')[0]} DOJO`;
             
     } catch (error) {
         console.error('Failed to update pot balances:', error);
@@ -560,41 +500,21 @@ function startDrawTimer() {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        document.getElementById('drawTimer').textContent = 
-            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        const timerEl = document.getElementById('drawTimer');
+        if (timerEl) {
+            timerEl.textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
     }
     
     updateTimer();
     setInterval(updateTimer, 1000);
 }
 
-async function checkAndUpdateNetwork() {
-    if (!window.ethereum && !window.onchain) return;
-    
-    try {
-        const provider = state.walletType === 'onchain' ? window.onchain : window.ethereum;
-        const chainId = await provider.request({ 
-            method: 'eth_chainId' 
-        });
-        
-        if (chainId === CRONOS_CHAIN_ID || chainId === CRONOS_CHAIN_ID_DECIMAL) {
-            updateNetworkStatus('Connected to Cronos ✅');
-        } else {
-            updateNetworkStatus('Please switch to Cronos network');
-        }
-    } catch (error) {
-        console.error('Network check failed:', error);
-        updateNetworkStatus('Network check failed');
-    }
-}
-
-function updateNetworkStatus(message) {
-    const statusText = document.querySelector('.status-text');
-    if (statusText) {
-        statusText.textContent = message;
-    }
-    console.log('Network status:', message);
-}
+// Initialize
+window.addEventListener('load', () => {
+    document.body.addEventListener('touchstart', () => {}, {passive: true});
+});
 </script>
 
 </body>
