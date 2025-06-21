@@ -4,226 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quantum Powerball X | Cronos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- 🔮 GL1TCHBALL HEADER -->
-<div class="glitchball-hero">
-  <h1 class="glitch-title">GL1TCHBALL</h1>
-  <div class="glitch-subtext">Jackpot Protocol // Cronos Chain</div>
-
-  <div class="jackpot-display">
-    <div class="jackpot-label">MEGA JACKPOT</div>
-    <div class="jackpot-amount">
-      <span id="jackpotCRO">0</span> CRO
-    </div>
-    <div class="jackpot-timer" id="drawTimer">--:--:--</div>
-  </div>
-</div>
-
-<div class="app-wrapper">
-    
-    <!-- Network Indicator -->
-    <div class="network-status">
-        <div class="status-pill">
-            <span class="status-dot"></span>
-            <span id="networkName">CRONOS</span>
+    <!-- Main app container -->
+    <div class="app-container">
+        <!-- Header with protocol stats -->
+        <div class="protocol-stats">
+            <div class="stat-card">
+                <h3>Protocol TVL</h3>
+                <div class="value" id="tvlValue">$0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Players</h3>
+                <div class="value" id="playersCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Current Round</h3>
+                <div class="value" id="roundNumber">#1</div>
+            </div>
         </div>
-        <div id="walletConnect" class="wallet-pill">
-            <span class="status-dot"></span>
-            <span>CONNECT</span>
-        </div>
-    </div>
 
-    <!-- 🔐 VAULT + Y2K VERIFICATION GATE -->
-<div id="fomoGate" style="margin: 20px 0; display: none;">
-
-  <!-- 🟡 Vault Qualifier (has 4M+ Y2K but no profile) -->
-  <div id="createProfileCTA" style="display:none;">
-    <a href="https://y2k-the-vault.netlify.app/" target="_blank" style="
-      display: block;
-      background: linear-gradient(135deg, #00ffe1, #ff00f7);
-      color: #000;
-      padding: 16px;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 16px;
-      text-align: center;
-      text-decoration: none;
-      text-shadow: 0 0 10px #fff;
-      box-shadow: 0 0 20px rgba(0,255,225,0.4);
-      animation: pulseProfile 2s infinite;
-      letter-spacing: 0.5px;
-    ">
-      🔓 YOU QUALIFY — CREATE YOUR PLAYER PROFILE →
-    </a>
-  </div>
-
-  <!-- 🔴 FOMO Block (does not hold enough Y2K) -->
-  <div id="vaultFomoBlock" style="display:none;">
-    <div style="
-      background: linear-gradient(135deg, #220000, #1a0000);
-      border: 2px dashed #ff4d4d;
-      color: #ffcccc;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 15px;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      animation: glowFomo 1.8s infinite alternate;
-    ">
-      🔒 VAULT ACCESS LOCKED<br>
-      <span style="color: #ff6b6b;">Hold 4,000,000+ Y2K</span><br>
-      to unlock free Powerball entries and<br><strong style="color: #00ffe1;">your player identity</strong>.
-    </div>
-  </div>
-
-</div>
-
-    <!-- Live Metrics -->
-    <div class="metrics-bar">
-        <div class="metric">
-            <div class="metric-value" id="tvl">-</div>
-            <div class="metric-label">TVL</div>
-        </div>
-        <div class="metric">
-            <div class="metric-value" id="entries">-</div>
-            <div class="metric-label">ENTRIES</div>
-        </div>
-        <div class="metric">
-            <div class="metric-value" id="apy">-</div>
-            <div class="metric-label">APY</div>
-        </div>
-    </div>
-
-    <!-- Main Draw Container -->
-    <div class="draw-container">
-        <div class="jackpot-card">
+        <!-- Jackpot display -->
+        <div class="jackpot-container">
             <div class="jackpot-header">
                 <h2>MEGA JACKPOT</h2>
-                <div class="draw-timer" id="drawTimer">--:--:--</div>
+                <div class="timer" id="drawTimer">00:00:00</div>
             </div>
-            <div class="prize-amount">
-                <div class="token-amount">
-                    <span id="prizeAmount">0</span>
-                    <span class="token-symbol">CRO</span>
+            <div class="rewards-pool">
+                <div class="token-pool y2k">
+                    <img src="https://raw.githubusercontent.com/y2k-finance/assets/main/logos/y2k.png" alt="Y2K">
+                    <div class="pool-info">
+                        <span class="label">Y2K Pool</span>
+                        <span class="amount" id="y2kPool">0 Y2K</span>
+                    </div>
                 </div>
-                <div class="usd-value" id="prizeUsd">$0.00</div>
-            </div>
-            <div class="jackpot-stats">
-                <div class="stat">
-                    <span>WIN ODDS</span>
-                    <span id="odds">1:13,983,816</span>
+                <div class="token-pool dojo">
+                    <img src="https://raw.githubusercontent.com/y2k-finance/assets/main/logos/dojo.png" alt="DOJO">
+                    <div class="pool-info">
+                        <span class="label">DOJO Pool</span>
+                        <span class="amount" id="dojoPool">0 DOJO</span>
+                    </div>
                 </div>
-                <div class="stat">
-                    <span>ROUND</span>
-                    <span id="round">#1</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Jackpot Token Pots -->
-<div class="jackpot-pots">
-  <div class="pot">
-    <img src="https://raw.githubusercontent.com/y2k-finance/assets/main/logos/y2k.png" class="pot-icon" alt="Y2K Logo">
-    <span class="pot-label">Y2K Pot</span>
-    <span class="pot-amount" id="y2kPot">Loading...</span>
-  </div>
-  <div class="pot">
-    <img src="https://raw.githubusercontent.com/y2k-finance/assets/main/logos/dojo.png" class="pot-icon" alt="DOJO Logo">
-    <span class="pot-label">DOJO Pot</span>
-    <span class="pot-amount" id="dojoPot">Loading...</span>
-  </div>
-</div>
-
-        <!-- Number Selection -->
-        <div class="number-selection">
-            <div class="selection-header">
-                <h3>PICK YOUR NUMBERS</h3>
-                <div class="selection-count">
-                    <span id="pickedCount">0</span>/6
-                </div>
-            </div>
-
-            <div class="number-grid" id="numberGrid"></div>
-
-            <div class="selection-tools">
-                <button class="tool-btn quick" onclick="quickSelect()">
-                    <span>🎲</span>
-                    QUICK PICK
-                </button>
-                <button class="tool-btn clear" onclick="clearSelection()">
-                    <span>🗑️</span>
-                    CLEAR
-                </button>
             </div>
         </div>
 
-        <!-- Entry Controls -->
-        <div class="entry-controls">
-            <button id="submitEntry" class="entry-btn primary">
-                <div class="btn-content">
-                    <span>ENTER DRAW</span>
-                    <span class="entry-cost">5 CRO</span>
+        <!-- Ticket purchase -->
+        <div class="ticket-purchase">
+            <h3>Purchase Tickets</h3>
+            <div class="price-display">
+                <span>Price per ticket:</span>
+                <span class="price">5 CRO</span>
+            </div>
+            <div class="distribution-info">
+                <div class="distribution-row">
+                    <span>🎮 45% Rewards Pool</span>
+                    <span>2.25 CRO</span>
                 </div>
-            </button>
-            <button id="multiEntry" class="entry-btn secondary">
-                <div class="btn-content">
-                    <span>MULTI ENTRY</span>
-                    <span class="entry-cost">SAVE 15%</span>
+                <div class="distribution-row">
+                    <span>🔄 45% Token Buyback</span>
+                    <span>2.25 CRO</span>
                 </div>
+                <div class="distribution-row">
+                    <span>💧 5% Liquidity</span>
+                    <span>0.25 CRO</span>
+                </div>
+                <div class="distribution-row">
+                    <span>🔥 5% Burn</span>
+                    <span>0.25 CRO</span>
+                </div>
+            </div>
+            <div class="quantity-selector">
+                <button class="qty-btn" onclick="updateQuantity(-1)">-</button>
+                <input type="number" id="ticketQuantity" value="1" min="1" max="100">
+                <button class="qty-btn" onclick="updateQuantity(1)">+</button>
+            </div>
+            <button class="purchase-btn" id="purchaseBtn">
+                Purchase Tickets
+                <span class="total-price">5 CRO</span>
             </button>
         </div>
-    </div>
 
-    <!-- Active Entries -->
-    <div class="entries-section">
-        <div class="section-header">
-            <h3>YOUR ENTRIES</h3>
-            <span class="active-count" id="activeCount">0 Active</span>
+        <!-- Recent transactions -->
+        <div class="transactions">
+            <h3>Recent Activity</h3>
+            <div class="transaction-list" id="transactionList">
+                <!-- Transactions will be populated here -->
+            </div>
         </div>
-        <div class="entries-list" id="entriesList"></div>
     </div>
-
-    <!-- Previous Draws -->
-    <div class="history-section">
-        <div class="section-header">
-            <h3>PREVIOUS DRAWS</h3>
-            <button class="history-btn">VIEW ALL</button>
-        </div>
-        <div class="history-list" id="historyList"></div>
-    </div>
-</div>
 
 <style>
 :root {
-    /* Colors - Cronos Theme */
-    --bg-primary: #1B0740;
-    --bg-surface: #2A1155;
-    --accent-primary: #7C3AED;
-    --accent-secondary: #3B82F6;
-    --text-primary: #FFFFFF;
-    --text-secondary: rgba(255,255,255,0.7);
+    --primary: #7C3AED;
+    --secondary: #3B82F6;
+    --accent: #00FFE1;
+    --background: #0A0F1C;
+    --surface: #1A1F2E;
+    --text: #FFFFFF;
+    --text-secondary: #94A3B8;
     --success: #10B981;
     --warning: #F59E0B;
     --error: #EF4444;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #7C3AED, #3B82F6);
-    --gradient-surface: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-    
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
-    
-    /* Glass Effect */
-    --glass-bg: rgba(255,255,255,0.08);
-    --glass-border: 1px solid rgba(255,255,255,0.1);
-    --glass-radius: 16px;
 }
 
 * {
@@ -234,90 +116,55 @@
 }
 
 html {
-    background-color: var(--bg-primary);
+    background-color: var(--background);
 }
 
 body {
     font-family: 'Space Grotesk', sans-serif;
-    color: var(--text-primary);
-    background: radial-gradient(circle at top, var(--bg-surface), var(--bg-primary));
+    color: var(--text);
     min-height: 100vh;
     padding: 16px;
     -webkit-font-smoothing: antialiased;
 }
 
-.app-wrapper {
+.app-container {
     max-width: 480px;
     margin: 0 auto;
 }
 
-/* Network Status */
-.network-status {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 24px;
-}
-
-.status-pill, .wallet-pill {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    border-radius: 24px;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.status-pill:active, .wallet-pill:active {
-    transform: scale(0.97);
-}
-
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--success);
-    animation: pulse 2s infinite;
-}
-
-/* Metrics Bar */
-.metrics-bar {
+/* Protocol Stats */
+.protocol-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 24px;
 }
 
-.metric {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    border-radius: var(--glass-radius);
-    padding: 12px;
+.stat-card {
+    background: var(--surface);
+    padding: 16px;
+    border-radius: 12px;
     text-align: center;
 }
 
-.metric-value {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.metric-label {
+.stat-card h3 {
     font-size: 12px;
     color: var(--text-secondary);
+    margin-bottom: 8px;
 }
 
-/* Jackpot Card */
-.jackpot-card {
-    background: var(--gradient-surface);
-    border: var(--glass-border);
-    border-radius: var(--glass-radius);
+.stat-card .value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Jackpot Container */
+.jackpot-container {
+    background: linear-gradient(135deg, var(--surface), rgba(124, 58, 237, 0.1));
+    border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
-    box-shadow: var(--shadow-lg);
 }
 
 .jackpot-header {
@@ -327,647 +174,384 @@ body {
     margin-bottom: 24px;
 }
 
-.draw-timer {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent-primary);
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.prize-amount {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.token-amount {
-    font-size: 48px;
-    font-weight: 700;
-    background: var(--gradient-primary);
+.jackpot-header h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    background: linear-gradient(to right, var(--accent), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 8px;
 }
 
-.token-symbol {
-    font-size: 24px;
-    margin-left: 8px;
+.timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    color: var(--accent);
 }
 
-.usd-value {
-    color: var(--text-secondary);
-}
-
-.jackpot-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
-
-.stat {
+.rewards-pool {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.stat span:first-child {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-/* Number Selection */
-.number-selection {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    border-radius: var(--glass-radius);
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow-sm);
-}
-
-.selection-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.selection-count {
-    background: rgba(255,255,255,0.1);
-    padding: 4px 12px;
-    border-radius: 12px;
-}
-
-.number-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 24px;
-}
-
-.number-btn {
-    aspect-ratio: 1;
-    border: none;
-    background: rgba(255,255,255,0.1);
-    color: var(--text-primary);
-    border-radius: 12px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.number-btn:active {
-    transform: scale(0.95);
-}
-
-.number-btn.selected {
-    background: var(--gradient-primary);
-}
-
-.selection-tools {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
 }
 
-.tool-btn {
-    border: none;
-    background: rgba(255,255,255,0.1);
-    color: var(--text-primary);
+.token-pool {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
     padding: 12px;
     border-radius: 12px;
+}
+
+.token-pool img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.pool-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.tool-btn:active {
-    transform: scale(0.97);
-}
-
-.tool-btn.quick {
-    background: var(--accent-secondary);
-}
-
-.tool-btn.ai {
-    background: var(--accent-primary);
-}
-
-/* Entry Controls */
-.entry-controls {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.entry-btn {
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.entry-btn:active {
-    transform: scale(0.97);
-}
-
-.entry-btn.primary {
-    background: var(--gradient-primary);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-sm);
-}
-
-.entry-btn.secondary {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    color: var(--text-primary);
-}
-
-.btn-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.entry-cost {
+.pool-info .label {
     font-size: 12px;
-    opacity: 0.7;
+    color: var(--text-secondary);
 }
 
-/* Entries Section */
-.entries-section {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    border-radius: var(--glass-radius);
+.pool-info .amount {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Ticket Purchase */
+.ticket-purchase {
+    background: var(--surface);
+    border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
-    box-shadow: var(--shadow-sm);
 }
 
-.section-header {
+.ticket-purchase h3 {
+    margin-bottom: 16px;
+}
+
+.price-display {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.active-count {
-    color: var(--text-secondary);
+.price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
 }
 
-.entries-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.entry-item {
-    background: rgba(255,255,255,0.05);
+.distribution-info {
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 16px;
+    margin-bottom: 24px;
+}
+
+.distribution-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.distribution-row:last-child {
+    margin-bottom: 0;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.qty-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.qty-btn:active {
+    transform: scale(0.95);
+}
+
+#ticketQuantity {
+    flex: 1;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: var(--text);
+    text-align: center;
+    font-size: 16px;
+}
+
+.purchase-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.entry-numbers {
-    display: flex;
-    gap: 8px;
+.purchase-btn:active {
+    transform: scale(0.98);
 }
 
-.number {
-    background: var(--glass-bg);
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-/* History Section */
-.history-section {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    border-radius: var(--glass-radius);
+/* Transactions */
+.transactions {
+    background: var(--surface);
+    border-radius: 16px;
     padding: 24px;
-    box-shadow: var(--shadow-sm);
 }
 
-.history-btn {
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    color: var(--text-primary);
-    padding: 8px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.transactions h3 {
+    margin-bottom: 16px;
 }
 
-.history-btn:active {
-    transform: scale(0.97);
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-/* Animations */
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.transaction-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.transaction-type {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.transaction-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.transaction-amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+}
+
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
     100% { opacity: 1; }
 }
-
-@keyframes selectPop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Notifications */
-.notification {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 24px;
-    border-radius: 12px;
-    background: var(--glass-bg);
-    border: var(--glass-border);
-    color: var(--text-primary);
-    font-size: 14px;
-    animation: slideUp 0.3s ease;
-    z-index: 1000;
-}
-
-.notification.success {
-    background: var(--success);
-}
-
-.notification.warning {
-    background: var(--warning);
-}
-
-.notification.error {
-    background: var(--error);
-}
-
-@keyframes slideUp {
-    from { transform: translate(-50%, 100%); opacity: 0; }
-    to { transform: translate(-50%, 0); opacity: 1; }
-}
-
-    /* === GL1TCHBALL HERO === */
-.glitchball-hero {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.glitch-title {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 900;
-  font-size: 36px;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #00ffe1, #ff00f7);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: glitchPulse 2s infinite alternate;
-}
-
-.glitch-subtext {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  margin-top: 6px;
-  letter-spacing: 1px;
-}
-
-.jackpot-display {
-  margin-top: 24px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.15);
-}
-
-.jackpot-label {
-  font-size: 14px;
-  color: #ff00f7;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  letter-spacing: 1px;
-}
-
-.jackpot-amount {
-  font-size: 32px;
-  font-weight: 700;
-  background: linear-gradient(90deg, #00ffe1, #ffffff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 6px;
-}
-
-.jackpot-timer {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 18px;
-  color: #00ffe1;
-  text-shadow: 0 0 4px #00ffe1;
-}
-
-/* Animation */
-@keyframes glitchPulse {
-  0% { transform: scale(1); text-shadow: 0 0 8px #ff00f7; }
-  100% { transform: scale(1.02); text-shadow: 0 0 12px #00ffe1; }
-}
-
-    @keyframes glowFomo {
-  0% { box-shadow: 0 0 5px red; }
-  100% { box-shadow: 0 0 20px red; }
-}
-
-@keyframes pulseProfile {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.85; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-    .token-pot {
-  margin-top: 16px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 14px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.token-line {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-primary);
-  padding: 4px 0;
-  border-bottom: 1px dashed rgba(255,255,255,0.1);
-}
-
-.token-line:last-child {
-  border-bottom: none;
-}
-
-.token-label {
-  font-weight: 600;
-  color: #00ffe1;
-}
-
-.token-balance {
-  font-weight: bold;
-}
-
-    .jackpot-pots {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.pot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.pot-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  margin-right: 12px;
-}
-
-.pot-label {
-  flex: 1;
-  color: #fff;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.pot-amount {
-  color: var(--primary);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 18px;
-  text-shadow: 0 0 4px var(--primary);
-}
 </style>
 
 <script>
-// State Management
+// Constants
+const TICKET_PRICE = 5; // in CRO
+const REWARDS_PERCENT = 0.45;
+const BUYBACK_PERCENT = 0.45;
+const LP_PERCENT = 0.05;
+const BURN_PERCENT = 0.05;
+
+// State management
 let state = {
-    selectedNumbers: new Set(),
-    maxNumbers: 6,
-    entries: [],
-    ticketPrice: 5, // CRO
-    timer: null,
-    connected: false,
-    contract: null
+    ticketQuantity: 1,
+    y2kPool: 0,
+    dojoPool: 0,
+    tvl: 0,
+    players: 0,
+    round: 1
 };
 
-// Initialize App
+// Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    initializeUI();
-    startDrawTimer();
+    initializeApp();
+    startTimer();
     setupEventListeners();
-    initializeWallet();
+    loadInitialData();
 });
 
-// Initialize UI
-function initializeUI() {
-    initializeNumberGrid();
-    initializeLocalStorage();
+// Initialize app
+function initializeApp() {
+    updateTicketPrice();
+    updateDistributionInfo();
 }
 
-// Initialize Number Grid
-function initializeNumberGrid() {
-    const grid = document.getElementById('numberGrid');
-    for (let i = 1; i <= 49; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'number-btn';
-        btn.textContent = i;
-        btn.addEventListener('click', () => toggleNumber(i, btn));
-        grid.appendChild(btn);
-    }
-}
-
-// Initialize Local Storage
-function initializeLocalStorage() {
-    const storedEntries = localStorage.getItem('cronosLotteryEntries');
-    if (storedEntries) {
-        state.entries = JSON.parse(storedEntries);
-        state.entries.forEach(entry => addEntryToUI(entry));
-    }
-}
-
-// Toggle Number Selection
-function toggleNumber(num, btn) {
-    if (!state.connected) {
-        showNotification('Please connect your wallet first', 'warning');
-        return;
-    }
-
-    if (btn.classList.contains('selected')) {
-        state.selectedNumbers.delete(num);
-        btn.classList.remove('selected');
-    } else if (state.selectedNumbers.size < state.maxNumbers) {
-        state.selectedNumbers.add(num);
-        btn.classList.add('selected');
-        btn.style.animation = 'none';
-        btn.offsetHeight;
-        btn.style.animation = 'selectPop 0.3s ease';
-    }
-    updateSelectionCount();
-}
-
-// Update Selection Counter
-function updateSelectionCount() {
-    const counter = document.getElementById('pickedCount');
-    counter.textContent = state.selectedNumbers.size;
-}
-
-// Quick Select
-function quickSelect() {
-    if (!state.connected) {
-        showNotification('Please connect your wallet first', 'warning');
-        return;
-    }
-
-    clearSelection();
-    while (state.selectedNumbers.size < state.maxNumbers) {
-        const num = Math.floor(Math.random() * 49) + 1;
-        if (!state.selectedNumbers.has(num)) {
-            state.selectedNumbers.add(num);
-            document.querySelectorAll('.number-btn')[num-1].classList.add('selected');
-        }
-    }
-    updateSelectionCount();
-}
-
-// Clear Selection
-function clearSelection() {
-    state.selectedNumbers.clear();
-    document.querySelectorAll('.number-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    updateSelectionCount();
-}
-
-// Start Draw Timer
-function startDrawTimer() {
+// Start countdown timer
+function startTimer() {
     const timerElement = document.getElementById('drawTimer');
-    const getNextDrawTime = () => {
+    
+    function updateTimer() {
         const now = new Date();
         const nextDraw = new Date();
-        nextDraw.setHours(24, 0, 0, 0); // Next draw at midnight
-        return Math.floor((nextDraw - now) / 1000);
-    };
-
-    let timeLeft = getNextDrawTime();
-    
-    state.timer = setInterval(() => {
-        const hours = Math.floor(timeLeft / 3600);
-        const minutes = Math.floor((timeLeft % 3600) / 60);
-        const seconds = timeLeft % 60;
+        nextDraw.setHours(24, 0, 0, 0);
+        
+        const timeLeft = nextDraw - now;
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
         
         timerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(state.timer);
-            executeDraw();
-            timeLeft = getNextDrawTime();
-        }
-        timeLeft--;
-    }, 1000);
-}
-
-// Execute Draw
-async function executeDraw() {
-    if (!state.contract) return;
-    
-    try {
-        showNotification('Drawing numbers...', 'info');
-        // Simulate contract interaction
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        showNotification('Draw completed!', 'success');
-        startDrawTimer();
-    } catch (error) {
-        showNotification('Draw failed. Please try again.', 'error');
-    }
-}
-
-// Submit Entry
-async function submitEntry() {
-    if (!state.connected) {
-        showNotification('Please connect your wallet first', 'warning');
-        return;
-    }
-
-    if (state.selectedNumbers.size !== state.maxNumbers) {
-        showNotification('Please select 6 numbers', 'warning');
-        return;
     }
     
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
+
+// Update ticket quantity
+function updateQuantity(change) {
+    const input = document.getElementById('ticketQuantity');
+    const newValue = Math.max(1, Math.min(100, parseInt(input.value) + change));
+    input.value = newValue;
+    state.ticketQuantity = newValue;
+    updateTicketPrice();
+    updateDistributionInfo();
+}
+
+// Update ticket price display
+function updateTicketPrice() {
+    const totalPrice = state.ticketQuantity * TICKET_PRICE;
+    document.querySelector('.purchase-btn .total-price').textContent = `${totalPrice} CRO`;
+}
+
+// Update distribution info
+function updateDistributionInfo() {
+    const totalPrice = state.ticketQuantity * TICKET_PRICE;
+    const rewards = totalPrice * REWARDS_PERCENT;
+    const buyback = totalPrice * BUYBACK_PERCENT;
+    const lp = totalPrice * LP_PERCENT;
+    const burn = totalPrice * BURN_PERCENT;
+    
+    document.querySelector('.distribution-row:nth-child(1) span:last-child').textContent = `${rewards.toFixed(2)} CRO`;
+    document.querySelector('.distribution-row:nth-child(2) span:last-child').textContent = `${buyback.toFixed(2)} CRO`;
+    document.querySelector('.distribution-row:nth-child(3) span:last-child').textContent = `${lp.toFixed(2)} CRO`;
+    document.querySelector('.distribution-row:nth-child(4) span:last-child').textContent = `${burn.toFixed(2)} CRO`;
+}
+
+// Load initial protocol data
+async function loadInitialData() {
     try {
-        showNotification('Processing entry...', 'info');
-        // Simulate contract interaction
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        const entry = {
-            id: Date.now(),
-            numbers: Array.from(state.selectedNumbers).sort((a, b) => a - b),
-            timestamp: new Date().toISOString()
+        // Simulate API call
+        const data = {
+            y2kPool: 1250000,
+            dojoPool: 750000,
+            tvl: 2500000,
+            players: 1250,
+            round: 1
         };
         
-        state.entries.push(entry);
-        addEntryToUI(entry);
-        saveToLocalStorage();
-        clearSelection();
-        showNotification('Entry submitted successfully!', 'success');
+        updateProtocolData(data);
     } catch (error) {
-        showNotification('Transaction failed. Please try again.', 'error');
+        console.error('Failed to load initial data:', error);
     }
 }
 
-// Add Entry to UI
-function addEntryToUI(entry) {
-    const entriesList = document.getElementById('entriesList');
-    const entryElement = document.createElement('div');
-    entryElement.className = 'entry-item';
-    entryElement.innerHTML = `
-        <div class="entry-numbers">
-            ${entry.numbers.map(n => `<span class="number">${String(n).padStart(2, '0')}</span>`).join('')}
-        </div>
-        <div class="entry-timestamp">${new Date(entry.timestamp).toLocaleTimeString()}</div>
-    `;
-    entriesList.prepend(entryElement);
+// Update protocol data
+function updateProtocolData(data) {
+    state = { ...state, ...data };
     
-    document.getElementById('activeCount').textContent = `${state.entries.length} Active`;
+    document.getElementById('y2kPool').textContent = `${numberWithCommas(data.y2kPool)} Y2K`;
+    document.getElementById('dojoPool').textContent = `${numberWithCommas(data.dojoPool)} DOJO`;
+    document.getElementById('tvlValue').textContent = `$${numberWithCommas(data.tvl)}`;
+    document.getElementById('playersCount').textContent = numberWithCommas(data.players);
+    document.getElementById('roundNumber').textContent = `#${data.round}`;
 }
 
-// Save to Local Storage
-function saveToLocalStorage() {
-    localStorage.setItem('cronosLotteryEntries', JSON.stringify(state.entries));
+// Add transaction to list
+function addTransaction(transaction) {
+    const list = document.getElementById('transactionList');
+    const item = document.createElement('div');
+    item.className = 'transaction-item';
+    
+    item.innerHTML = `
+        <div class="transaction-info">
+            <div class="transaction-type">${transaction.type}</div>
+            <div class="transaction-time">${transaction.time}</div>
+        </div>
+        <div class="transaction-amount">${transaction.amount}</div>
+    `;
+    
+    list.insertBefore(item, list.firstChild);
 }
 
-// Show Notification
-function showNotification(message, type = 'info') {
+// Setup event listeners
+function setupEventListeners() {
+    document.getElementById('ticketQuantity').addEventListener('change', (e) => {
+        state.ticketQuantity = Math.max(1, Math.min(100, parseInt(e.target.value) || 1));
+        e.target.value = state.ticketQuantity;
+        updateTicketPrice();
+        updateDistributionInfo();
+    });
+    
+    document.getElementById('purchaseBtn').addEventListener('click', async () => {
+        try {
+            // Simulate purchase transaction
+            const transaction = {
+                type: 'Ticket Purchase',
+                time: new Date().toLocaleTimeString(),
+                amount: `${state.ticketQuantity * TICKET_PRICE} CRO`
+            };
+            
+            addTransaction(transaction);
+            
+            // Update protocol data
+            const newData = {
+                y2kPool: state.y2kPool + (state.ticketQuantity * TICKET_PRICE * REWARDS_PERCENT * 0.5),
+                dojoPool: state.dojoPool + (state.ticketQuantity * TICKET_PRICE * REWARDS_PERCENT * 0.5),
+                tvl: state.tvl + (state.ticketQuantity * TICKET_PRICE),
+                players: state.players + 1,
+                round: state.round
+            };
+            
+            updateProtocolData(newData);
+            
+            // Show success message
+            showNotification('Tickets purchased successfully!', 'success');
+        } catch (error) {
+            showNotification('Failed to purchase tickets', 'error');
+        }
+    });
+}
+
+// Utility functions
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function showNotification(message, type) {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
@@ -977,145 +561,5 @@ function showNotification(message, type = 'info') {
         notification.remove();
     }, 3000);
 }
-
-// Initialize Wallet Connection
-async function initializeWallet() {
-    const connectBtn = document.getElementById('walletConnect');
-    
-    connectBtn.addEventListener('click', async () => {
-        if (state.connected) return;
-        
-        try {
-            showNotification('Connecting to Cronos...', 'info');
-            // Simulate wallet connection
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            state.connected = true;
-            connectBtn.querySelector('span:last-child').textContent = shortWallet(address); // you can define `shortWallet()` to slice the addr
-            showNotification('Wallet connected successfully!', 'success');
-            checkVaultEligibility(address);
-        } catch (error) {
-            showNotification('Failed to connect wallet', 'error');
-        }
-    });
-}
-
-    async function checkVaultEligibility(address) {
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  const y2kContract = new ethers.Contract(
-    "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d",
-    ["function balanceOf(address) view returns (uint256)"],
-    provider
-  );
-
-  const balance = await y2kContract.balanceOf(address);
-  const heldY2K = Number(ethers.formatUnits(balance, 18));
-
-  const fomoBlock = document.getElementById('vaultFomoBlock');
-  const profileCTA = document.getElementById('createProfileCTA');
-  const fomoGate = document.getElementById('fomoGate');
-
-  fomoGate.style.display = 'block';
-
-  if (heldY2K < 4000000) {
-    fomoBlock.style.display = 'block';
-    profileCTA.style.display = 'none';
-    return;
-  }
-
-  // Check Firebase for profile
-  const userRef = firebase.firestore().collection('users').doc(address);
-  const doc = await userRef.get();
-
-  if (!doc.exists) {
-    // Has enough Y2K, no profile yet
-    profileCTA.style.display = 'block';
-    fomoBlock.style.display = 'none';
-  } else {
-    // Has profile — optionally show something later
-    fomoGate.style.display = 'none';
-  }
-}
-
-// Setup Event Listeners
-function setupEventListeners() {
-    document.getElementById('submitEntry').addEventListener('click', submitEntry);
-    document.getElementById('multiEntry').addEventListener('click', () => {
-        if (!state.connected) {
-            showNotification('Please connect your wallet first', 'warning');
-            return;
-        }
-        showNotification('Multi-entry feature coming soon!', 'info');
-    });
-}
-
-    // GL1TCHBALL Jackpot Timer
-function startDrawTimer() {
-  const timerElement = document.getElementById('drawTimer');
-  const getNextDrawTime = () => {
-    const now = new Date();
-    const nextDraw = new Date();
-    nextDraw.setHours(24, 0, 0, 0); // Midnight UTC
-    return Math.floor((nextDraw - now) / 1000);
-  };
-
-  let timeLeft = getNextDrawTime();
-
-  setInterval(() => {
-    const hours = Math.floor(timeLeft / 3600);
-    const minutes = Math.floor((timeLeft % 3600) / 60);
-    const seconds = timeLeft % 60;
-
-    timerElement.textContent = 
-      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    
-    timeLeft--;
-    if (timeLeft <= 0) {
-      timeLeft = getNextDrawTime();
-    }
-  }, 1000);
-}
-
-// Initialize Glitchball Timer on Load
-document.addEventListener('DOMContentLoaded', startDrawTimer);
-
-    import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@6.7.0/+esm';
-
-const provider = new ethers.JsonRpcProvider("https://evm.cronos.org");
-const jackpotWallet = "0x348c2F06C64b4465f90446Fd806aFf3A01220450";
-
-// Token Contracts
-const Y2K_TOKEN = "0xB4Df7d2A736Cc391146bB0dF4277E8F68247Ac6d";
-const DOJO_TOKEN = "0x6Eb1d264Ceb70Fb38b41893Ac6043087E75c3ae4";
-const ERC20_ABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
-
-// Fetch balances and inject into DOM
-async function fetchJackpotBalances() {
-  try {
-    const y2k = new ethers.Contract(Y2K_TOKEN, ERC20_ABI, provider);
-    const dojo = new ethers.Contract(DOJO_TOKEN, ERC20_ABI, provider);
-
-    const [y2kBalanceRaw, dojoBalanceRaw, y2kDecimals, dojoDecimals] = await Promise.all([
-      y2k.balanceOf(jackpotWallet),
-      dojo.balanceOf(jackpotWallet),
-      y2k.decimals(),
-      dojo.decimals()
-    ]);
-
-    const y2kBalance = ethers.formatUnits(y2kBalanceRaw, y2kDecimals);
-    const dojoBalance = ethers.formatUnits(dojoBalanceRaw, dojoDecimals);
-
-    document.getElementById("y2kPot").textContent = `${parseFloat(y2kBalance).toLocaleString(undefined, { maximumFractionDigits: 2 })} Y2K`;
-    document.getElementById("dojoPot").textContent = `${parseFloat(dojoBalance).toLocaleString(undefined, { maximumFractionDigits: 2 })} DOJO`;
-
-  } catch (err) {
-    console.error("Jackpot token fetch failed:", err);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', fetchJackpotBalances);
 </script>
 </html>
