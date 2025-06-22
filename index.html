@@ -110,6 +110,66 @@
       margin-top: 10px;
     }
 
+    .profile-card {
+  display: none;
+  background: var(--surface);
+  padding: 16px;
+  border-radius: 16px;
+  margin-top: 24px;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile-card.active {
+  display: flex;
+}
+
+.profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.nickname {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.handle {
+  font-size: 12px;
+  color: var(--faded);
+}
+
+.profile-warning {
+  font-size: 12px;
+  color: var(--accent2);
+  margin-top: 4px;
+}
+
+.cta-link {
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+@media screen and (max-width: 480px) {
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .profile-img {
+    margin-bottom: 10px;
+  }
+}
+
     .section {
       background: var(--surface);
       border-radius: 14px;
@@ -295,6 +355,16 @@
         <span class="connect-text">CONNECT WALLET</span>
       </button>
       <div id="statusBar" class="status-bar">Waiting for wallet...</div>
+      <div id="profileCard" class="profile-card">
+  <img id="pfpImg" class="profile-img" src="https://api.dicebear.com/6.x/pixel-art/svg?seed=anon" />
+  <div class="profile-info">
+    <div id="nickname" class="nickname">anon</div>
+    <div id="handle" class="handle">@none</div>
+    <div id="profileWarning" class="profile-warning" style="display:none;">
+      You don’t hold 4M+ Y2K. <span class="cta-link" onclick="window.open('https://y2k-the-vault.netlify.app/', '_blank')">Create your profile</span> to flex on the leaderboard.
+    </div>
+  </div>
+</div>
     </header>
 
     <div id="potsSection" class="section">
@@ -402,9 +472,12 @@
         isConnected = true;
 
         const y2k = await getY2KBalance(currentWallet, provider);
-        if (y2k >= 4_000_000) {
-          document.getElementById("numberPicker").classList.add("eligible");
-        }
+
+if (y2k >= 4_000_000) {
+  loadVaultProfile(currentWallet);
+} else {
+  showGenericProfile(false);
+}
 
         // Refresh data
         loadPots();
@@ -537,6 +610,39 @@
           "<div class='leaderboard-item'>Error loading leaderboard</div>";
       }
     }
+
+    async function loadVaultProfile(wallet) {
+  try {
+    const snap = await getDoc(doc(db, "users", wallet));
+    if (!snap.exists()) {
+      showGenericProfile(true);
+      return;
+    }
+
+    const user = snap.data();
+    document.getElementById("profileCard").classList.add("active");
+    document.getElementById("pfpImg").src = user.pfpUrl || "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+    document.getElementById("nickname").textContent = user.username || "anon";
+    document.getElementById("handle").textContent = user.xHandle ? `@${user.xHandle}` : "@none";
+    document.getElementById("profileWarning").style.display = "none";
+  } catch (err) {
+    console.error("Vault Profile Error", err);
+    showGenericProfile(true);
+  }
+}
+
+function showGenericProfile(isEligible) {
+  document.getElementById("profileCard").classList.add("active");
+  document.getElementById("pfpImg").src = "https://api.dicebear.com/6.x/pixel-art/svg?seed=anon";
+  document.getElementById("nickname").textContent = "anon";
+  document.getElementById("handle").textContent = "@none";
+
+  const warning = document.getElementById("profileWarning");
+  warning.textContent = isEligible
+    ? "Customize your profile in the Quantum Vault."
+    : "You don’t hold 4M+ Y2K. Create your profile to flex on the leaderboard.";
+  warning.style.display = "block";
+}
   </script>
 </body>
 </html>
