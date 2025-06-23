@@ -335,9 +335,13 @@
       }
 
       .number-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
+  grid-template-columns: repeat(6, 1fr); /* desktop */
+}
+@media screen and (max-width: 480px) {
+  .number-grid {
+    grid-template-columns: repeat(5, 1fr); /* mobile tweak */
+  }
+}
 
     @keyframes glitchFade {
   0% {
@@ -544,10 +548,10 @@ if (y2k >= 4_000_000) {
     }
 
     function initNumberPicker() {
-      const grid = document.getElementById("pickerGrid");
-      const selected = new Set();
+  const grid = document.getElementById("pickerGrid");
+  const selected = new Set();
 
-      for (let i = 1; i <= 24; i++) {
+  for (let i = 1; i <= 69; i++) {
         const btn = document.createElement("div");
         btn.className = "number-btn";
         btn.textContent = i;
