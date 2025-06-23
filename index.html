@@ -338,6 +338,39 @@
         grid-template-columns: repeat(4, 1fr);
       }
     }
+
+    @keyframes glitchFade {
+  0% {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0% 0% 0% 0%);
+  }
+  20% {
+    transform: skewX(10deg);
+    clip-path: inset(20% 0 60% 0);
+  }
+  40% {
+    transform: skewX(-10deg);
+    clip-path: inset(10% 0 30% 0);
+  }
+  60% {
+    transform: skewX(5deg);
+    clip-path: inset(30% 0 20% 0);
+  }
+  80% {
+    transform: none;
+    clip-path: inset(40% 0 10% 0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+    clip-path: inset(50% 0 0 0);
+  }
+}
+
+.welcome-message.glitch-out {
+  animation: glitchFade 0.7s ease-out forwards;
+}
   </style>
 </head>
 <body>
@@ -460,10 +493,16 @@
         currentWallet = (await signer.getAddress()).toLowerCase();
 
         const short = `${currentWallet.slice(0, 6)}...${currentWallet.slice(-4)}`;
-        document.getElementById("statusBar").textContent = `Connected: ${short}`;
-        document.getElementById("welcomeMsg").style.display = "none";
-        connectBtn.classList.add("connected");
-        connectBtn.querySelector(".connect-text").textContent = "CONNECTED";
+document.getElementById("statusBar").textContent = `Connected: ${short}`;
+
+const welcome = document.getElementById("welcomeMsg");
+welcome.classList.add("glitch-out");
+setTimeout(() => {
+  welcome.style.display = "none";
+}, 800);
+
+connectBtn.classList.add("connected");
+connectBtn.querySelector(".connect-text").textContent = "CONNECTED";
 
         // Remove overlays
         document.querySelectorAll('.section-overlay').forEach(overlay => {
