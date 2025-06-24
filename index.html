@@ -423,6 +423,18 @@
       </div>
     </div>
 
+    <div id="drawTimer" class="section">
+  <div class="section-header">
+    ⏰ Next Draw Countdown
+    <div class="tooltip">ℹ️
+      <span class="tooltip-text">Time left before the next Powerball draw</span>
+    </div>
+  </div>
+  <div class="section-content">
+    <div id="timerDisplay" style="font-size: 18px; color: var(--accent); text-align: center;">Loading...</div>
+  </div>
+</div>
+
     <div id="numberPicker" class="section">
       <div class="section-overlay active">
         <div class="overlay-message">
@@ -654,6 +666,34 @@ if (y2k >= 4_000_000) {
           "<div class='leaderboard-item'>Error loading leaderboard</div>";
       }
     }
+
+    function startCountdown() {
+  const timerDisplay = document.getElementById("timerDisplay");
+
+  // Set target time (e.g., draw every hour on the hour)
+  function getNextDrawTime() {
+    const now = new Date();
+    now.setMinutes(60, 0, 0); // next top of the hour
+    return now.getTime();
+  }
+
+  let target = getNextDrawTime();
+
+  setInterval(() => {
+    const now = Date.now();
+    let diff = target - now;
+
+    if (diff <= 0) {
+      target = getNextDrawTime(); // reset if time passed
+      diff = target - now;
+    }
+
+    const mins = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, "0");
+    const secs = Math.floor((diff / 1000) % 60).toString().padStart(2, "0");
+
+    timerDisplay.textContent = `${mins}:${secs}`;
+  }, 1000);
+}
 
     async function loadVaultProfile(wallet) {
   try {
