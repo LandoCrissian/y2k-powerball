@@ -375,6 +375,14 @@
 .welcome-message.glitch-out {
   animation: glitchFade 0.7s ease-out forwards;
 }
+
+      .token-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 3px;
+}
   </style>
 </head>
 <body>
@@ -412,14 +420,22 @@
         </div>
       </div>
       <div class="section-content">
+        
         <div class="pot-info">
-          <span class="pot-label">Y2K Pool:</span>
-          <span id="y2kPot" class="pot-value">Loading...</span>
-        </div>
-        <div class="pot-info">
-          <span class="pot-label">DOJO Pool:</span>
-          <span id="dojoPot" class="pot-value">Loading...</span>
-        </div>
+  <span class="pot-label">
+    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_5445.jpeg" class="token-icon" alt="Y2K Logo">
+    Y2K Pool:
+  </span>
+  <span id="y2kPot" class="pot-value">Loading...</span>
+</div>
+
+<div class="pot-info">
+  <span class="pot-label">
+    <img src="https://raw.githubusercontent.com/LandoCrissian/y2k-powerball/refs/heads/main/IMG_6584.jpeg" class="token-icon" alt="DOJO Logo">
+    DOJO Pool:
+  </span>
+  <span id="dojoPot" class="pot-value">Loading...</span>
+</div>
       </div>
     </div>
 
