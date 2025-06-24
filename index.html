@@ -750,6 +750,49 @@ function showGenericProfile(isEligible) {
     : "You don’t hold 4M+ Y2K. Create your profile to flex on the leaderboard.";
   warning.style.display = "block";
 }
+
+    async function drawAndSave() {
+  try {
+    const winningNumbers = [];
+    while (winningNumbers.length < 6) {
+      const num = Math.floor(Math.random() * 69) + 1;
+      if (!winningNumbers.includes(num)) winningNumbers.push(num);
+    }
+    winningNumbers.sort((a, b) => a - b);
+
+    // Save draw to Firestore
+    const drawRef = collection(db, "draws");
+    await addDoc(drawRef, {
+      numbers: winningNumbers,
+      timestamp: Date.now()
+    });
+
+    alert(`Winning Numbers Drawn: ${winningNumbers.join(", ")}`);
+
+    // Optional: Check for winners
+    const ticketsSnap = await getDocs(collection(db, "powerball_tickets"));
+    let winners = [];
+
+    ticketsSnap.forEach(docSnap => {
+      const ticket = docSnap.data();
+      const matchCount = ticket.numbers.filter(n => winningNumbers.includes(n)).length;
+
+      if (matchCount === 6) {
+        winners.push(ticket.wallet);
+      }
+    });
+
+    if (winners.length > 0) {
+      alert(`🎉 Winners: ${winners.join(", ")}`);
+    } else {
+      alert("No winners this round.");
+    }
+
+  } catch (err) {
+    console.error("Draw Error:", err);
+    alert("Draw failed. Check console for details.");
+  }
+}
   </script>
 </body>
 </html>
