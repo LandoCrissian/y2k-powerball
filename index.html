@@ -761,7 +761,7 @@ function showGenericProfile(isEligible) {
     winningNumbers.sort((a, b) => a - b);
 
     // Save draw to Firestore
-    const drawRef = collection(db, "draws");
+    const drawRef = collection(db, "Draws"); // Capital D
     await addDoc(drawRef, {
       numbers: winningNumbers,
       timestamp: Date.now()
