@@ -751,7 +751,7 @@ function showGenericProfile(isEligible) {
   warning.style.display = "block";
 }
 
-    async function drawAndSave() {
+    window.drawAndSave = async function() {
   try {
     const winningNumbers = [];
     while (winningNumbers.length < 6) {
